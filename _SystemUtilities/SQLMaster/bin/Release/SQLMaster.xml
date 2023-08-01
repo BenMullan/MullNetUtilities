@@ -1,0 +1,44 @@
+﻿<?xml version="1.0"?>
+<doc>
+<assembly>
+<name>
+SQLMaster
+</name>
+</assembly>
+<members>
+<member name="P:MullNet.SystemUtilities.SQLMaster.ConnectToServerWindow.SpecifiedSQLServerConnection_">
+	<summary>Returns Nothing, if there is no Server Name specified</summary>
+</member><member name="M:MullNet.SystemUtilities.SQLMaster.ConnectToServerWindow.RequestSQLServerConnectionDetails">
+	<summary>Returns Nothing, if [Esc] is pressed, or the form is closed with [x] instead of [Ok]</summary>
+</member><member name="P:MullNet.SystemUtilities.SQLMaster.My.Resources.Resources.ResourceManager">
+	<summary>
+  Returns the cached ResourceManager instance used by this class.
+</summary>
+</member><member name="P:MullNet.SystemUtilities.SQLMaster.My.Resources.Resources.Culture">
+	<summary>
+  Overrides the current thread's CurrentUICulture property for all
+  resource lookups using this strongly typed resource class.
+</summary>
+</member><member name="P:MullNet.SystemUtilities.SQLMaster.My.Resources.Resources.Construct">
+	<summary>
+  Looks up a localized resource of type System.Drawing.Bitmap.
+</summary>
+</member><member name="P:MullNet.SystemUtilities.SQLMaster.My.Resources.Resources.Execute">
+	<summary>
+  Looks up a localized resource of type System.Drawing.Bitmap.
+</summary>
+</member><member name="P:MullNet.SystemUtilities.SQLMaster.My.Resources.Resources.network_server_database">
+	<summary>
+  Looks up a localized resource of type System.Drawing.Bitmap.
+</summary>
+</member><member name="P:MullNet.SystemUtilities.SQLMaster.My.Resources.Resources.Run">
+	<summary>
+  Looks up a localized resource of type System.Drawing.Bitmap.
+</summary>
+</member><member name="T:MullNet.SystemUtilities.SQLMaster.My.Resources.Resources">
+	<summary>
+  A strongly-typed resource class, for looking up localized strings, etc.
+</summary>
+</member>
+</members>
+</doc>

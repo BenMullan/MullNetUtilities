@@ -1,0 +1,80 @@
+﻿[08/03/2023 4:42:19 (Afternoon)] ↓
+Info: "SaveScreenshot.exe" exited with code 0 at 16:42:19.1052596 after 0.2500143s. The PID was 6384 of session 1 on machine "MNLT01".
+
+[08/03/2023 4:42:19 (Afternoon)] ↓
+SaveScreenshot.exe Output ↓
+Successfully saved screenshot as: D:\Benedict\Documents\Programming\MullNet\MullNetUtilities\_SystemUtilities\SessionView\bin\Release\MNLT01_Session1.PNG
+
+
+[08/03/2023 4:42:31 (Afternoon)] ↓
+Info: "SaveScreenshot.exe" exited with code 2 at 16:42:31.0059403 after 0.210012s. The PID was 7336 of session 1 on machine "MNLT01".
+
+[08/03/2023 4:42:31 (Afternoon)] ↓
+SaveScreenshot.exe Output ↓
+08/03/2023 4:42:30 (Afternoon) Runtime Exception: System.Runtime.InteropServices.ExternalException (0x80004005): A generic error occurred in GDI+.
+   at System.Drawing.Image.Save(String filename, ImageCodecInfo encoder, EncoderParameters encoderParams)
+   at System.Drawing.Image.Save(String filename, ImageFormat format)
+   at System.Drawing.Image.Save(String filename)
+   at MullNet.SilentControlToolset.SaveScreenshot.Main(String[] _CLAs)
+
+
+[08/03/2023 4:44:26 (Afternoon)] ↓
+Info: "SaveScreenshot.exe" exited with code 2 at 16:44:26.8515663 after 0.2310132s. The PID was 8604 of session 1 on machine "MNLT01".
+
+[08/03/2023 4:44:26 (Afternoon)] ↓
+SaveScreenshot.exe Output ↓
+08/03/2023 4:44:26 (Afternoon) Runtime Exception: System.Runtime.InteropServices.ExternalException (0x80004005): A generic error occurred in GDI+.
+   at System.Drawing.Image.Save(String filename, ImageCodecInfo encoder, EncoderParameters encoderParams)
+   at System.Drawing.Image.Save(String filename, ImageFormat format)
+   at System.Drawing.Image.Save(String filename)
+   at MullNet.SilentControlToolset.SaveScreenshot.Main(String[] _CLAs)
+
+
+[08/03/2023 4:56:54 (Afternoon)] ↓
+Info: "SaveScreenshot.exe" exited with code 0 at 16:56:54.9073526 after 0.2390136s. The PID was 8056 of session 1 on machine "MNLT01".
+
+[08/03/2023 4:56:54 (Afternoon)] ↓
+SaveScreenshot.exe Output ↓
+Successfully saved screenshot as: D:\Benedict\Documents\Programming\MullNet\MullNetUtilities\_SystemUtilities\SessionView\bin\Release\MNLT01_Session1.PNG
+
+
+[08/03/2023 4:56:59 (Afternoon)] ↓
+Info: "SaveScreenshot.exe" exited with code 0 at 16:56:59.6396233 after 0.2420138s. The PID was 14868 of session 1 on machine "MNLT01".
+
+[08/03/2023 4:56:59 (Afternoon)] ↓
+SaveScreenshot.exe Output ↓
+Successfully saved screenshot as: D:\Benedict\Documents\Programming\MullNet\MullNetUtilities\_SystemUtilities\SessionView\bin\Release\MNLT01_Session1.PNG
+
+
+[08/03/2023 4:57:06 (Afternoon)] ↓
+Info: "SaveScreenshot.exe" exited with code 0 at 16:57:06.0559903 after 0.2540145s. The PID was 9332 of session 1 on machine "MNLT01".
+
+[08/03/2023 4:57:06 (Afternoon)] ↓
+SaveScreenshot.exe Output ↓
+Successfully saved screenshot as: D:\Benedict\Documents\Programming\MullNet\MullNetUtilities\_SystemUtilities\SessionView\bin\Release\MNLT01_Session1.PNG
+
+
+[08/03/2023 4:57:10 (Afternoon)] ↓
+Info: "SaveScreenshot.exe" exited with code 0 at 16:57:10.4212400 after 0.244014s. The PID was 14260 of session 1 on machine "MNLT01".
+
+[08/03/2023 4:57:10 (Afternoon)] ↓
+SaveScreenshot.exe Output ↓
+Successfully saved screenshot as: D:\Benedict\Documents\Programming\MullNet\MullNetUtilities\_SystemUtilities\SessionView\bin\Release\MNLT01_Session1.PNG
+
+
+[08/03/2023 4:57:54 (Afternoon)] ↓
+Info: "SaveScreenshot.exe" exited with code 0 at 16:57:54.3917549 after 0.2430139s. The PID was 1320 of session 1 on machine "MNLT01".
+
+[08/03/2023 4:57:54 (Afternoon)] ↓
+SaveScreenshot.exe Output ↓
+Successfully saved screenshot as: D:\Benedict\Documents\Programming\MullNet\MullNetUtilities\_SystemUtilities\SessionView\bin\Release\MNLT01_Session1.PNG
+
+
+[08/03/2023 4:58:13 (Afternoon)] ↓
+Info: "SaveScreenshot.exe" exited with code 0 at 16:58:13.1658288 after 0.2360135s. The PID was 12404 of session 1 on machine "MNLT01".
+
+[08/03/2023 4:58:13 (Afternoon)] ↓
+SaveScreenshot.exe Output ↓
+Successfully saved screenshot as: D:\Benedict\Documents\Programming\MullNet\MullNetUtilities\_SystemUtilities\SessionView\bin\Release\MNLT01_Session1.PNG
+
+

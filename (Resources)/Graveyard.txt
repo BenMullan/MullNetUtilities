@@ -1,0 +1,65 @@
+###		[Graveyard.txt]
+###		Old-and-unneeded snippets removed from projects, which I have an aversion to deleting entirely.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		Console.Title = "Running Tests..."
+
+		For _Base10Number As UInt64 = 0 To 100000 Step +1
+			Try
+
+				Dim _IncrementedValue$ = [UsefulMethods].IncrementNumericalValue(_Base10Number.ToString(), "0123456789")
+				If (_Base10Number + 1).ToString() <> _IncrementedValue Then
+					Console.Write(_Base10Number & vbTab & _IncrementedValue & vbTab & vbTab)
+					UsefulMethods.ConsoleErrorWriteInColour("MISMATCH", ConsoleColor.Red)
+					Console.WriteLine()	': Threading.Thread.Sleep(50)
+				End If
+
+			Catch _Ex As Exception : UsefulMethods.ConsoleErrorWriteLineInColour(_Ex.Message, ConsoleColor.Red) : Console.ReadLine() : End Try
+		Next
+		ConsoleWriteLineInColour("Done 10", ConsoleColor.Green)
+
+
+		For _Base2Number As Int64 = 0 To 100000 Step +1
+			Try
+
+				Dim _IncrementedValue$ = [UsefulMethods].IncrementNumericalValue(Convert.ToString(_Base2Number, toBase:=2), "01")
+				If Convert.ToString(_Base2Number + 1, toBase:=2) <> _IncrementedValue Then
+					Console.Write(Convert.ToString(_Base2Number, toBase:=2) & vbTab & _IncrementedValue & vbTab & vbTab)
+					UsefulMethods.ConsoleErrorWriteInColour("MISMATCH", ConsoleColor.Red)
+					Console.WriteLine()	': Threading.Thread.Sleep(50)
+				End If
+
+			Catch _Ex As Exception : UsefulMethods.ConsoleErrorWriteLineInColour(_Ex.Message, ConsoleColor.Red) : Console.ReadLine() : End Try
+		Next
+		ConsoleWriteLineInColour("Done 2", ConsoleColor.Green)
+
+
+		For _Base16Number As Int64 = 0 To 100000 Step +1
+			Try
+
+				Dim _IncrementedValue$ = [UsefulMethods].IncrementNumericalValue(Convert.ToString(_Base16Number, toBase:=16), "0123456789abcdef")
+				If Convert.ToString(_Base16Number + 1, toBase:=16) <> _IncrementedValue Then
+					Console.Write(Convert.ToString(_Base16Number, toBase:=16) & vbTab & _IncrementedValue & vbTab & vbTab)
+					UsefulMethods.ConsoleErrorWriteInColour("MISMATCH", ConsoleColor.Red)
+					Console.WriteLine()	': Threading.Thread.Sleep(50)
+				End If
+
+			Catch _Ex As Exception : UsefulMethods.ConsoleErrorWriteLineInColour(_Ex.Message, ConsoleColor.Red) : Console.ReadLine() : End Try
+		Next
+		ConsoleWriteLineInColour("Done 16", ConsoleColor.Green)
+
+		Console.Title = "Finished All Tests"
+		Console.ReadLine()

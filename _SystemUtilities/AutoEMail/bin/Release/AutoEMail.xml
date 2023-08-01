@@ -1,0 +1,61 @@
+﻿<?xml version="1.0"?>
+<doc>
+<assembly>
+<name>
+AutoEMail
+</name>
+</assembly>
+<members>
+<member name="T:AutoEMail.My.Resources.Resources">
+<summary>
+  A strongly-typed resource class, for looking up localized strings, etc.
+</summary>
+</member>
+<member name="P:AutoEMail.My.Resources.Resources.ResourceManager">
+<summary>
+  Returns the cached ResourceManager instance used by this class.
+</summary>
+</member>
+<member name="P:AutoEMail.My.Resources.Resources.Culture">
+<summary>
+  Overrides the current thread's CurrentUICulture property for all
+  resource lookups using this strongly typed resource class.
+</summary>
+</member>
+<member name="P:AutoEMail.My.Resources.Resources.EMail">
+<summary>
+  Looks up a localized resource of type System.Drawing.Bitmap.
+</summary>
+</member>
+<member name="P:AutoEMail.My.Resources.Resources.HTML_EMail">
+<summary>
+  Looks up a localized string similar to &lt;!doctype html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width&quot; /&gt;
+    &lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=UTF-8&quot; /&gt;
+    &lt;title&gt;Complain about Bob&lt;/title&gt;
+    &lt;style&gt;
+      img {
+        border: none;
+        -ms-interpolation-mode: bicubic;
+        max-width: 100%; 
+      }
+
+      body {
+        background-color: #daeef2;
+        font-family: sans-serif;
+        -webkit-font-smoothing: antialiased;
+        font-size: 14px;
+        line-height: 1.4;
+        mar [rest of string was truncated]&quot;;.
+</summary>
+</member>
+<member name="M:AutoEMail.AutoEMail.SetDefaultSenderAccounts">
+ <summary>
+ 
+ </summary>
+ <remarks></remarks>
+</member>
+</members>
+</doc>

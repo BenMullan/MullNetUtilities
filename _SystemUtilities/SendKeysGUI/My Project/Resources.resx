@@ -1,0 +1,320 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="ExpansionsHTML" xml:space="preserve">
+    <value>&lt;html&gt;
+	&lt;head&gt;
+		&lt;title&gt;Expansions HTML&lt;/title&gt;
+		&lt;style&gt;
+			body { padding: 1% 3% 1% 3%; color: #454545; background-color: #EDFEFF; font-family: verdana; }
+			table, th, td { border: 1px solid black; }
+		&lt;/style&gt;
+	&lt;/head&gt;
+	&lt;body&gt;
+		&lt;center&gt;
+			&lt;h1&gt;SendKeys Examples&lt;/h1&gt;
+		&lt;/center&gt;
+		
+			&lt;p&gt;
+				&lt;ul&gt;
+					&lt;li&gt;Hello World&lt;/li&gt;
+					&lt;li&gt;{Enter}&lt;/li&gt;
+					&lt;li&gt;{F5}&lt;/li&gt;
+					&lt;li&gt;^{v}&amp;emsp;&lt;b&gt;Ctrl + V&lt;/b&gt;&lt;/li&gt;
+					&lt;li&gt;^+{F1}&amp;emsp;&lt;b&gt;Ctrl + Shift + F1&lt;/b&gt;&lt;/li&gt;
+					&lt;li&gt;+(EC)&amp;emsp;&lt;b&gt;Holds down SHIFT while E and C are pressed&lt;/b&gt;&lt;/li&gt;
+					&lt;li&gt;+EC&amp;emsp;&lt;b&gt;Holds down SHIFT whilst E is pressed, followed by a C without SHIFT&lt;/b&gt;&lt;/li&gt;
+				&lt;/ul&gt;
+			&lt;/p&gt;
+			
+		&lt;center&gt;
+			
+			&lt;h1&gt;SendKeys Expansions&lt;/h1&gt;
+			
+			&lt;p&gt;
+				Each key is represented by one or more characters. To specify a single keyboard character, use the character itself. For example, to represent the letter A, pass in the string "A" to the method. To represent more than one character, append each additional character to the one preceding it. To represent the letters A, B, and C, specify the parameter as "ABC".
+				&lt;br/&gt;
+				The plus sign (+), caret (^), percent sign (%), tilde (~), and parentheses () have special meanings to SendKeys. To specify one of these characters, enclose it within braces ({}). For example, to specify the plus sign, use "{+}". To specify brace characters, use "{{}" and "{}}". Brackets ([ ]) have no special meaning to SendKeys, but you must enclose them in braces. In other applications, brackets do have a special meaning that might be significant when dynamic data exchange (DDE) occurs.
+			&lt;/p&gt;
+			
+			&lt;p&gt;
+				To specify characters that aren't displayed when you press a key, such as ENTER or TAB, and keys that represent actions rather than characters, use the codes in the following table.
+			&lt;/p&gt;
+			
+			&lt;table&gt;
+				&lt;thead&gt;
+					&lt;tr&gt;
+					&lt;th&gt;Key&lt;/th&gt;
+					&lt;th&gt;Code&lt;/th&gt;
+					&lt;/tr&gt;
+				&lt;/thead&gt;
+				&lt;tbody&gt;
+					&lt;tr&gt;
+					&lt;td&gt;BACKSPACE&lt;/td&gt;
+					&lt;td&gt;{BACKSPACE}, {BS}, or {BKSP}&lt;/td&gt;
+					&lt;/tr&gt;
+					&lt;tr&gt;
+					&lt;td&gt;BREAK&lt;/td&gt;
+					&lt;td&gt;{BREAK}&lt;/td&gt;
+					&lt;/tr&gt;
+					&lt;tr&gt;
+					&lt;td&gt;CAPS LOCK&lt;/td&gt;
+					&lt;td&gt;{CAPSLOCK}&lt;/td&gt;
+					&lt;/tr&gt;
+					&lt;tr&gt;
+					&lt;td&gt;DEL or DELETE&lt;/td&gt;
+					&lt;td&gt;{DELETE} or {DEL}&lt;/td&gt;
+					&lt;/tr&gt;
+					&lt;tr&gt;
+					&lt;td&gt;DOWN ARROW&lt;/td&gt;
+					&lt;td&gt;{DOWN}&lt;/td&gt;
+					&lt;/tr&gt;
+					&lt;tr&gt;
+					&lt;td&gt;END&lt;/td&gt;
+					&lt;td&gt;{END}&lt;/td&gt;
+					&lt;/tr&gt;
+					&lt;tr&gt;
+					&lt;td&gt;ENTER&lt;/td&gt;
+					&lt;td&gt;{ENTER}or ~&lt;/td&gt;
+					&lt;/tr&gt;
+					&lt;tr&gt;
+					&lt;td&gt;ESC&lt;/td&gt;
+					&lt;td&gt;{ESC}&lt;/td&gt;
+					&lt;/tr&gt;
+					&lt;tr&gt;
+					&lt;td&gt;HELP&lt;/td&gt;
+					&lt;td&gt;{HELP}&lt;/td&gt;
+					&lt;/tr&gt;
+					&lt;tr&gt;
+					&lt;td&gt;HOME&lt;/td&gt;
+					&lt;td&gt;{HOME}&lt;/td&gt;
+					&lt;/tr&gt;
+					&lt;tr&gt;
+					&lt;td&gt;INS or INSERT&lt;/td&gt;
+					&lt;td&gt;{INSERT} or {INS}&lt;/td&gt;
+					&lt;/tr&gt;
+					&lt;tr&gt;
+					&lt;td&gt;LEFT ARROW&lt;/td&gt;
+					&lt;td&gt;{LEFT}&lt;/td&gt;
+					&lt;/tr&gt;
+					&lt;tr&gt;
+					&lt;td&gt;NUM LOCK&lt;/td&gt;
+					&lt;td&gt;{NUMLOCK}&lt;/td&gt;
+					&lt;/tr&gt;
+					&lt;tr&gt;
+					&lt;td&gt;PAGE DOWN&lt;/td&gt;
+					&lt;td&gt;{PGDN}&lt;/td&gt;
+					&lt;/tr&gt;
+					&lt;tr&gt;
+					&lt;td&gt;PAGE UP&lt;/td&gt;
+					&lt;td&gt;{PGUP}&lt;/td&gt;
+					&lt;/tr&gt;
+					&lt;tr&gt;
+					&lt;td&gt;PRINT SCREEN&lt;/td&gt;
+					&lt;td&gt;{PRTSC} (reserved for future use)&lt;/td&gt;
+					&lt;/tr&gt;
+					&lt;tr&gt;
+					&lt;td&gt;RIGHT ARROW&lt;/td&gt;
+					&lt;td&gt;{RIGHT}&lt;/td&gt;
+					&lt;/tr&gt;
+					&lt;tr&gt;
+					&lt;td&gt;SCROLL LOCK&lt;/td&gt;
+					&lt;td&gt;{SCROLLLOCK}&lt;/td&gt;
+					&lt;/tr&gt;
+					&lt;tr&gt;
+					&lt;td&gt;TAB&lt;/td&gt;
+					&lt;td&gt;{TAB}&lt;/td&gt;
+					&lt;/tr&gt;
+					&lt;tr&gt;
+					&lt;td&gt;UP ARROW&lt;/td&gt;
+					&lt;td&gt;{UP}&lt;/td&gt;
+					&lt;/tr&gt;
+					&lt;tr&gt;
+					&lt;td&gt;F1&lt;/td&gt;
+					&lt;td&gt;{F1}&lt;/td&gt;
+					&lt;/tr&gt;
+					&lt;tr&gt;
+					&lt;td&gt;...to...&lt;/td&gt;
+					&lt;td&gt;...to...&lt;/td&gt;
+					&lt;/tr&gt;
+					&lt;tr&gt;
+					&lt;td&gt;F16&lt;/td&gt;
+					&lt;td&gt;{F16}&lt;/td&gt;
+					&lt;/tr&gt;
+					&lt;tr&gt;
+					&lt;td&gt;Keypad add&lt;/td&gt;
+					&lt;td&gt;{ADD}&lt;/td&gt;
+					&lt;/tr&gt;
+					&lt;tr&gt;
+					&lt;td&gt;Keypad subtract&lt;/td&gt;
+					&lt;td&gt;{SUBTRACT}&lt;/td&gt;
+					&lt;/tr&gt;
+					&lt;tr&gt;
+					&lt;td&gt;Keypad multiply&lt;/td&gt;
+					&lt;td&gt;{MULTIPLY}&lt;/td&gt;
+					&lt;/tr&gt;
+					&lt;tr&gt;
+					&lt;td&gt;Keypad divide&lt;/td&gt;
+					&lt;td&gt;{DIVIDE}&lt;/td&gt;
+					&lt;/tr&gt;
+				&lt;/tbody&gt;
+			&lt;/table&gt;
+			
+			&lt;p&gt;
+				To specify keys combined with any combination of the SHIFT, CTRL, and ALT keys, precede the key code with one or more of the following codes.
+			&lt;/p&gt;
+			
+			&lt;table&gt;
+				&lt;thead&gt;
+					&lt;tr&gt;
+					&lt;th&gt;Key&lt;/th&gt;
+					&lt;th&gt;Code&lt;/th&gt;
+					&lt;/tr&gt;
+				&lt;/thead&gt;
+				&lt;tbody&gt;
+					&lt;tr&gt;
+					&lt;td&gt;SHIFT&lt;/td&gt;
+					&lt;td&gt;+&lt;/td&gt;
+					&lt;/tr&gt;
+					&lt;tr&gt;
+					&lt;td&gt;CTRL&lt;/td&gt;
+					&lt;td&gt;^&lt;/td&gt;
+					&lt;/tr&gt;
+					&lt;tr&gt;
+					&lt;td&gt;ALT&lt;/td&gt;
+					&lt;td&gt;%&lt;/td&gt;
+					&lt;/tr&gt;
+				&lt;/tbody&gt;
+			&lt;/table&gt;
+			
+			&lt;p&gt;
+				To specify that any combination of SHIFT, CTRL, and ALT should be held down while several other keys are pressed, enclose the code for those keys in parentheses. For example, to specify to hold down SHIFT while E and C are pressed, use "+(EC)". To specify to hold down SHIFT while E is pressed, followed by C without SHIFT, use "+EC".
+				&lt;br/&gt;
+				To specify repeating keys, use the form {key number}. You must put a space between key and number. For example, {LEFT 42} means press the LEFT ARROW key 42 times; {h 10} means press H 10 times.
+			&lt;/p&gt;
+			
+		&lt;/center&gt;
+	&lt;/body&gt;
+&lt;/html&gt;</value>
+  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="ProcExp_WindowSelection_TargetIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\ProcExp_WindowSelection_TargetIcon.PNG;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+</root>

@@ -1,0 +1,18 @@
+# .gitignore
+# The moronic creater of this file format perpended the name with a dot (.), so it isn't seen correctly by Visual Studio.
+
+# Debugging Resources
+[Dd]ebug/
+[Dd]ebugPublic/
+[Oo]bj/
+Microsoft.VisualStudio.HostingProcess.Utilities.dll
+Microsoft.VisualStudio.HostingProcess.Utilities.Sync.dll
+
+# Built by Visual Studio
+*.vshost.exe
+*.vshost.exe.config
+*.vshost.exe.manifest
+*.obj
+*.pdb
+*.user
+.vs/
