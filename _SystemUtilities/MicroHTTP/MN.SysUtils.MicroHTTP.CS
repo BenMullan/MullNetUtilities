@@ -1,5 +1,6 @@
 ﻿/*
 	MullNet System Utilities \ MicroHTTP.exe
+	Ben Mullan (c) 2023
 	A lightweight HTTP Server, which can serve either a constant String, single File, or a file from a specified Directory.
 */
 
