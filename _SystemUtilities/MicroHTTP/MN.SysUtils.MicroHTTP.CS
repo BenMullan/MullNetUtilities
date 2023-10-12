@@ -80,7 +80,7 @@ public static class MicroHTTP {
 
 			//Write to the console, whenever a Request is successfully handled
 			MicroHTTP.TheMicroHTTPServer.RequestHandledSuccessfully += (MullNet.MetaUtilities.MicroHTTPServer.HTTPRequestSnapshot _Request) => {
-				MullNet.CompilerExtentions.UsefulMethods.ConsoleWriteInColour($"Incomming Request from {_Request.UserHostAddress}...", System.ConsoleColor.Blue);
+				MullNet.CompilerExtentions.UsefulMethods.ConsoleWriteInColour($"Incomming Request from {_Request.UserHostAddress}... ", System.ConsoleColor.Blue);
 			};
 
 			//Write to the console, whenever a Request is successfully handled
