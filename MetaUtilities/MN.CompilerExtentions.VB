@@ -345,6 +345,18 @@ Namespace CompilerExtentions
 			Return If(_String.EndsWith("\"c), _String, _String & "\"c)
 		End Function
 
+		''' <summary>(MullNet CompilerExtention) If the _String ends with a [/], then returns the string without this.</summary>
+		<Global.System.Runtime.CompilerServices.Extension()>
+		Public Function WithoutForwardslashOnEnd$(ByVal _String$)
+			Return If(_String.EndsWith("/"c), _String.WithLastCharacterRemoved(), _String)
+		End Function
+
+		''' <summary>(MullNet CompilerExtention) If the _String ends with a [/], then returns the string, otherwise returns the string concatenated with a [/].</summary>
+		<Global.System.Runtime.CompilerServices.Extension()>
+		Public Function WithForwardslashOnEnd$(ByVal _String$)
+			Return If(_String.EndsWith("/"c), _String, _String & "/"c)
+		End Function
+
 		''' <summary>(MullNet CompilerExtention) E.g. "hello world" → "Hello World". E.g. "HELLO WORLD" → "Hello World"</summary>
 		<Global.System.Runtime.CompilerServices.Extension()>
 		Public Function InTitleCase$(ByVal _Input$)

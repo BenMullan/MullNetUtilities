@@ -18,28 +18,37 @@
 	''' </summary>
 	Public Class MicroHTTPServer
 
+		''' <summary>Represents a mode of operation for the Server</summary>
 		Public Enum MicroHTTPServerMode As [Byte]
 			ServeString = 1 : ServeSingleFile = 2 : ServeFilesFromDirectory = 3
 		End Enum
 
-		Protected Shared FileEncodingDeterminer_ As Func(Of IO.FileInfo, System.Text.Encoding) = _
-		 Function(_File As IO.FileInfo) As System.Text.Encoding
+		''' <summary>Represents the URL$, UserAgent$, UserHostName$, and HTTPMethod$ or an incomming request</summary>
+		Public Structure HTTPRequestSnapshot
+			Public URL$, UserAgent$, UserHostName$, UserHostAddress$, HTTPMethod$
+			Public Sub New(ByVal _URL$, ByVal _UserAgent$, ByVal _UserHostName$, ByVal _UserHostAddress$, ByVal _HTTPMethod$)
+				Me.URL = _URL : Me.UserAgent = _UserAgent : Me.UserHostName = _UserHostName : Me.UserHostAddress = _UserHostAddress : Me.UserAgent = _UserAgent
+			End Sub
+		End Structure
 
-			 Dim _StreamReader As New System.IO.StreamReader(path:=_File.FullName, encoding:=System.Text.Encoding.ASCII, detectEncodingFromByteOrderMarks:=True)
-			 _StreamReader.Peek() : Return _StreamReader.CurrentEncoding
+		Protected Shared FileEncodingDeterminer_ As Func(Of IO.FileInfo, System.Text.Encoding) =
+			Function(_File As IO.FileInfo) As System.Text.Encoding
 
-		 End Function
+				Dim _StreamReader As New System.IO.StreamReader(path:=_File.FullName, encoding:=System.Text.Encoding.ASCII, detectEncodingFromByteOrderMarks:=True)
+				_StreamReader.Peek() : Return _StreamReader.CurrentEncoding
 
-		Protected MIMEType_FromFileExtension_Resolver_ As Func(Of [String], [String]) = _
-		 Function(_FileExtension$) As [String]
+			End Function
 
-			 If _FileExtension Is Nothing Then Return MicroHTTPServer.DefaultMIMEType_
-			 _FileExtension = _FileExtension.ToUpper()
+		Protected MIMEType_FromFileExtension_Resolver_ As Func(Of [String], [String]) =
+			Function(_FileExtension$) As [String]
 
-			 If Not Me.MIMETypesDictionary.ContainsKey(_FileExtension) Then Return MicroHTTPServer.DefaultMIMEType_
-			 Return Me.MIMETypesDictionary.Item(_FileExtension)
+				If _FileExtension Is Nothing Then Return MicroHTTPServer.DefaultMIMEType_
+				_FileExtension = _FileExtension.ToUpper()
 
-		 End Function
+				If Not MicroHTTPServer.MIMETypesDictionary.ContainsKey(_FileExtension) Then Return MicroHTTPServer.DefaultMIMEType_
+				Return MicroHTTPServer.MIMETypesDictionary.Item(_FileExtension)
+
+			End Function
 
 		Protected Const DefaultMIMEType_$ = "text/plain"
 		Protected ReadOnly HTTPListener_ As New System.Net.HttpListener()
@@ -60,36 +69,46 @@
 		''' <summary>The Number of requests responded-to by the Web Server instance so-far. This is NOT readonly, so that it can be externally reset.</summary>
 		Public SuccessfullyHandledRequestsCount As UInt32 = 0
 
-		''' <summary>Occurs directly after a HTTP Request is responded-to. The Argument is the Request, whose full URL is avaliable via the Property .Url.ToString(). Also note the Properties of .UserAgent, .UserHostName, and .HttpMethod.</summary>
-		Public Event RequestHandledSuccessfully As Action(Of System.Net.HttpListenerRequest)
+		''' <summary>Occurs as soon as an incomming HTTP Request is received. The argument is a structure containing request data, including the URL, UserAgent, UserHostName, UserHostAddress, and HttpMethod.</summary>
+		Public Event RequestReceived As Action(Of MicroHTTPServer.HTTPRequestSnapshot)
 
-		''' <summary>Occurs when a request is received, but not responded-to correctly.</summary>
+		''' <summary>Occurs directly after a HTTP Request is responded-to. The argument is a structure containing request data, including the URL, UserAgent, UserHostName, UserHostAddress, and HttpMethod.</summary>
+		Public Event RequestHandledSuccessfully As Action(Of MicroHTTPServer.HTTPRequestSnapshot)
+
+		''' <summary>Occurs when a request is received, but not responded-to correctly. The argument is an error message.</summary>
 		Public Event RequestHandledUnsuccessfully As Action(Of [String])
 
 		''' <summary>A mapping of FILE-EXTENTIONS to MIME-TYPES. E.g. {"HTM", "text/html"}, {"BMP", "image/bmp"}. If a request's File Extension dosen't appear in the Dictionary's Keys, then the default of "text/plain" is used.</summary>
-		Public MIMETypesDictionary As New Dictionary(Of [String], [String])() From {
-		 {"HTM", "text/html"},
-		 {"HTML", "text/html"},
-		 {"TXT", "text/plain"},
-		 {"AVI", "video/x-msvideo"},
-		 {"BMP", "image/bmp"},
-		 {"CSS", "text/css"},
-		 {"CSV", "text/csv"},
-		 {"ICO", "image/vnd.microsoft.icon"},
-		 {"GIF", "image/gif"},
-		 {"JFIF", "image/jpeg"},
-		 {"JPEG", "image/jpeg"},
-		 {"JPG", "image/jpeg"},
-		 {"PNG", "image/png"},
-		 {"JS", "text/javascript"},
-		 {"MP3", "audio/mpeg"},
-		 {"MP4", "video/mp4"},
-		 {"PDF", "application/pdf"},
-		 {"WAV", "audio/wav"},
-		 {"XML", "application/xml"},
-		 {"ZIP", "application/zip"},
-		 {"7Z", "application/x-7z-compressed"}
+		Public Shared MIMETypesDictionary As New Dictionary(Of [String], [String])() From {
+			{"HTM", "text/html"},
+			{"HTML", "text/html"},
+			{"TXT", "text/plain"},
+			{"AVI", "video/x-msvideo"},
+			{"BMP", "image/bmp"},
+			{"CSS", "text/css"},
+			{"CSV", "text/csv"},
+			{"ICO", "image/vnd.microsoft.icon"},
+			{"GIF", "image/gif"},
+			{"JFIF", "image/jpeg"},
+			{"JPEG", "image/jpeg"},
+			{"JPG", "image/jpeg"},
+			{"PNG", "image/png"},
+			{"JS", "text/javascript"},
+			{"MP3", "audio/mpeg"},
+			{"MP4", "video/mp4"},
+			{"PDF", "application/pdf"},
+			{"WAV", "audio/wav"},
+			{"XML", "application/xml"},
+			{"ZIP", "application/zip"},
+			{"7Z", "application/x-7z-compressed"}
 		}
+
+		''' <summary>Serialises the MIMETypesDictionary</summary>
+		Public Shared ReadOnly Property SerialisedMIMETypesDictionary As [String]
+			Get
+				Return [String].Join(", ", MicroHTTPServer.MIMETypesDictionary.ToArray().Select(Of [String])(Function(_ExtensionToMIME As KeyValuePair(Of [String], [String])) _ExtensionToMIME.Key & "→"c & _ExtensionToMIME.Value))
+			End Get
+		End Property
 
 		''' <summary>E.g. Port=8090 and VirtualPath="Help" would make a URL of http://localhost:8090/Help/</summary>
 		Public ReadOnly Property URL As [String]
@@ -134,6 +153,10 @@
 					Dim _Response As System.Net.HttpListenerResponse = _HTTPListenerContext.Response
 					Dim _ResponseContentBytes As [Byte]()
 
+					REM Without a Snapshot object, the _Request would be disposed-of on trying to access it in the actions after _Response.Close()
+					Dim _RequestSnapshot As New MicroHTTPServer.HTTPRequestSnapshot(_Request.Url.ToString(), _Request.UserAgent, _Request.UserHostName, _Request.UserHostAddress, _Request.HttpMethod)
+					RaiseEvent RequestReceived(_RequestSnapshot)
+
 					REM Prepare the Response, depending on the Instance's current Mode
 					Select Case Me.Mode_
 
@@ -141,7 +164,7 @@
 
 							_ResponseContentBytes = System.Text.Encoding.UTF8.GetBytes(Me.StringToServe_)
 							_Response.StatusCode = Net.HttpStatusCode.OK
-							_Response.ContentType = If(Me.ResponseMIMEType, Me.MIMEType_FromFileExtension_Resolver_.Invoke(Nothing))
+							_Response.ContentType = If(Not System.String.IsNullOrEmpty(Me.ResponseMIMEType), Me.ResponseMIMEType, Me.MIMEType_FromFileExtension_Resolver_.Invoke(Nothing))
 							_Response.ContentEncoding = System.Text.Encoding.UTF8
 
 						Case MicroHTTPServerMode.ServeSingleFile
@@ -157,7 +180,7 @@
 
 								_ResponseContentBytes = My.Computer.FileSystem.ReadAllBytes(Me.FileToServe_.FullName)
 								_Response.StatusCode = Net.HttpStatusCode.OK
-								_Response.ContentType = If(Me.ResponseMIMEType, Me.MIMEType_FromFileExtension_Resolver_.Invoke(IO.Path.GetExtension(Me.FileToServe_.FullName)))
+								_Response.ContentType = If(Not System.String.IsNullOrEmpty(Me.ResponseMIMEType), Me.ResponseMIMEType, Me.MIMEType_FromFileExtension_Resolver_.Invoke(IO.Path.GetExtension(Me.FileToServe_.FullName)))
 								_Response.ContentEncoding = MicroHTTPServer.FileEncodingDeterminer_.Invoke(Me.FileToServe_)
 
 							End If
@@ -179,7 +202,7 @@
 								REM It's an existant File; serve it with either the specified MIME Type, or the file-extention-based MIME Type
 								_ResponseContentBytes = My.Computer.FileSystem.ReadAllBytes(_RequestFileOrDirectoryPath)
 								_Response.StatusCode = Net.HttpStatusCode.OK
-								_Response.ContentType = If(Me.ResponseMIMEType, Me.MIMEType_FromFileExtension_Resolver_.Invoke(IO.Path.GetExtension(_RequestFileOrDirectoryPath).Replace("."c, "")))
+								_Response.ContentType = If(Not System.String.IsNullOrEmpty(Me.ResponseMIMEType), Me.ResponseMIMEType, Me.MIMEType_FromFileExtension_Resolver_.Invoke(IO.Path.GetExtension(_RequestFileOrDirectoryPath).Replace("."c, "")))
 								_Response.ContentEncoding = MicroHTTPServer.FileEncodingDeterminer_.Invoke(New IO.FileInfo(_RequestFileOrDirectoryPath))
 
 							Else
@@ -202,8 +225,7 @@
 
 					REM Increment the Counter and Raise the [RequestHandledSuccessfully] Event
 					Me.SuccessfullyHandledRequestsCount += 1US
-					Dim _CopyOf_Request As Net.HttpListenerRequest = _Request
-					RaiseEvent RequestHandledSuccessfully(_CopyOf_Request)
+					RaiseEvent RequestHandledSuccessfully(_RequestSnapshot)
 
 				Catch _Ex As Exception : RaiseEvent RequestHandledUnsuccessfully(_Ex.Message) : End Try
 			End While
@@ -233,7 +255,7 @@
 		Protected Shared ReadOnly Property HTMLDirectoryListingFor_(ByVal _Directory As IO.DirectoryInfo, ByVal _CurrentURL$) As [String]
 			Get
 
-				Return _
+				Return (
 				 <html>
 					 <head><title>Index of <%= _Directory.FullName.WithBackslashOnEnd() %></title></head>
 					 <body>
@@ -241,16 +263,16 @@
 						 <ol>
 							 <%=
 								 From _SubDirectory As IO.DirectoryInfo In _Directory.GetDirectories()
-								 Select <li><a href=<%= _CurrentURL.WithBackslashOnEnd() & _SubDirectory.Name.WithBackslashOnEnd() %>><%= _SubDirectory.Name.WithBackslashOnEnd() %></a></li>
+								 Select <li><a href=<%= _CurrentURL.WithForwardslashOnEnd() & _SubDirectory.Name.WithForwardslashOnEnd() %>><%= _SubDirectory.Name.WithBackslashOnEnd() %></a></li>
 							 %>
 							 <%=
 								 From _File As IO.FileInfo In _Directory.GetFiles()
-								 Select <li><a href=<%= _CurrentURL.WithBackslashOnEnd() & _File.Name %>><%= _File.Name %></a></li>
+								 Select <li><a href=<%= _CurrentURL.WithForwardslashOnEnd() & _File.Name %>><%= _File.Name %></a></li>
 							 %>
 						 </ol>
 					 </body>
-				 </html> _
-				 .ToString()
+				 </html>
+				).ToString()
 
 			End Get
 		End Property

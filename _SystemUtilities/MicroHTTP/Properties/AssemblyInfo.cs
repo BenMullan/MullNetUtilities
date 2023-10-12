@@ -6,10 +6,10 @@ using System.Resources;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("MullNet SystemUtilities MicroHTTP")]
-[assembly: AssemblyDescription("MN SystemUtilities MicroHTTP")]
+[assembly: AssemblyTitle("MullNet SystemUtilities MicroHTTP - Lightweight command-line HTTP Server")]
+[assembly: AssemblyDescription("MN SystemUtilities MicroHTTP - Lightweight command-line HTTP Server")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("MULLNETDOTNET")]
+[assembly: AssemblyCompany("MULLNETDOTNET (von Ben Mullan, 2023)")]
 [assembly: AssemblyProduct("MicroHTTP")]
 [assembly: AssemblyCopyright("Copyright © MNDN 2023")]
 [assembly: AssemblyTrademark("MNDN-TM")]
@@ -33,6 +33,6 @@ using System.Resources;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.4.2.0")]
-[assembly: AssemblyFileVersion("1.4.2.0")]
+[assembly: AssemblyVersion("2.3.0.0")]
+[assembly: AssemblyFileVersion("2.3.0.0")]
 [assembly: NeutralResourcesLanguageAttribute("en-GB")]
