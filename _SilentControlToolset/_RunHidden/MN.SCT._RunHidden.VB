@@ -20,7 +20,7 @@ Public Module _RunHidden
 				_ProgramToRun = New IO.FileInfo(_CLAs.ElementAt(0))
 				If Not _ProgramToRun.Exists Then Throw New Exception("The Program File [" & _ProgramToRun.FullName & "] does not exit or is invalid")
 			Catch _Ex As Exception
-				_ProgramToRun = MullNet.MetaUtilities.Processes.ResolveFilePath_FromFileName(_CLAs.ElementAt(0))
+				_ProgramToRun = MullNet.MetaUtilities.Processes.ResolveFullFilePath_FromFileName(_CLAs.ElementAt(0))
 			End Try
 
 			REM ↓ Gather the CLAs for the Child Process
@@ -50,7 +50,7 @@ Public Module _RunHidden
 
 				REM ↓ Run the child Process
 				.Start()
-				_RunHidden.WriteText_ToChildProcessOutputFile("Info: Started " & _ProgramToRun.FullName.InSquares() & " with arguments ↓" & vbCrLf & String.Join(" "c, _ProgramArguments))
+				_RunHidden.WriteText_ToChildProcessOutputFile("Info: Started [" & _ProgramToRun.FullName & "] with arguments ↓" & vbCrLf & String.Join(" "c, _ProgramArguments))
 				Dim _SessionID$ = .SessionId.ToString()
 				Dim _ProcessOutput$ = .StandardOutput.ReadToEnd()
 				Dim _ErrorOutput$ = .StandardError.ReadToEnd()
@@ -78,12 +78,12 @@ Public Module _RunHidden
 		Catch _Ex As Exception
 
 			REM ↓ Write an Exception Message to the TextFile
-
-			Dim _ExceptionMessageText$ = "_RunHidden Exception: " & _Ex.Message & vbCrLf & _
-			"Usage: Specify the Program to run as the first command-line argument, with arguments therefor, thereafter" & vbCrLf & _
-			  "Example: _RunHidden WhoAmI" & vbCrLf & _
-			  "Example: _RunHidden.exe SaveScreenshot.exe /Single /OutputFile:Shot.PNG" & vbCrLf & _
-			"NOTE: _RunHidden.exe returns the same Exit-Code as the process it runs."
+			Dim _ExceptionMessageText$ = _
+			   "_RunHidden Exception: " & _Ex.Message & vbCrLf & vbCrLf & _
+			   "Usage: Specify the Program to run as the first command-line argument, with arguments therefor, thereafter" & vbCrLf & _
+			   "Example: _RunHidden WhoAmI" & vbCrLf & _
+			   "Example: _RunHidden.exe SaveScreenshot.exe /Single /OutputFile:Shot.PNG" & vbCrLf & _
+			   "NOTE: _RunHidden.exe returns the same Exit-Code as the process it runs."
 			_RunHidden.WriteText_ToChildProcessOutputFile("_RunHidden Error: " & _ExceptionMessageText)
 
 			Return -1
@@ -93,7 +93,7 @@ Public Module _RunHidden
 
 	''' <summary>Automatically appends two {LineBreak}s. Saves in the same same directory as the _RunHidden.exe Binary.</summary>
 	Public Sub WriteText_ToChildProcessOutputFile(ByVal _Text$)
-		My.Computer.FileSystem.WriteAllText(IO.Path.Combine((New System.IO.FileInfo(System.Environment.GetCommandLineArgs().ElementAt(0))).DirectoryName, _RunHidden.StdOut_AndStdErr_OutputTextFileName), DateTime.Now.ToString().InSquares() & " ↓" & vbCrLf & _Text & vbCrLf & vbCrLf, append:=True)
+		My.Computer.FileSystem.WriteAllText(IO.Path.Combine((New System.IO.FileInfo(System.Environment.GetCommandLineArgs().ElementAt(0))).DirectoryName, _RunHidden.StdOut_AndStdErr_OutputTextFileName), DateTime.Now.ToString() & " ↓" & vbCrLf & _Text & vbCrLf & vbCrLf, append:=True)
 	End Sub
 
 End Module

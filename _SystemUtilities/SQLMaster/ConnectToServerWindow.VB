@@ -29,7 +29,7 @@
 		Try
 			Me.AuthenticationMode_ComboBox.SelectedIndex = 0
 			Me.AuthUsername_TextBox.Text = System.Security.Principal.WindowsIdentity.GetCurrent().Name
-			Me.ServerNameAndInstance_TextBox.Text = MetaUtilities.SQLQueryRunner.LocalSQLServerInstances.FirstOrDefault()
+			Me.ServerNameAndInstance_TextBox.Text = MetaUtilities.SQLQueryRunner.LocalSQLServerInstances(_ReplaceMSSQLSERVERInstances_WithHostnameOnly:=True).FirstOrDefault()
 		Catch _Ex As Exception : MsgBox(_Ex.Message, MsgBoxStyle.Critical) : End Try
 	End Sub
 

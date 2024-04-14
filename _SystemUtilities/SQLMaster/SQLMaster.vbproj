@@ -105,12 +105,6 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="SampleQueriesWindow.Designer.VB">
-      <DependentUpon>SampleQueriesWindow.VB</DependentUpon>
-    </Compile>
-    <Compile Include="SampleQueriesWindow.VB">
-      <SubType>Form</SubType>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="ConnectToServerWindow.resx">
@@ -124,9 +118,6 @@
       <LastGenOutput>Resources.Designer.vb</LastGenOutput>
       <CustomToolNamespace>My.Resources</CustomToolNamespace>
       <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SampleQueriesWindow.resx">
-      <DependentUpon>SampleQueriesWindow.VB</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

@@ -7,11 +7,11 @@
 public static class MicroHTTP {
 
 	// To be set via CLA-Actions
-	public static MullNet.MetaUtilities.MicroHTTPServer	TheMicroHTTPServer = null;
-	public static System.UInt16							Port = System.Convert.ToUInt16((new System.Random(System.DateTime.Now.Millisecond)).Next(minValue: 500, maxValue: 9000));
-	public static System.String							VirtualPath = System.String.Empty;
-	public static System.String							MIMEType = System.String.Empty;
-	public static System.Boolean                        LaunchInBrowser = false;
+	public static MullNet.MetaUtilities.MicroHTTPServer TheMicroHTTPServer = null;
+	public static System.UInt16 Port = System.Convert.ToUInt16((new System.Random(System.DateTime.Now.Millisecond)).Next(minValue: 500, maxValue: 9000));
+	public static System.String VirtualPath = System.String.Empty;
+	public static System.String MIMEType = System.String.Empty;
+	public static System.Boolean LaunchInBrowser = false;
 
 	public static System.Int32 Main(System.String[] _CLAs) {
 
@@ -80,12 +80,12 @@ public static class MicroHTTP {
 
 			//Write to the console, whenever a Request is successfully handled
 			MicroHTTP.TheMicroHTTPServer.RequestHandledSuccessfully += (MullNet.MetaUtilities.MicroHTTPServer.HTTPRequestSnapshot _Request) => {
-				MullNet.CompilerExtentions.UsefulMethods.ConsoleWriteInColour($"Incomming Request from {_Request.UserHostAddress}... ", System.ConsoleColor.Blue);
+				MullNet.CompilerExtentions.UsefulMethods.ConsoleWriteInColour("Incomming Request from " + _Request.UserHostAddress + "... ", System.ConsoleColor.Blue);
 			};
 
 			//Write to the console, whenever a Request is successfully handled
 			MicroHTTP.TheMicroHTTPServer.RequestHandledSuccessfully += (MullNet.MetaUtilities.MicroHTTPServer.HTTPRequestSnapshot _Request) => {
-				MullNet.CompilerExtentions.UsefulMethods.ConsoleWriteLineInColour($"Served {_Request.URL}", System.ConsoleColor.Green);
+				MullNet.CompilerExtentions.UsefulMethods.ConsoleWriteLineInColour("Served " + _Request.URL, System.ConsoleColor.Green);
 			};
 
 			//Write to the console, whenever a Request is UNsuccessfully handled
@@ -95,7 +95,7 @@ public static class MicroHTTP {
 
 			//Run the Server...
 			if (MicroHTTP.LaunchInBrowser) { MullNet.CompilerExtentions.UsefulMethods.ConsoleWriteLineInColour("Launching Browser...", System.ConsoleColor.Blue); System.Diagnostics.Process.Start(MicroHTTP.TheMicroHTTPServer.URL); }
-			MullNet.CompilerExtentions.UsefulMethods.ConsoleWriteLineInColour($"MicroHTTP listening on {MicroHTTP.TheMicroHTTPServer.URL}\r\n", System.ConsoleColor.Blue);
+			MullNet.CompilerExtentions.UsefulMethods.ConsoleWriteLineInColour("MicroHTTP listening on " + MicroHTTP.TheMicroHTTPServer.URL + "\r\n", System.ConsoleColor.Blue);
 			TheMicroHTTPServer.Run();
 
 			//This line should never be hit, because the exit code should be produced by the above delegate

@@ -27,7 +27,7 @@
 		Public Structure HTTPRequestSnapshot
 			Public URL$, UserAgent$, UserHostName$, UserHostAddress$, HTTPMethod$
 			Public Sub New(ByVal _URL$, ByVal _UserAgent$, ByVal _UserHostName$, ByVal _UserHostAddress$, ByVal _HTTPMethod$)
-				Me.URL = _URL : Me.UserAgent = _UserAgent : Me.UserHostName = _UserHostName : Me.UserHostAddress = _UserHostAddress : Me.UserAgent = _UserAgent
+				Me.URL = _URL : Me.UserAgent = _UserAgent : Me.UserHostName = _UserHostName : Me.UserHostAddress = _UserHostAddress : Me.HTTPMethod = _HTTPMethod
 			End Sub
 		End Structure
 
@@ -187,7 +187,7 @@
 
 						Case MicroHTTPServerMode.ServeFilesFromDirectory
 
-							Dim _RequestFileOrDirectoryPath As [String] = (IO.Path.Combine(Me.DirectoryToServeFilesFrom_.FullName, If([String].IsNullOrEmpty(Me.VirtualPath), _Request.Url.LocalPath.Skip(1).ToArray(), _Request.Url.LocalPath.Skip(1 + Me.VirtualPath.Length + 1).ToArray())))	'The +1s are to skip over any leading forward slashes. Windows would treat /Dir as the root directory of a drive e.g. C:\Dir\
+							Dim _RequestFileOrDirectoryPath As [String] = IO.Path.Combine(Me.DirectoryToServeFilesFrom_.FullName, If([String].IsNullOrEmpty(Me.VirtualPath), _Request.Url.LocalPath.Skip(1).ToArray(), _Request.Url.LocalPath.Skip(1 + Me.VirtualPath.Length + 1).ToArray()))   'The +1s are to skip over any leading forward slashes. Windows would treat /Dir as the root directory of a drive e.g. C:\Dir\
 
 							If IO.File.GetAttributes(_RequestFileOrDirectoryPath).HasFlag(IO.FileAttributes.Directory) Then
 
@@ -255,24 +255,24 @@
 		Protected Shared ReadOnly Property HTMLDirectoryListingFor_(ByVal _Directory As IO.DirectoryInfo, ByVal _CurrentURL$) As [String]
 			Get
 
-				Return (
-				 <html>
-					 <head><title>Index of <%= _Directory.FullName.WithBackslashOnEnd() %></title></head>
-					 <body>
-						 <h1>Index of <%= _Directory.FullName.WithBackslashOnEnd() %></h1>
-						 <ol>
-							 <%=
-								 From _SubDirectory As IO.DirectoryInfo In _Directory.GetDirectories()
-								 Select <li><a href=<%= _CurrentURL.WithForwardslashOnEnd() & _SubDirectory.Name.WithForwardslashOnEnd() %>><%= _SubDirectory.Name.WithBackslashOnEnd() %></a></li>
-							 %>
-							 <%=
-								 From _File As IO.FileInfo In _Directory.GetFiles()
-								 Select <li><a href=<%= _CurrentURL.WithForwardslashOnEnd() & _File.Name %>><%= _File.Name %></a></li>
-							 %>
-						 </ol>
-					 </body>
-				 </html>
-				).ToString()
+				Return
+				  <html>
+					  <head><title>Index Of <%= _Directory.FullName.WithBackslashOnEnd() %></title></head>
+					  <body>
+						  <h1>Index Of <%= _Directory.FullName.WithBackslashOnEnd() %></h1>
+						  <ol>
+							  <%=
+								  From _SubDirectory As IO.DirectoryInfo In _Directory.GetDirectories()
+								  Select <li><a href=<%= _CurrentURL.WithForwardslashOnEnd() & _SubDirectory.Name.WithForwardslashOnEnd() %>><%= _SubDirectory.Name.WithBackslashOnEnd() %></a></li>
+																																							  %>
+							  <%=
+								  From _File As IO.FileInfo In _Directory.GetFiles()
+								  Select <li><a href=<%= _CurrentURL.WithForwardslashOnEnd() & _File.Name %>><%= _File.Name %></a></li>
+																											  %>
+						  </ol>
+					  </body>
+				  </html>
+				.ToString()
 
 			End Get
 		End Property

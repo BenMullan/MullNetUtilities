@@ -31,7 +31,7 @@ Public Class Home
 #End Region
 
 	Private Sub InitializeComponent()
-		Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(Home))
+		Dim resources As New System.ComponentModel.ComponentResourceManager(GetType(Home))
 		Me.AddRecButton = New System.Windows.Forms.Button()
 		Me.RecTextBox = New System.Windows.Forms.TextBox()
 		Me.GroupBox1 = New System.Windows.Forms.GroupBox()
@@ -188,12 +188,12 @@ Public Class Home
 		'DelayAfterEachSendNumericUpDown
 		'
 		Me.DelayAfterEachSendNumericUpDown.Location = New System.Drawing.Point(145, 84)
-		Me.DelayAfterEachSendNumericUpDown.Maximum = New Decimal(New Integer() {100000000, 0, 0, 0})
-		Me.DelayAfterEachSendNumericUpDown.Minimum = New Decimal(New Integer() {1, 0, 0, 0})
+		Me.DelayAfterEachSendNumericUpDown.Maximum = New Decimal(New Int32() {100000000, 0, 0, 0})
+		Me.DelayAfterEachSendNumericUpDown.Minimum = New Decimal(New Int32() {1, 0, 0, 0})
 		Me.DelayAfterEachSendNumericUpDown.Name = "DelayAfterEachSendNumericUpDown"
 		Me.DelayAfterEachSendNumericUpDown.Size = New System.Drawing.Size(74, 20)
 		Me.DelayAfterEachSendNumericUpDown.TabIndex = 2
-		Me.DelayAfterEachSendNumericUpDown.Value = New Decimal(New Integer() {30, 0, 0, 0})
+		Me.DelayAfterEachSendNumericUpDown.Value = New Decimal(New Int32() {30, 0, 0, 0})
 		'
 		'PriorityComboBox
 		'
@@ -217,12 +217,12 @@ Public Class Home
 		'SendCount
 		'
 		Me.SendCount.Location = New System.Drawing.Point(60, 20)
-		Me.SendCount.Maximum = New Decimal(New Integer() {10000, 0, 0, 0})
-		Me.SendCount.Minimum = New Decimal(New Integer() {1, 0, 0, 0})
+		Me.SendCount.Maximum = New Decimal(New Int32() {10000, 0, 0, 0})
+		Me.SendCount.Minimum = New Decimal(New Int32() {1, 0, 0, 0})
 		Me.SendCount.Name = "SendCount"
 		Me.SendCount.Size = New System.Drawing.Size(51, 20)
 		Me.SendCount.TabIndex = 0
-		Me.SendCount.Value = New Decimal(New Integer() {1, 0, 0, 0})
+		Me.SendCount.Value = New Decimal(New Int32() {1, 0, 0, 0})
 		'
 		'SendCountLabel2
 		'
@@ -316,33 +316,29 @@ Public Class Home
 	End Sub
 
 	Private Sub Home_Load() Handles MyBase.Load
-		RecTextBox.Select()
-		PriorityComboBox.SelectedIndex = 1
+		Me.RecTextBox.Select()
+		Me.PriorityComboBox.SelectedIndex = 1
 	End Sub
 
 	Private Sub AddRecButton_Click() Handles AddRecButton.Click
-		If RecTextBox.Text = "" Then
+		If Me.RecTextBox.Text = "" Then
 			MsgBox("Please specify a Recipient to add", MsgBoxStyle.Information, "Recipients")
 		Else
 			'Check that RecTextBox.Text matches the RegEx of an EMail
-			If IsValidEMailAddress(RecTextBox.Text) Then
-				RecipientsList.Items.Add(RecTextBox.Text)
+			If Me.IsValidEMailAddress(Me.RecTextBox.Text) Then
+				Me.RecipientsList.Items.Add(Me.RecTextBox.Text)
 			Else
 				MsgBox("Please specify a valid EMail Address", MsgBoxStyle.Information, "Recipients")
 			End If
-			RecTextBox.Text = ""
+			Me.RecTextBox.Text = ""
 		End If
 	End Sub
 
 	Private Sub SendCount_ValueChanged() Handles SendCount.ValueChanged
-		If SendCount.Value = 1 Then
-			SendCountLabel2.Text = "EMail to each Recipient"
-		Else
-			SendCountLabel2.Text = "EMails to each Recipient"
-		End If
+		Me.SendCountLabel2.Text = If(Me.SendCount.Value = 1, "EMail to each Recipient", "EMails to each Recipient")
 	End Sub
 
-	Function IsValidEMailAddress(ByVal EmailAddress As String) As Boolean
+	Public Function IsValidEMailAddress(ByVal EmailAddress As String) As Boolean
 		Dim EMailAddressRegularExpression As New System.Text.RegularExpressions.Regex("^[_a-zA-Z0-9-]+(.[a-zA-Z0-9-]+)@[a-zA-Z0-9-]+(.[a-zA-Z0-9-]+)*(.[a-zA-Z]{2,4})$")
 		Return EMailAddressRegularExpression.IsMatch(EmailAddress)
 	End Function
@@ -356,13 +352,13 @@ Public Class Home
 	Public Const Default_SenderEMailAddress As String = "bob.the.builder.802.11@gmail.com"
 	Public Const Default_SenderEMailPassword As String = "take the time 80:21"
 	Public Const Default_SMTPServer As String = "smtp.gmail.com"
-	Public Const Default_SMTPServerPort As Integer = 587 'STARTTLS/TLS: 587    SSL: 465
+	Public Const Default_SMTPServerPort As Int32 = 587 'STARTTLS/TLS: 587    SSL: 465
 	Public Const Default_SMTPServerUsesSSL As Boolean = True
 
 	Public SenderEMailAddress As String = Default_SenderEMailAddress
 	Public SenderEMailPassword As String = Default_SenderEMailPassword
 	Public SMTPServer As String = Default_SMTPServer
-	Public SMTPServerPort As Integer = Default_SMTPServerPort 'STARTTLS/TLS: 587    SSL: 465
+	Public SMTPServerPort As Int32 = Default_SMTPServerPort 'STARTTLS/TLS: 587    SSL: 465
 	Public SMTPServerUsesSSL As Boolean = Default_SMTPServerUsesSSL
 
 	Public SMTPClient As New System.Net.Mail.SmtpClient()
@@ -370,12 +366,12 @@ Public Class Home
 
 	Public Function InitialiseEMail() As Boolean
 		Try
-			With SMTPClient
+			With Me.SMTPClient
 				.UseDefaultCredentials = False
-				.Credentials = New Net.NetworkCredential(SenderEMailAddress, SenderEMailPassword)
-				.Port = SMTPServerPort
-				.EnableSsl = SMTPServerUsesSSL
-				.Host = SMTPServer
+				.Credentials = New Net.NetworkCredential(Me.SenderEMailAddress, Me.SenderEMailPassword)
+				.Port = Me.SMTPServerPort
+				.EnableSsl = Me.SMTPServerUsesSSL
+				.Host = Me.SMTPServer
 			End With
 			Return True
 		Catch Ex As Exception
@@ -385,49 +381,49 @@ Public Class Home
 	End Function
 
 	Public Sub Start() Handles StartButton.Click
-		If RecipientsList.Items.Count = 0 Or BodyTextBox.Text = "" Or SubjectTextBox.Text = "" Then
+		If Me.RecipientsList.Items.Count = 0 Or Me.BodyTextBox.Text = "" Or Me.SubjectTextBox.Text = "" Then
 			MsgBox("Please specify at least one Recipient, as well as a Body and a Subject", MsgBoxStyle.Information, "AutoEmail")
 		Else
 			'Show the Log Form
 			SendLog.Show()
 
 			SendLog.Log("------------------------------------------------------------------ Started ------------------------------------------------------------------")
-			SendLog.Log("Using Sender Account: " & SenderEMailAddress)
+			SendLog.Log("Using Sender Account: " & Me.SenderEMailAddress)
 
 			'Set the MousePointer to a Wait Cursor
-			Cursor = Cursors.WaitCursor
+			Me.Cursor = Cursors.WaitCursor
 
 			'(Try to) Connect to the SMTP Server
-			If InitialiseEMail() = True Then
+			If Me.InitialiseEMail() = True Then
 
 				'Send the Message to everyone on the list, as many times as have been specified
-				For Count As Integer = 1 To SendCount.Value Step 1
-					For Each Recipient As String In RecipientsList.Items
+				For Count As Int32 = 1 To Me.SendCount.Value Step 1
+					For Each Recipient As String In Me.RecipientsList.Items
 						Try
 							'Define "EMail" as a new, blank EMail Message
-							EMail = New System.Net.Mail.MailMessage() With
-							{.From = New System.Net.Mail.MailAddress(SenderEMailAddress),
-							.Subject = SubjectTextBox.Text,
-							.IsBodyHtml = HTMLBodyCheckBox.Checked,
-							.Body = BodyTextBox.Text}
+							Me.EMail = New System.Net.Mail.MailMessage() With
+							{.From = New System.Net.Mail.MailAddress(Me.SenderEMailAddress),
+							.Subject = Me.SubjectTextBox.Text,
+							.IsBodyHtml = Me.HTMLBodyCheckBox.Checked,
+							.Body = Me.BodyTextBox.Text}
 
 							'Specify the Addr. to which this EMail should be sent
-							EMail.To.Add(Recipient)
+							Me.EMail.To.Add(Recipient)
 							'Set the Priority of the EMail
-							EMail.Priority = ResolveEMailPriority()
+							Me.EMail.Priority = Me.ResolveEMailPriority()
 
 							'Send the EMail
-							SMTPClient.Send(EMail)
+							Me.SMTPClient.Send(Me.EMail)
 
 							'Tell the user that the EMail has been sent
-							SendLog.Log("Cycle " & Count.ToString() & " of " & SendCount.Value.ToString() & ", Sent To: " & Recipient)
+							SendLog.Log("Cycle " & Count.ToString() & " of " & Me.SendCount.Value.ToString() & ", Sent To: " & Recipient)
 
 							'Pause a the specified amount
-							SendLog.Log("Waiting " & DelayAfterEachSendNumericUpDown.Value.ToString() & " MilliSeconds...")
-							Threading.Thread.Sleep(CInt(DelayAfterEachSendNumericUpDown.Value))
+							SendLog.Log("Waiting " & Me.DelayAfterEachSendNumericUpDown.Value.ToString() & " MilliSeconds...")
+							Threading.Thread.Sleep(Me.DelayAfterEachSendNumericUpDown.Value)
 
 						Catch Ex As Exception
-							SendLog.Log("Cycle " & Count.ToString() & " of " & SendCount.Value.ToString() & ", Error: " & Recipient & " - " & Ex.Message)
+							SendLog.Log("Cycle " & Count.ToString() & " of " & Me.SendCount.Value.ToString() & ", Error: " & Recipient & " - " & Ex.Message)
 						End Try
 					Next
 				Next
@@ -435,7 +431,7 @@ Public Class Home
 			End If
 
 			'Set the MousePointer back to normal
-			Cursor = Cursors.Default
+			Me.Cursor = Cursors.Default
 
 		End If
 	End Sub
@@ -465,7 +461,7 @@ Public Class Home
 
 		Try
 			If e.KeyCode = Keys.Delete Or e.KeyCode = Keys.Back Then
-				RecipientsList.Items.RemoveAt(RecipientsList.SelectedIndex)
+				Me.RecipientsList.Items.RemoveAt(Me.RecipientsList.SelectedIndex)
 			End If
 		Catch ex As Exception
 		End Try
@@ -475,19 +471,19 @@ Public Class Home
 	Private Sub RecipientsList_MouseDown(ByVal sender As Object, ByVal e As System.Windows.Forms.MouseEventArgs) Handles RecipientsList.MouseDown
 		Try
 			If e.Button = MouseButtons.Right Then
-				RecipientsList.SelectedIndex = RecipientsList.IndexFromPoint(e.X, e.Y)
-				RecipientsList.Items.RemoveAt(RecipientsList.SelectedIndex)
+				Me.RecipientsList.SelectedIndex = Me.RecipientsList.IndexFromPoint(e.X, e.Y)
+				Me.RecipientsList.Items.RemoveAt(Me.RecipientsList.SelectedIndex)
 			End If
 		Catch ex As Exception
 		End Try
 	End Sub
 
 	Private Sub RecTextBox_GotFocus() Handles RecTextBox.GotFocus
-		Me.AcceptButton = AddRecButton
+		Me.AcceptButton = Me.AddRecButton
 	End Sub
 
 	Private Sub ChangeAcceptButtonToStart() Handles SubjectTextBox.GotFocus, BodyTextBox.GotFocus, SendCount.GotFocus, PriorityComboBox.GotFocus, HTMLBodyCheckBox.GotFocus
-		Me.AcceptButton = StartButton
+		Me.AcceptButton = Me.StartButton
 	End Sub
 
 	Private Sub LinkLabel1_LinkClicked() Handles LinkLabel1.LinkClicked

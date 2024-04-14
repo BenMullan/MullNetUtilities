@@ -12,12 +12,12 @@
 				_ProgramToRun = New IO.FileInfo(_CLAs.ElementAt(0))
 				If Not _ProgramToRun.Exists Then Throw New Exception("The Program File [" & _ProgramToRun.FullName & "] does not exit or is invalid")
 			Catch _Ex As Exception
-				_ProgramToRun = MullNet.MetaUtilities.Processes.ResolveFilePath_FromFileName(_CLAs.ElementAt(0))
+				_ProgramToRun = MullNet.MetaUtilities.Processes.ResolveFullFilePath_FromFileName(_CLAs.ElementAt(0))
 			End Try
 
 			Dim _ProgramArguments$ = ""
 			If _CLAs.Length > 1 Then
-				Dim _ArgumentCLAs As New List(Of String)()
+				Dim _ArgumentCLAs As New List(Of [String])()
 				For _ArgumentCLA_Index% = 1 To (_CLAs.Length - 1) Step +1
 					_ArgumentCLAs.Add(_CLAs.ElementAt(_ArgumentCLA_Index))
 				Next

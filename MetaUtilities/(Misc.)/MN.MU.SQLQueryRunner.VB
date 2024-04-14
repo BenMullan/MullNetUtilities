@@ -1,4 +1,11 @@
-﻿Namespace MetaUtilities
+﻿REM SQLQueryRunner - Executes an SQL Query and returns the resultant Data Table
+REM Ben Mullan (c) 2023
+
+REM Example for a Local instance of SQL Server with Windows Authentication:
+'	Dim _SQLQueryRunner As New SQLQueryRunner(".")
+'	Dim _Result As DataTable = _SQLQueryRunner.ExecuteQuery("SELECT * FROM [DB].[dbo].[Table];")
+
+Namespace MetaUtilities
 
 	''' <summary>Runs a Query on an SQL Server, returning the DataTable resulting from the Query</summary>
 	Public Class SQLQueryRunner
@@ -32,7 +39,7 @@
 			End Get
 		End Property
 
-		Public Event QueryWatch_QueryOutputChanged As Action(Of SqlClient.SqlNotificationEventArgs)
+		Public Event QueryWatch_QueryOutputChanged As Action(Of Global.System.Data.SqlClient.SqlNotificationEventArgs)
 
 		''' <summary>CONSTRUCTOR FOR SQL SERVER AUTHENTICATION. Readies the Object with the specified arguments, but does not initiate any form of connection with the SQL Server at this point.</summary>
 		Public Sub New(ByVal _SQLServerName$, ByVal _SQLServerUserName$, ByVal _SQLServerUserPassword$)
@@ -55,7 +62,7 @@
 		End Sub
 
 		''' <summary>Constructs the ConnectionString based on the current values of Fields in the Class. E.g. there are different ConnectionString Formats for Windows Authentication vs SQL Server Authentication.</summary>
-		Public ReadOnly Property ConnectionString As String
+		Public ReadOnly Property ConnectionString As [String]
 			Get
 
 				Select Case Me.SQLServerAuthenticationMode
@@ -77,13 +84,13 @@
 		''' <summary>
 		''' Connects to the SQL Server, executes the T-SQL _Query, and returns the resultant DataTable.
 		''' Example Call:
-		''' _SQLQueryRunner.ExecuteQuery("SELECT * FROM [TestingDB].[dbo].[People] WHERE ""Name"" = @TargetName;", New SqlClient.SqlParameter() With {.ParameterName = "TargetName", .Value = "Ben", .DbType = DbType.String})
+		''' _SQLQueryRunner.ExecuteQuery("SELECT * FROM [TestingDB].[dbo].[People] WHERE ""Name"" = @TargetName;", New Global.System.Data.SqlClient.SqlParameter() With {.ParameterName = "TargetName", .Value = "Ben", .DbType = DbType.String})
 		''' </summary>
 		''' <param name="_Query">The T-SQL Query to execute, e.g. "SELECT * FROM [DatabaseName].[dbo].[TableName];"</param>
 		''' <param name="_SQLParameters">(Optional) An array of SQLParameters, which are added to the connection object prior to executing the SQLCommand. They can be referanced in the _Query in the form @ParameterName. Each Parameter ought to have a ParameterName, Value, and DbType</param>
 		''' <returns>The DataTable filled with the output from the Command.</returns>
 		''' <remarks>There is potential for a blank DataTable to be returned here.</remarks>
-		Public Function ExecuteQuery(ByVal _Query$, ByVal ParamArray _SQLParameters As SqlClient.SqlParameter()) As DataTable
+		Public Function ExecuteQuery(ByVal _Query$, ByVal ParamArray _SQLParameters As Global.System.Data.SqlClient.SqlParameter()) As DataTable
 			Try
 				Debug.WriteLine("Executing Query on SQL Server " & Me.SQLServerName.InSquares() & ": " & _Query.InSquares())
 
@@ -102,7 +109,7 @@
 				Dim _SQLCommand As New Global.System.Data.SqlClient.SqlCommand(_Query, _SQLConnection)
 
 				'Load the Parameters into the SQL Command
-				For Each Param As SqlClient.SqlParameter In _SQLParameters : _SQLCommand.Parameters.Add(Param) : Next
+				For Each Param As Global.System.Data.SqlClient.SqlParameter In _SQLParameters : _SQLCommand.Parameters.Add(Param) : Next
 
 				_SQLConnection.Open()
 
@@ -119,7 +126,7 @@
 
 				Return Me.QueryOutputDataTable
 
-			Catch _Ex As Exception : Throw New Exception("@SQLQueryRunner\ExecuteQuery: " & _Ex.Message & vbCrLf & vbCrLf & "The Query was: " & _Query.InSquares(), _Ex) : End Try
+			Catch _Ex As Exception : Throw New Exception("@SQLQueryRunner\ExecuteQuery: " & _Ex.Message & Global.Microsoft.VisualBasic.Constants.vbCrLf & Global.Microsoft.VisualBasic.Constants.vbCrLf & "The Query was: " & _Query.InSquares(), _Ex) : End Try
 		End Function
 
 #Region "QueryWatch Logic - For detecting a change in the result of an SQL Query"
@@ -128,9 +135,9 @@
 		''' Begins listening for a change in the Output of the specified _Query. When a change occurs, the QueryWatch_QueryOutputChanged Event is Raised.
 		''' 
 		''' Example Call:
-		''' Dim _SQLQueryRunner As New DocScript.Utilities.SQLQueryRunner(_SQLServerName:=&quot;MNLT01\SQLEXPRESS&quot;)
+		''' Dim _SQLQueryRunner As New SQLQueryRunner(_SQLServerName:=&quot;MNLT01\SQLEXPRESS&quot;)
 		''' _SQLQueryRunner.BeginQueryWatch(_DatabaseName:=&quot;QueryWatchTest&quot;, _Query:=&quot;SELECT &quot;&quot;Name&quot;&quot; FROM [dbo].[People];&quot;)
-		''' AddHandler _SQLQueryRunner.QueryWatch_QueryOutputChanged, Sub(_EventArgs As SqlClient.SqlNotificationEventArgs) MsgBox(&quot;Type: &quot; &amp; _EventArgs.Type.ToString())
+		''' AddHandler _SQLQueryRunner.QueryWatch_QueryOutputChanged, Sub(_EventArgs As Global.System.Data.SqlClient.SqlNotificationEventArgs) MsgBox(&quot;Type: &quot; &amp; _EventArgs.Type.ToString())
 		''' </summary>
 		''' <param name="_DatabaseName">Needed because a Queue will be registered with the ServiceBroker of this Database. The specified Database MUST have its Service Broker ENABLED. To enable the Service Broker: ALTER DATABASE [DBName] SET ENABLE_BROKER;</param>
 		''' <param name="_Query">E.g. SELECT "Name" FROM [dbo].[People];</param>
@@ -143,7 +150,7 @@
 		''' INVALID:	SELECT * FROM Messages;
 		''' VALID:		SELECT ID, Message FROM dbo.Messages;
 		''' </remarks>
-		Public Sub BeginQueryWatch(ByVal _DatabaseName$, ByVal _Query$, ByVal ParamArray _SQLParameters As SqlClient.SqlParameter())
+		Public Sub BeginQueryWatch(ByVal _DatabaseName$, ByVal _Query$, ByVal ParamArray _SQLParameters As Global.System.Data.SqlClient.SqlParameter())
 			Try
 				Debug.WriteLine("Registering QueryWatch for Database " & _DatabaseName.InSquares() & " on SQL Server " & Me.SQLServerName.InSquares() & " from Workstation " & My.Computer.Name.InSquares() & " for Query " & _Query.InSquares())
 
@@ -169,18 +176,18 @@
 		Protected QW_ConnectionStringWithInitialCatalog_$
 		Protected QW_Query_$
 		Protected QW_DatabaseName_$
-		Protected QW_SQLParameters_ As SqlClient.SqlParameter()
+		Protected QW_SQLParameters_ As Global.System.Data.SqlClient.SqlParameter()
 
 		Protected Sub RegisterSQLDependency_()
 
 			Dim _SQLConnection As New Global.System.Data.SqlClient.SqlConnection(Me.QW_ConnectionStringWithInitialCatalog_)
 			Dim _SQLCommand As New Global.System.Data.SqlClient.SqlCommand(Me.QW_Query_, _SQLConnection)
-			For Each Param As SqlClient.SqlParameter In Me.QW_SQLParameters_ : _SQLCommand.Parameters.Add(Param) : Next
+			For Each Param As Global.System.Data.SqlClient.SqlParameter In Me.QW_SQLParameters_ : _SQLCommand.Parameters.Add(Param) : Next
 
 			_SQLCommand.Notification = Nothing
 
-			Dim _SQLDependancy As New SqlClient.SqlDependency(_SQLCommand)
-			AddHandler _SQLDependancy.OnChange, New SqlClient.OnChangeEventHandler(AddressOf Me.QueryWatch_ChangeOccuredHandler_)
+			Dim _SQLDependancy As New Global.System.Data.SqlClient.SqlDependency(_SQLCommand)
+			AddHandler _SQLDependancy.OnChange, New Global.System.Data.SqlClient.OnChangeEventHandler(AddressOf Me.QueryWatch_ChangeOccuredHandler_)
 
 			_SQLConnection.Open()
 			_SQLCommand.ExecuteReader(CommandBehavior.CloseConnection)
@@ -190,7 +197,7 @@
 
 		End Sub
 
-		Protected Sub QueryWatch_ChangeOccuredHandler_(ByVal _Sender As Object, ByVal _EventArgs As SqlClient.SqlNotificationEventArgs)
+		Protected Sub QueryWatch_ChangeOccuredHandler_(ByVal _Sender As Object, ByVal _EventArgs As Global.System.Data.SqlClient.SqlNotificationEventArgs)
 
 			'This call dosen't work for some reason with the GUIDefault LogEventHandler, because of a Thread-access/EventHandlerAsync oddity. It works perfectly for CLIDefault though.
 			Debug.WriteLine("Query Output changed for Query " & Me.QW_Query_.InSquares() & " in Database " & Me.QW_DatabaseName_.InSquares() & " with Info " & _EventArgs.Info.ToString().InSquares() & " and Source " & _EventArgs.Source.ToString().InSquares() & " and Type " & _EventArgs.Type.ToString().InSquares())
@@ -198,7 +205,7 @@
 			RaiseEvent QueryWatch_QueryOutputChanged(_EventArgs)
 
 			REM We have to Unsubscribe from the Event, and then execute the Query again (which will re-subscribe the Handler to the Event...)
-			Dim _SQLDependency As SqlClient.SqlDependency = TryCast(_Sender, SqlClient.SqlDependency)
+			Dim _SQLDependency As Global.System.Data.SqlClient.SqlDependency = TryCast(_Sender, Global.System.Data.SqlClient.SqlDependency)
 			RemoveHandler _SQLDependency.OnChange, AddressOf Me.QueryWatch_ChangeOccuredHandler_
 
 			Me.RegisterSQLDependency_()
@@ -207,13 +214,24 @@
 
 #End Region
 
-		Public Shared ReadOnly Property LocalSQLServerInstances As [String]()
+		''' <summary>Scans the Registry for all avaliable local SQL Server instances, returning their names.</summary>
+		''' <param name="_ReplaceMSSQLSERVERInstances_WithHostnameOnly">Using the default instance by name in a Connection String (e.g. "SpareLat\MSSQLSERVER") results in error 25, so specify this parameter as True, in order to have that instance returned as just "SpareLat". Default Instances with other names won't be detected.</param>
+		Public Shared ReadOnly Property LocalSQLServerInstances(Optional ByVal _ReplaceMSSQLSERVERInstances_WithHostnameOnly As [Boolean] = False) As [String]()
 			Get
 
 				Dim _RegistryView As Microsoft.Win32.RegistryView = If(Environment.Is64BitOperatingSystem, Microsoft.Win32.RegistryView.Registry64, Microsoft.Win32.RegistryView.Registry32)
 				Dim _HKLM_RegistryKey As Microsoft.Win32.RegistryKey = Microsoft.Win32.RegistryKey.OpenBaseKey(Microsoft.Win32.RegistryHive.LocalMachine, _RegistryView)
 				Dim _InstanceKey As Microsoft.Win32.RegistryKey = _HKLM_RegistryKey.OpenSubKey("SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\SQL", writable:=False)
-				If _InstanceKey IsNot Nothing Then Return _InstanceKey.GetValueNames().Select(Of [String])(Function(_InstanceName$) Environment.MachineName & "\"c & _InstanceName).ToArray() Else Return (New [String](-1) {})
+
+				REM Hostname-backslash-Instance Names, potentially including that of a Default Instance
+				Dim _InstanceNames$() = {}
+				If _InstanceKey IsNot Nothing Then _InstanceNames = _InstanceKey.GetValueNames().Select(Of [String])(Function(_InstanceName$) Environment.MachineName & "\"c & _InstanceName).ToArray()
+
+				REM E.g. "SpareLat\MSSQLSERVER" → "SpareLat"
+				If _ReplaceMSSQLSERVERInstances_WithHostnameOnly Then _InstanceNames = _
+				 _InstanceNames.Select(Of [String])(Function(_InstanceName$) If(_InstanceName.EndsWith("\MSSQLSERVER"), _InstanceName.Split("\"c).ElementAt(0), _InstanceName)).ToArray()
+
+				Return _InstanceNames
 
 			End Get
 		End Property

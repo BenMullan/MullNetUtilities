@@ -1,6 +1,13 @@
 ﻿Namespace MetaUtilities.Dialogs
 
-	''' <summary>Enables one of a selection of Objects to be chosen, via a GUI.</summary>
+	''' <summary>
+	''' Enables one of a selection of Objects to be chosen, via a GUI.
+	''' 
+	''' Example:
+	'''     Dim _ChooseCameraDialog As New MullNet.MetaUtilities.Dialogs.ChooseFromListDialog(Of DirectShowLib.DsDevice)(_CameraDeviceProvider.Devices.ToArray(), "Camera Device", Function(_Camera As DirectShowLib.DsDevice) _Camera.Name)
+	'''     'User could have clicked [Cancel] or pressed [Esc]
+	'''     If Not ((_ChooseCameraDialog.ShowDialog() = (Windows.Forms.[DialogResult]).OK) AndAlso (_ChooseCameraDialog.ChosenItem IsNot Nothing)) Then Application.Exit()
+	''' </summary>
 	Partial Public Class ChooseFromListDialog(Of TEachItem) : Inherits MullNet.MetaUtilities.Dialogs.BaseDialog
 
 		REM Input

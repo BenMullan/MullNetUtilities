@@ -8,6 +8,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Resources", "_Resources", "{4B415B07-AA91-47E6-89BA-A25C3604E871}"
 	ProjectSection(SolutionItems) = preProject
 		(Resources)\Graveyard.txt = (Resources)\Graveyard.txt
+		ReadMe.MD = ReadMe.MD
 		ReadMe.txt = ReadMe.txt
 	EndProjectSection
 EndProject
@@ -44,6 +45,8 @@ EndProject
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "ConsoleInfo", "_SystemUtilities\ConsoleInfo\ConsoleInfo.vbproj", "{37A8899D-E135-409D-8BE6-39841352C0C9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroHTTP", "_SystemUtilities\MicroHTTP\MicroHTTP.csproj", "{E6D03027-C4D3-4BC3-BA68-93CBCA9FCCB1}"
+EndProject
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Doorman", "_SystemUtilities\Doorman\Doorman.vbproj", "{032E7D4D-AFDA-42EB-BB61-EE1D19272500}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -217,6 +220,16 @@ Global
 		{E6D03027-C4D3-4BC3-BA68-93CBCA9FCCB1}.Release|Mixed Platforms.Build.0 = Release|x86
 		{E6D03027-C4D3-4BC3-BA68-93CBCA9FCCB1}.Release|x86.ActiveCfg = Release|x86
 		{E6D03027-C4D3-4BC3-BA68-93CBCA9FCCB1}.Release|x86.Build.0 = Release|x86
+		{032E7D4D-AFDA-42EB-BB61-EE1D19272500}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{032E7D4D-AFDA-42EB-BB61-EE1D19272500}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{032E7D4D-AFDA-42EB-BB61-EE1D19272500}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{032E7D4D-AFDA-42EB-BB61-EE1D19272500}.Debug|x86.ActiveCfg = Debug|x86
+		{032E7D4D-AFDA-42EB-BB61-EE1D19272500}.Debug|x86.Build.0 = Debug|x86
+		{032E7D4D-AFDA-42EB-BB61-EE1D19272500}.Release|Any CPU.ActiveCfg = Release|x86
+		{032E7D4D-AFDA-42EB-BB61-EE1D19272500}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{032E7D4D-AFDA-42EB-BB61-EE1D19272500}.Release|Mixed Platforms.Build.0 = Release|x86
+		{032E7D4D-AFDA-42EB-BB61-EE1D19272500}.Release|x86.ActiveCfg = Release|x86
+		{032E7D4D-AFDA-42EB-BB61-EE1D19272500}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -232,6 +245,7 @@ Global
 		{9E3CE020-74AC-4D4E-99E2-6B70FD4B7F03} = {5515E705-8DD0-493B-A89F-55562DF6C75B}
 		{37A8899D-E135-409D-8BE6-39841352C0C9} = {5515E705-8DD0-493B-A89F-55562DF6C75B}
 		{E6D03027-C4D3-4BC3-BA68-93CBCA9FCCB1} = {5515E705-8DD0-493B-A89F-55562DF6C75B}
+		{032E7D4D-AFDA-42EB-BB61-EE1D19272500} = {5515E705-8DD0-493B-A89F-55562DF6C75B}
 		{1395A587-5DB1-4D3A-BFE1-DE68429B0859} = {6849EA69-1655-4B4E-90DD-9941C9EE20FB}
 		{530E931A-757A-493B-AA6D-E2685008488E} = {A77EB88F-DB7C-4E2B-9223-0184FBA43825}
 		{11DA8ADB-33B9-491E-91AA-4895760A8D4A} = {A77EB88F-DB7C-4E2B-9223-0184FBA43825}

@@ -36,7 +36,7 @@ Namespace CompilerExtentions
 		''' <summary>(MullNet CompilerExtention) Runs the ToString() of the _Object through the specified _Action</summary>
 		<System.Runtime.CompilerServices.Extension()>
 		Public Function Output(Of _TInput)(ByVal _Object As _TInput, ByVal _Action As Action(Of String), Optional ByVal _MsgBefore$ = "") As _TInput
-			If Not (_MsgBefore = "") Then _MsgBefore = (_MsgBefore & " "c)
+			If Not [String].IsNullOrEmpty(_MsgBefore) Then _MsgBefore &= " "c
 			_Action.Invoke(_MsgBefore & _Object.ToString())
 			Return _Object
 		End Function
@@ -44,7 +44,7 @@ Namespace CompilerExtentions
 		''' <summary>(MullNet CompilerExtention) Ensures that the _Object IsNot Nothing, Throwing a NullReferanceException with the _MessageIfNull if it is</summary>
 		<System.Runtime.CompilerServices.Extension()>
 		Public Function MustNotBeNothing(Of _TObject)(ByRef _Object As _TObject, Optional ByVal _MsgIfNull$ = "") As _TObject
-			If (_Object Is Nothing) Then Throw New NullReferenceException("The Object was [Nothing]. " & _MsgIfNull)
+			If _Object Is Nothing Then Throw New NullReferenceException("The Object was [Nothing]. " & _MsgIfNull)
 			Return _Object
 		End Function
 
@@ -79,7 +79,7 @@ Namespace CompilerExtentions
 				If _CharsAtWhichToSplitString.Contains(_Char) Then
 
 					REM Only add the String to be returned, if it is not empty
-					If (Not String.IsNullOrEmpty(_StringToAddAccumulator)) Then _StringsToReturn.Add(_StringToAddAccumulator)
+					If Not String.IsNullOrEmpty(_StringToAddAccumulator) Then _StringsToReturn.Add(_StringToAddAccumulator)
 					_StringToAddAccumulator = String.Empty
 
 				Else
@@ -220,31 +220,31 @@ Namespace CompilerExtentions
 		''' <remarks></remarks>
 		<Global.System.Runtime.CompilerServices.Extension()>
 		Public Function MatchesRegEx(ByVal _StringToValidate$, ByVal _RegExPattern$) As Boolean
-			Return (New Global.System.Text.RegularExpressions.Regex([pattern]:=[_RegExPattern])).IsMatch(_StringToValidate)
+			Return New Global.System.Text.RegularExpressions.Regex([pattern]:=[_RegExPattern]).IsMatch(_StringToValidate)
 		End Function
 
 		''' <summary>(MullNet CompilerExtention) Returns in the form [_InputString$]</summary>
 		<Global.System.Runtime.CompilerServices.Extension()>
 		Public Function InSquares$(ByRef _InputString$)
-			Return ("["c & _InputString & "]"c)
+			Return "["c & _InputString & "]"c
 		End Function
 
 		''' <summary>(MullNet CompilerExtention) Returns in the form {_InputString$}</summary>
 		<Global.System.Runtime.CompilerServices.Extension()>
 		Public Function InCurlies$(ByRef _InputString$)
-			Return ("{"c & _InputString & "}"c)
+			Return "{"c & _InputString & "}"c
 		End Function
 
 		''' <summary>(MullNet CompilerExtention) Returns in the form &lt;_InputString$&gt;</summary>
 		<Global.System.Runtime.CompilerServices.Extension()>
 		Public Function InPointies$(ByRef _InputString$)
-			Return ("<"c & _InputString & ">"c)
+			Return "<"c & _InputString & ">"c
 		End Function
 
 		''' <summary>(MullNet CompilerExtention) Returns in the form (_InputString$)</summary>
 		<Global.System.Runtime.CompilerServices.Extension()>
 		Public Function InBrackets$(ByRef _InputString$)
-			Return ("("c & _InputString & ")"c)
+			Return "("c & _InputString & ")"c
 		End Function
 
 		''' <summary>(MullNet CompilerExtention) Returns a string containing any Digit Chars (0 to 9) which were found in the _InputString$</summary>
@@ -263,7 +263,7 @@ Namespace CompilerExtentions
 			Dim _TabbedInLines_ToReturn$ = ""
 
 			For Each _Line$ In _SplitLines
-				_TabbedInLines_ToReturn &= (_TabChar.Repeat(_NumberOfTabs) & _Line & vbCrLf)
+				_TabbedInLines_ToReturn &= _TabChar.Repeat(_NumberOfTabs) & _Line & vbCrLf
 			Next
 
 			REM Remove the last vbCrLf from the end, if the Loop iterated at all. vbCrLf is TWO CHARACTERS!
@@ -290,7 +290,7 @@ Namespace CompilerExtentions
 		Public Function GetMD5Hash(ByVal _InputString$) As String
 			Try
 
-				Return (New Security.Cryptography.MD5CryptoServiceProvider()) _
+				Return New Security.Cryptography.MD5CryptoServiceProvider() _
 				 .ComputeHash(System.Text.Encoding.ASCII.GetBytes(_InputString$)) _
 				 .Aggregate(Of String, String)(
 				   seed:="",
@@ -362,7 +362,7 @@ Namespace CompilerExtentions
 		Public Function InTitleCase$(ByVal _Input$)
 			Try
 
-				Return (New System.Globalization.CultureInfo("en-GB", useUserOverride:=False)).TextInfo.ToTitleCase(_Input.ToLower())
+				Return New System.Globalization.CultureInfo("en-GB", useUserOverride:=False).TextInfo.ToTitleCase(_Input.ToLower())
 
 			Catch _Ex As Exception : Throw New Exception("@InTitleCase (CompilerExtention): " & _Ex.Message, _Ex) : End Try
 		End Function
@@ -435,11 +435,11 @@ Namespace CompilerExtentions
 
 				Dim _IndexOfLastWantedElement As Int32 = 0
 
-				For _ElementIndex As Int32 = 0 To (_Array.Length - 1) Step +1
-					If _Condition.Invoke(_Array(CInt(_ElementIndex))) Then
+				For _ElementIndex As Int32 = 0 To _Array.Length - 1 Step +1
+					If _Condition.Invoke(_Array(_ElementIndex)) Then
 
 						'The last wanted element was the previous one
-						_IndexOfLastWantedElement = (_ElementIndex - 1) : Exit For
+						_IndexOfLastWantedElement = _ElementIndex - 1 : Exit For
 
 					End If
 				Next
@@ -463,7 +463,7 @@ Namespace CompilerExtentions
 
 				Dim _IndexOfLastWantedElement As UInt32 = 0
 
-				For _ElementIndex% = 0 To (_Array.Length - 1) Step +1
+				For _ElementIndex% = 0 To _Array.Length - 1 Step +1
 					If _Condition.Invoke(_Array(_ElementIndex)) Then
 
 						'The last wanted element is teh current one
@@ -529,7 +529,7 @@ Namespace CompilerExtentions
 				Dim _ChunkAccumulator As New List(Of _TElement)()
 
 				For Each _Element As _TElement In _Array
-					If _Condition.Invoke(_Element) Then	'The _Element is one to Split at
+					If _Condition.Invoke(_Element) Then 'The _Element is one to Split at
 						_ChunksToReturn.Add(_ChunkAccumulator.ToArray()) : _ChunkAccumulator.Clear()
 					Else 'The _Element is not one to Split at
 						_ChunkAccumulator.Add(_Element)
@@ -551,7 +551,7 @@ Namespace CompilerExtentions
 		Public Function ReplaceWhere(Of _TElement)(ByVal _Array As _TElement(), ByVal _Condition As Func(Of _TElement, Boolean), ByVal _Replacement As _TElement) As _TElement()
 			Try
 
-				For _Index% = 0 To (_Array.Length - 1) Step +1
+				For _Index% = 0 To _Array.Length - 1 Step +1
 					If _Condition.Invoke(_Array(_Index)) Then _Array(_Index) = _Replacement
 				Next
 
@@ -569,7 +569,7 @@ Namespace CompilerExtentions
 
 				If Not _Array.Any(_Condition) Then Throw New Exception("None of the Elements in the _Array matched the _Condition")
 
-				For _Index% = 0 To (_Array.Length - 1) Step +1
+				For _Index% = 0 To _Array.Length - 1 Step +1
 					If _Condition.Invoke(_Array(_Index)) Then
 						Return _Index
 					End If
@@ -590,7 +590,7 @@ Namespace CompilerExtentions
 				'0  1  2  3  4  5  6  7  8  9  10 11 12
 				If Not _Array.Any(_Condition) Then Throw New Exception("None of the Elements in the _Array matched the _Condition")
 
-				For _Index% = (_Array.Length - 1) To 0 Step -1
+				For _Index% = _Array.Length - 1 To 0 Step -1
 					If _Condition.Invoke(_Array(_Index)) Then
 						Return _Index
 					End If
@@ -604,7 +604,7 @@ Namespace CompilerExtentions
 		''' <summary>(MullNet CompilerExtention) Evaluates weather or not each Element in the _Array is unique. In other words, False is Returned if two or more elements are the same.</summary>
 		<Global.System.Runtime.CompilerServices.Extension()>
 		Public Function AllElementsAreUnique(Of _TElement)(ByVal _Array As _TElement()) As Boolean
-			Return (New HashSet(Of _TElement)(_Array)).Count = _Array.Length
+			Return New HashSet(Of _TElement)(_Array).Count = _Array.Length
 		End Function
 
 		''' <summary>(MullNet CompilerExtention) Repeats the _Element _Times times.</summary>
@@ -640,7 +640,7 @@ Namespace CompilerExtentions
 				Dim _InterspersedArray As New List(Of _TElement)()
 
 				For _Index As UInt32 = 0 To CUInt(_Array.Length - 1) Step +1
-					If ((_Index Mod _HowOften) = 0) AndAlso (Not (_Index = 0)) Then _InterspersedArray.AddRange(_FillerBlock) 'Insert an instance of the FillerBlock
+					If ((_Index Mod _HowOften) = 0) AndAlso (Not _Index = 0) Then _InterspersedArray.AddRange(_FillerBlock) 'Insert an instance of the FillerBlock
 					_InterspersedArray.Add(_Array.ElementAt(CInt(_Index)))
 				Next
 
@@ -656,7 +656,7 @@ Namespace CompilerExtentions
 
 				Dim _ArrayToReturn As New List(Of _TElement)()
 
-				For _Index% = 0 To (_Array.Length - 2) Step +1
+				For _Index% = 0 To _Array.Length - 2 Step +1
 					_ArrayToReturn.Add(_Array.ElementAt(_Index))
 				Next
 
@@ -703,7 +703,7 @@ Namespace CompilerExtentions
 				'Here, the _Seed is already contained in the _StringArray
 
 				'For each CharIndex of the Seed
-				For _SeedChar_Index% = (_Seed.Length - 1) To 0 Step -1
+				For _SeedChar_Index% = _Seed.Length - 1 To 0 Step -1
 
 					'Put in each possible SubstitutionChar, and see if that makes the String Unique amoungst the _StringArray
 					For Each _SubstitutionChar As Char In _SubstitutionChars
@@ -757,7 +757,7 @@ Namespace CompilerExtentions
 		''' <summary>
 		''' (MullNet CompilerExtention) Invokes the Control if required, and runs the specified _Action
 		''' </summary>
-		<System.Runtime.CompilerServices.Extension()> _
+		<System.Runtime.CompilerServices.Extension()>
 		Public Sub InvokeIfRequired(ByVal _Control As Windows.Forms.Control, ByVal _Action As Action)
 			If _Control.InvokeRequired Then
 				_Control.Invoke(_Action)
@@ -902,7 +902,7 @@ Namespace CompilerExtentions
 				'After complete traversal, if there is an Opening Component left in stack then the source is not balanced
 
 				'Contains only Items which are also present in the _Pairs (E.g. only the Brackets [] {} <> out of all the Source Tokens)
-				Dim _JustTheRelevantItems As _TItems() = (From _Item As _TItems In _AllItems Where (_Pairs.Any(Function(_Pair As Tuple(Of _TItems, _TItems)) (_Pair.Item1.Equals(_Item)) OrElse (_Pair.Item2.Equals(_Item)))) Select _Item).ToArray()
+				Dim _JustTheRelevantItems As _TItems() = (From _Item As _TItems In _AllItems Where _Pairs.Any(Function(_Pair As Tuple(Of _TItems, _TItems)) _Pair.Item1.Equals(_Item) OrElse _Pair.Item2.Equals(_Item)) Select _Item).ToArray()
 				Dim _ItemsStack As New Stack(Of _TItems)()
 				Dim _NoOpeningComponents, _NoClosingComponents As UInt32
 
@@ -920,7 +920,7 @@ Namespace CompilerExtentions
 					ElseIf _Pairs.Any(Function(_Pair As Tuple(Of _TItems, _TItems)) _Pair.Item2.Equals(_LambdaCopyOf_Item)) Then
 
 						'Get the Pair which contains the corrosponding Opening Component for out Closing Component
-						Dim _Pair_WhereforWeHaveClosingComponent As Tuple(Of _TItems, _TItems) = _
+						Dim _Pair_WhereforWeHaveClosingComponent As Tuple(Of _TItems, _TItems) =
 						 _Pairs.First(Function(_Pair As Tuple(Of _TItems, _TItems)) _Pair.Item2.Equals(_LambdaCopyOf_Item))
 
 						'Now see if the Pop() produces the same Opening Component as we have in our Pair
@@ -934,7 +934,7 @@ Namespace CompilerExtentions
 				Next
 
 				REM Now determine if there is anything left on the Stack. The only things on there could ever be Opening Components, because that's all we ever Push()
-				If Not (_ItemsStack.Count = 0) Then Return False
+				If Not _ItemsStack.Count = 0 Then Return False
 
 				REM If we're here, then all Opening and Closing Components must have been balenced, because we haven't yet Return'd
 				Debug.WriteLine(String.Format("Determined that {0} relevant Item(s) out of {1} total Item(s) were well-balenced with {2} Opening Component(s) and {3} Closing Component(s) from {4} Pair(s)", _JustTheRelevantItems.Length.ToString(), _AllItems.Length.ToString(), _NoOpeningComponents.ToString(), _NoClosingComponents.ToString(), _Pairs.Length.ToString()))
@@ -998,7 +998,7 @@ Namespace CompilerExtentions
 		'''     function.
 		'''     </para>
 		''' </remarks>
-		<System.Runtime.InteropServices.DllImport("USER32.DLL")> _
+		<System.Runtime.InteropServices.DllImport("USER32.DLL")>
 		Public Function SetForegroundWindow(ByVal hWnd As IntPtr) As <System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.Bool)> Boolean
 		End Function
 
@@ -1025,7 +1025,7 @@ Namespace CompilerExtentions
 				Dim _ProvidedFilePath As [String] = Nothing
 
 				REM ↓ E.g.	Hypertext Markup (*.HTML)|*.HTML|All files (*.*)|*.*
-				Dim _FileDialog_Filter As [String] = String.Join("|", ( _
+				Dim _FileDialog_Filter As [String] = String.Join("|", (
 				 From _DescriptionAndExtention As Tuple(Of [String], [String])
 				 In _TargetFileExtentions.Concat({New Tuple(Of String, String)("All Files", "*")})
 				 Select String.Format("{0} (*.{1})|*.{1}", _DescriptionAndExtention.Item1, _DescriptionAndExtention.Item2)
@@ -1058,7 +1058,7 @@ Namespace CompilerExtentions
 			'	3999, 0123456789	→ 4000
 
 			REM Validation
-			If Not (_Tokens.Length >= 2) Then Throw New ArgumentException("There must be a minimum of two tokens (Base 2)")
+			If Not _Tokens.Length >= 2 Then Throw New ArgumentException("There must be a minimum of two tokens (Base 2)")
 			If Not _Tokens.ToCharArray().AllElementsAreUnique() Then Throw New ArgumentException("All Chars in the _Tokens must be unique")
 			If Not _InputValue.ToCharArray().All(AddressOf _Tokens.Contains) Then Throw New ArgumentException("All Chars in the _InputValue must be in _Tokens as well")
 
@@ -1066,12 +1066,12 @@ Namespace CompilerExtentions
 			'This also means that even empty input 
 			'E.g. We would have "99" → "99", but now it's "099" → "199"
 			'Any leading Min-Tokens are removed at the end anyway.
-			_InputValue = (_Tokens.ElementAt(0) & _InputValue)
+			_InputValue = _Tokens.ElementAt(0) & _InputValue
 
 			Dim _OutputValue As List(Of [Char]) = _InputValue.ToCharArray().ToList()
 
 			REM ←Leftwards← Sweep; find the 1st digit we can increment
-			For _IndexInValue As Int32 = (_OutputValue.Count - 1) To 0 Step -1
+			For _IndexInValue As Int32 = _OutputValue.Count - 1 To 0 Step -1
 
 				'If the digit we're looking at isn't the Max-Token, then increment it
 				'E.g. "46" → "47"
@@ -1088,7 +1088,7 @@ Namespace CompilerExtentions
 			Next
 
 			REM →Rightwards→ Sweep; find the 1st digit which changed \zw Input and Output
-			For _IndexInValue As Int32 = 0 To (_OutputValue.Count - 1) Step +1
+			For _IndexInValue As Int32 = 0 To _OutputValue.Count - 1 Step +1
 
 				'If Input[i] != Output[i], then we're looking at the first (left-most) digit that changed
 				'Set all digits to the right of this, to the Min-Token ("0")

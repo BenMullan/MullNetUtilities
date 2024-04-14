@@ -8,8 +8,8 @@ Imports System.Runtime.InteropServices
 
 ' Review the values of the assembly attributes
 
-<Assembly: AssemblyTitle("_RunHidden (MullNet SilentControlToolset)")> 
-<Assembly: AssemblyDescription("For the MullNet SilentControlToolset")> 
+<Assembly: AssemblyTitle("Runs the rest of the command-line Arguments as a new Process, without producing a Window for that process. The child-process's stdout and stderr are written to .\_RunHidden_ProcessOutputText.log")> 
+<Assembly: AssemblyDescription("Runs the rest of the command-line Arguments as a new Process, without producing a Window for that process. The child-process's stdout and stderr are written to .\_RunHidden_ProcessOutputText.log")> 
 <Assembly: AssemblyCompany("MullNet SilentControlToolset")> 
 <Assembly: AssemblyProduct("_RunHidden")> 
 <Assembly: AssemblyCopyright("Copyright © MullNet 2023")> 
@@ -31,5 +31,5 @@ Imports System.Runtime.InteropServices
 ' by using the '*' as shown below:
 ' <Assembly: AssemblyVersion("1.0.*")> 
 
-<Assembly: AssemblyVersion("1.0.0.0")> 
-<Assembly: AssemblyFileVersion("1.0.0.0")> 
+<Assembly: AssemblyVersion("2.5.0.0")> 
+<Assembly: AssemblyFileVersion("2.5.0.0")> 

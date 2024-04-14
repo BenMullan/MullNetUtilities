@@ -1,5 +1,7 @@
 ﻿Public Class MainWindow
 
+	Protected Cached_AvaliableDatabases_$() = {}
+
 	Protected Property CurrentSQLConnection_ As MullNet.MetaUtilities.SQLQueryRunner = Nothing
 	Public Property CurrentSQLConnection As MullNet.MetaUtilities.SQLQueryRunner
 		Get
@@ -52,13 +54,34 @@
 #End Region
 
 	Private Sub ListDatabasesOnServerToolStripMenuItem_Click_() Handles ListDatabasesOnServerToolStripMenuItem.Click
+
 		Me.SQLQuery_TextBox.Text = "SELECT ""Name"", ""Database_ID"" FROM [Sys].[Databases];"
-		Me.TheStatusLabel.Text = "Do Now: Execute the SQL Query to fetch avaliable Databases..."
+		ExecuteSQLQuery()
+		Me.TheStatusLabel.Text = "Listed avaliable Databases"
+
+		Try
+
+			Cached_AvaliableDatabases_ = _
+			   Me.TheOutputDataGridView.Rows.Cast(Of DataGridViewRow)() _
+			   .Select(Of [String])(Function(_Row As DataGridViewRow) If(_Row.Cells.Item(0).Value IsNot Nothing, _Row.Cells.Item(0).Value.ToString(), [String].Empty)) _
+			   .Where(Function(_DBName$) Not [String].IsNullOrWhiteSpace(_DBName)) _
+			   .ToArray()
+
+		Catch _Ex As Exception
+			MsgBox("The Database names could not be cached for the Table-listing function, because " & _Ex.Message, MsgBoxStyle.Exclamation)
+		End Try
+
 	End Sub
 
 	Private Sub ListAllTablesInDatabaseToolStripMenuItem_Click_() Handles ListAllTablesInDatabaseToolStripMenuItem.Click
-		Me.SQLQuery_TextBox.Text = "SELECT ""TABLE_NAME"" FROM [DatabaseName].[INFORMATION_SCHEMA].[TABLES] WHERE ""TABLE_TYPE"" = 'BASE TABLE';"
-		Me.TheStatusLabel.Text = "Do Now: Replace ""DatabaseName"", then execute the SQL Query..."
+
+		Dim _ChooseDatabaseDialog As New MullNet.MetaUtilities.Dialogs.ChooseFromListDialog(Of [String])(Cached_AvaliableDatabases_.Concat({"(Manually type Table Name)"}).ToArray(), "Database")
+		If Not ((_ChooseDatabaseDialog.ShowDialog() = (Windows.Forms.[DialogResult]).OK) AndAlso (_ChooseDatabaseDialog.ChosenItem IsNot Nothing)) Then Return
+
+		Me.SQLQuery_TextBox.Text = "SELECT ""TABLE_NAME"" FROM [" & _ChooseDatabaseDialog.ChosenItem & "].[INFORMATION_SCHEMA].[TABLES] WHERE ""TABLE_TYPE"" = 'BASE TABLE';"
+		ExecuteSQLQuery()
+		Me.TheStatusLabel.Text = "Listed Tables in " & _ChooseDatabaseDialog.ChosenItem
+
 	End Sub
 
 #Region "Close the form on pressing [Esc]"

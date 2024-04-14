@@ -2,17 +2,25 @@
 	Public Module Processes
 
 		''' <summary>Uses WHERE.EXE to resolve the path</summary>
-		Public Function ResolveFilePath_FromFileName(ByVal _FileName$) As IO.FileInfo
+		Public Function ResolveFullFilePath_FromFileName(ByVal _FileName$) As IO.FileInfo
 
 			REM If there are multiple instances of the file in-scope, they'll be returned in the format:
-			REM		C:\Windows\System32\hh.exe {vbCrLf} C:\Windows\hh.exe  
+			REM		C:\Windows\System32\hh.exe {vbCrLf} C:\Windows\hh.exe
 
-			Dim _WhereExe_Output$ = Global.MullNet.MetaUtilities.Processes.RunProcess_AndReturnOutput(Environment.GetEnvironmentVariable("WINDIR") & "\System32\WHERE.EXE", _FileName).Trim()
+			Dim _WhereExe_Output$ = _
+			 Global.MullNet.MetaUtilities.Processes.RunProcess_AndReturnOutput(
+			  IO.Path.Combine(Environment.GetEnvironmentVariable("WINDIR"), "System32\WHERE.EXE"),
+			  _FileName
+			 ).Trim().ToUpper()
 
-			If _WhereExe_Output.StartsWith("INFO") OrElse _WhereExe_Output.StartsWith("ERROR") Then Throw New Exception("WHERE.EXE reported that the file does not exist or is invalid")
+			REM If Where.exe couldn't find the binary, this function can't resolve the FilePath
+			If {"INFO", "ERROR"}.Any(AddressOf _WhereExe_Output.StartsWith) Then Throw New Exception("The file path could not be resolved by WHERE.EXE")
+
+			REM If Where.exe has returned multiple paths for the binary, take the 1st one
 			If _WhereExe_Output.Contains(vbCrLf) Then _WhereExe_Output = _WhereExe_Output.Split({vbCrLf}, StringSplitOptions.RemoveEmptyEntries).ElementAt(0).Trim()
 
 			Return (New IO.FileInfo(_WhereExe_Output))
+
 		End Function
 
 		''' <summary>Returns both the STDOUT and STDERR</summary>
