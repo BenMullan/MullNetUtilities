@@ -1,5 +1,6 @@
-﻿Module BaseUtility
+﻿Friend Module BaseUtility
 
+	<CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification:="Part of proper Entrypoint signature!")>
 	Public Function Main%(ByVal _CLAs$())
 
 		While True

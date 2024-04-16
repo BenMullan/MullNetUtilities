@@ -103,9 +103,9 @@ Namespace MetaUtilities
 
 		Protected Const ExitCode_ForWhenCLAHelpDictionaryIsDisplayed_% = -1
 
-		Protected Const CLAKeyStartChar_ As Char = "/"c		'E.g.	/ShowLog
-		Protected Const CLAValueStartChar_ As Char = ":"c	'E.g.	/Name:Ben
-		Protected Const HelpCLA_$ = CLAKeyStartChar_ & "?"c	'E.g.	/?
+		Protected Const CLAKeyStartChar_ As Char = "/"c     'E.g.	/ShowLog
+		Protected Const CLAValueStartChar_ As Char = ":"c   'E.g.	/Name:Ben
+		Protected Const HelpCLA_$ = CLAKeyStartChar_ & "?"c 'E.g.	/?
 
 		''' <summary>The Sub to be called when the Help Dictionary is to be displayed. Use MessageBox.Show for a GUI Application. Default: AddressOf Console.Writeline</summary>
 		Public OutputDelegate As Action(Of [String]) = AddressOf Console.WriteLine
@@ -184,11 +184,11 @@ Namespace MetaUtilities
 
 					Dim _LambdaCopyOf_CLAKeyToActionMapping As CLAKeyToActionMapping = _CLAKeyToActionMapping
 
-					Dim _CLAWithMatchingKey_Resolver As Func(Of String, Boolean) = _
+					Dim _CLAWithMatchingKey_Resolver As Func(Of String, Boolean) =
 					   Function(_CLA$) _CLA.ToUpper().StartsWith((CLAKeyStartChar_ & _LambdaCopyOf_CLAKeyToActionMapping.Key & CLAValueStartChar_).ToUpper()) AndAlso (_CLA.Length > (CLAKeyStartChar_ & _LambdaCopyOf_CLAKeyToActionMapping.Key & CLAValueStartChar_).Length)
 
 					'Ensure that there is a Value
-					If Not (_CommandLineArguments.Where(_CLAWithMatchingKey_Resolver).Count() = 1) Then _
+					If Not _CommandLineArguments.Where(_CLAWithMatchingKey_Resolver).Count() = 1 Then _
 					 Throw New CLAValueNotSpecifiedException("The Command-Line Argument with Key """ & _CLAKeyToActionMapping.Key & """ declared that a corrosponding Value was mandatory, but no recognisable value was provided in the Syntax /Key:Value or /Key:""Value"".")
 
 					'Extract the :Value or :"Value"
@@ -236,36 +236,36 @@ Namespace MetaUtilities
 				'						t it wraps around after 80 columns (in total)
 				'/ShowLog				(Optional) Shows the Log during Interpretation
 
-				_CLAHelpDictionaryText$ = _
-				 "Description:" & vbCrLf & _
-				 "-"c.Repeat(80) & vbCrLf & _
-				 Me.CLAHelpDictionary_Description & vbCrLf & vbCrLf & _
-				 "Examples:" & vbCrLf & _
+				_CLAHelpDictionaryText$ =
+				 "Description:" & vbCrLf &
+				 "-"c.Repeat(80) & vbCrLf &
+				 Me.CLAHelpDictionary_Description & vbCrLf & vbCrLf &
+				 "Examples:" & vbCrLf &
 				 "-"c.Repeat(80) & vbCrLf
 
 				For Each _Example$ In Me.CLAHelpDictionary_Examples
 					_CLAHelpDictionaryText &= _Example & vbCrLf
 				Next
 
-				_CLAHelpDictionaryText &= vbCrLf & _
-				 "Argument Usage: (Keys are case-insensitive)" & vbCrLf & _
+				_CLAHelpDictionaryText &= vbCrLf &
+				 "Argument Usage: (Keys are case-insensitive)" & vbCrLf &
 				 "-"c.Repeat(80) & vbCrLf
 
 				For Each _CLAKeyToActionMapping As CLAKeyToActionMapping In Me.KeyToActionMappings
 
 					Const _KeyAndValuePart_TargetLength% = 30
-					Const _DescriptionPart_MaxColumnWidth% = (80 - _KeyAndValuePart_TargetLength)
+					Const _DescriptionPart_MaxColumnWidth% = 80 - _KeyAndValuePart_TargetLength
 
 					'E.g. /RunFile:<Value>
-					Dim _KeyAndValuePart$ = (CLAKeyStartChar_ & _CLAKeyToActionMapping.Key) & If(_CLAKeyToActionMapping.MustHaveValue, CLAValueStartChar_ & "<Value>", String.Empty)
+					Dim _KeyAndValuePart$ = CLAKeyStartChar_ & _CLAKeyToActionMapping.Key & If(_CLAKeyToActionMapping.MustHaveValue, CLAValueStartChar_ & "<Value>", String.Empty)
 
 					'E.g. (Optional) Shows the Log during Interpretation
 					Dim _DescriptionPart$ = If(Not _CLAKeyToActionMapping.MustBeSpecified, "(Optional) ", String.Empty) & _CLAKeyToActionMapping.Description
 
 					REM Start the Descriptions 30 Chars in, and put a {LineBreak} and {30 Spaces} every 50 chars.
-					_CLAHelpDictionaryText &= _
-					 _KeyAndValuePart.PadRight(_KeyAndValuePart_TargetLength, " "c) & _
-					 _DescriptionPart.ToCharArray().Intersperse((vbCrLf & " "c.Repeat(_KeyAndValuePart_TargetLength)).ToCharArray(), _DescriptionPart_MaxColumnWidth) & _
+					_CLAHelpDictionaryText &=
+					 _KeyAndValuePart.PadRight(_KeyAndValuePart_TargetLength, " "c) &
+					 _DescriptionPart.ToCharArray().Intersperse((vbCrLf & " "c.Repeat(_KeyAndValuePart_TargetLength)).ToCharArray(), _DescriptionPart_MaxColumnWidth) &
 					 vbCrLf
 
 				Next
@@ -284,21 +284,21 @@ Namespace MetaUtilities
 				'/Debug → (Optional) Shows Debugging Logging Messages. More text can go here, but it wraps around after 80 columns (in total)
 				'/ShowLog → (Optional) Shows the Log during Interpretation
 
-				_CLAHelpDictionaryText$ = _
-				 "Description:" & vbCrLf & Me.CLAHelpDictionary_Description & vbCrLf & vbCrLf & _
+				_CLAHelpDictionaryText$ =
+				 "Description:" & vbCrLf & Me.CLAHelpDictionary_Description & vbCrLf & vbCrLf &
 				 "Examples:" & vbCrLf
 
 				For Each _Example$ In Me.CLAHelpDictionary_Examples
 					_CLAHelpDictionaryText &= _Example & vbCrLf
 				Next
 
-				_CLAHelpDictionaryText &= vbCrLf & _
+				_CLAHelpDictionaryText &= vbCrLf &
 				 "Argument Usage: (Keys are case-insensitive)" & vbCrLf
 
 				For Each _CLAKeyToActionMapping As CLAKeyToActionMapping In Me.KeyToActionMappings
 
 					'E.g. /RunFile:<Value>
-					Dim _KeyAndValuePart$ = (CLAKeyStartChar_ & _CLAKeyToActionMapping.Key) & If(_CLAKeyToActionMapping.MustHaveValue, CLAValueStartChar_ & "<Value>", String.Empty)
+					Dim _KeyAndValuePart$ = CLAKeyStartChar_ & _CLAKeyToActionMapping.Key & If(_CLAKeyToActionMapping.MustHaveValue, CLAValueStartChar_ & "<Value>", String.Empty)
 
 					'E.g. (Optional) Shows the Log during Interpretation
 					Dim _DescriptionPart$ = If(Not _CLAKeyToActionMapping.MustBeSpecified, "(Optional) ", String.Empty) & _CLAKeyToActionMapping.Description

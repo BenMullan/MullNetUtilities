@@ -1,7 +1,4 @@
-﻿Imports System
-Imports System.Collections.Generic
-Imports System.Text
-Imports System.Runtime.InteropServices
+﻿Imports System.Runtime.InteropServices
 
 Public Module Win32SessionProcurement
 
@@ -26,7 +23,7 @@ Public Module Win32SessionProcurement
 	End Sub
 
 	<DllImport("Wtsapi32.dll")>
-	Private Function WTSQuerySessionInformation(ByVal hServer As System.IntPtr, ByVal sessionId As Integer, ByVal wtsInfoClass As WTS_INFO_CLASS, <Out()> ByRef ppBuffer As System.IntPtr, <Out()> ByRef pBytesReturned As UInteger) As Boolean
+	Private Function WTSQuerySessionInformation(ByVal hServer As System.IntPtr, ByVal sessionId As Int32, ByVal wtsInfoClass As WTS_INFO_CLASS, <Out()> ByRef ppBuffer As System.IntPtr, <Out()> ByRef pBytesReturned As UInt32) As Boolean
 	End Function
 
 	<StructLayout(LayoutKind.Sequential)>
@@ -83,12 +80,13 @@ Public Module Win32SessionProcurement
 		Public Domain$, Username$, ClientName$, SessionID% ', WinStationName$, State$
 	End Structure
 
+	<CodeAnalysis.SuppressMessage("Style", "IDE0059:Unnecessary assignment of a value", Justification:="Makes the IntPtr.Zero value more explicit")>
 	Public Function GetSessionsForServer(ByVal ServerName$) As Win32Session()
 
 		Dim _Sessions_ToReturn As New List(Of Win32Session)()
 
 		Dim serverHandle As IntPtr = IntPtr.Zero
-		Dim resultList As List(Of String) = New List(Of String)()
+		Dim resultList As New List(Of [String])()
 		serverHandle = OpenServer(ServerName)
 
 		Try
@@ -100,12 +98,12 @@ Public Module Win32SessionProcurement
 			Dim retVal As Int32 = WTSEnumerateSessions(serverHandle, 0, 1, SessionInfoPtr, sessionCount)
 			Dim dataSize As Int32 = Marshal.SizeOf(GetType(WTS_SESSION_INFO))
 			Dim currentSession As Int32 = CInt(SessionInfoPtr)
-			Dim bytes As UInteger = 0
+			Dim bytes As UInt32 = 0
 
 			If retVal <> 0 Then
 
-				For i As Integer = 0 To sessionCount - 1
-					Dim si As WTS_SESSION_INFO = CType(Marshal.PtrToStructure(CType(currentSession, System.IntPtr), GetType(WTS_SESSION_INFO)), WTS_SESSION_INFO)
+				For i As Int32 = 0 To sessionCount - 1
+					Dim si As WTS_SESSION_INFO = Marshal.PtrToStructure(CType(currentSession, System.IntPtr), GetType(WTS_SESSION_INFO))
 					currentSession += dataSize
 					WTSQuerySessionInformation(serverHandle, si.SessionID, WTS_INFO_CLASS.WTSUserName, userPtr, bytes)
 					WTSQuerySessionInformation(serverHandle, si.SessionID, WTS_INFO_CLASS.WTSDomainName, domainPtr, bytes)

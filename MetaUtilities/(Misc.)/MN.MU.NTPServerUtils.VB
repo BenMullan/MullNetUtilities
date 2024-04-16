@@ -9,15 +9,15 @@
 			Dim _IntPart As UInt64 = 0
 			Dim _FractionPart As UInt64 = 0
 
-			For _Index% = 0 To 3 Step +1 : _IntPart = Convert.ToUInt64(256 * _IntPart + _NTPServerResponseBytes.ElementAt(_OffsetTransmitTime + _Index)) : Next
-			For _Index% = 4 To 7 : _FractionPart = Convert.ToUInt64(256 * _FractionPart + _NTPServerResponseBytes.ElementAt(_OffsetTransmitTime + _Index)) : Next
+			For _Index% = 0 To 3 Step +1 : _IntPart = Convert.ToUInt64((256 * _IntPart) + _NTPServerResponseBytes.ElementAt(_OffsetTransmitTime + _Index)) : Next
+			For _Index% = 4 To 7 : _FractionPart = Convert.ToUInt64((256 * _FractionPart) + _NTPServerResponseBytes.ElementAt(_OffsetTransmitTime + _Index)) : Next
 
-			Dim _Milliseconds As UInt64 = Convert.ToUInt64(_IntPart * 1000 + (_FractionPart * 1000) / &H100000000L)
+			Dim _Milliseconds As UInt64 = Convert.ToUInt64((_IntPart * 1000) + (_FractionPart * 1000 / &H100000000L))
 			Dim _TimeSpan As TimeSpan = TimeSpan.FromTicks(Convert.ToInt64(_Milliseconds) * TimeSpan.TicksPerMillisecond)
 			Dim _DateTime As New DateTime(1900, 1, 1) : _DateTime += _TimeSpan
 			Dim _Offset As TimeSpan = TimeZone.CurrentTimeZone.GetUtcOffset(_DateTime)
 
-			Return (_DateTime + _Offset)
+			Return _DateTime + _Offset
 
 		End Function
 

@@ -6,115 +6,24 @@ MullNet.MetaUtilities
 </name>
 </assembly>
 <members>
-<member name="M:MullNet.MetaUtilities.Screenshotting.GetScreenshot">
-	<summary>WARNING: Tends to cause an Exception after ~40+ calls, because of a bug in GDI+.</summary>
-</member><member name="M:MullNet.MetaUtilities.Screenshotting.TakeAndSaveScreenshot(System.String)">
-	<summary>Does not cause a bug after some time, because the objects are properly disposed of, in each call.</summary>
-</member><member name="P:MullNet.MetaUtilities.SQLQueryRunner.QueryOutputDataTable">
-	<summary>The Table filled with the resultant output of the previous SQL Query. If no queries have been made yet, then it is Nothing/null.</summary>
-</member><member name="M:MullNet.MetaUtilities.SQLQueryRunner.#ctor(System.String,System.String,System.String)">
-	<summary>CONSTRUCTOR FOR SQL SERVER AUTHENTICATION. Readies the Object with the specified arguments, but does not initiate any form of connection with the SQL Server at this point.</summary>
-</member><member name="M:MullNet.MetaUtilities.SQLQueryRunner.#ctor(System.String)">
-	<summary>CONSTRUCTOR FOR WINDOWS AUTHENTICATION. Readies the Object with the specified arguments, but does not initiate any form of connection with the SQL Server at this point.</summary>
-</member><member name="P:MullNet.MetaUtilities.SQLQueryRunner.ConnectionString">
-	<summary>Constructs the ConnectionString based on the current values of Fields in the Class. E.g. there are different ConnectionString Formats for Windows Authentication vs SQL Server Authentication.</summary>
-</member><member name="M:MullNet.MetaUtilities.SQLQueryRunner.ExecuteQuery(System.String,System.Data.SqlClient.SqlParameter[])">
-	<summary>
- Connects to the SQL Server, executes the T-SQL _Query, and returns the resultant DataTable.
- Example Call:
- _SQLQueryRunner.ExecuteQuery("SELECT * FROM [TestingDB].[dbo].[People] WHERE ""Name"" = @TargetName;", New Global.System.Data.SqlClient.SqlParameter() With {.ParameterName = "TargetName", .Value = "Ben", .DbType = DbType.String})
- </summary>
-	<param name="_Query">The T-SQL Query to execute, e.g. "SELECT * FROM [DatabaseName].[dbo].[TableName];"</param>
-	<param name="_SQLParameters">(Optional) An array of SQLParameters, which are added to the connection object prior to executing the SQLCommand. They can be referanced in the _Query in the form @ParameterName. Each Parameter ought to have a ParameterName, Value, and DbType</param>
-	<returns>The DataTable filled with the output from the Command.</returns>
-	<remarks>There is potential for a blank DataTable to be returned here.</remarks>
-</member><member name="M:MullNet.MetaUtilities.SQLQueryRunner.BeginQueryWatch(System.String,System.String,System.Data.SqlClient.SqlParameter[])">
-	<summary>
- Begins listening for a change in the Output of the specified _Query. When a change occurs, the QueryWatch_QueryOutputChanged Event is Raised.
- 
- Example Call:
- Dim _SQLQueryRunner As New SQLQueryRunner(_SQLServerName:="MNLT01\SQLEXPRESS")
- _SQLQueryRunner.BeginQueryWatch(_DatabaseName:="QueryWatchTest", _Query:="SELECT ""Name"" FROM [dbo].[People];")
- AddHandler _SQLQueryRunner.QueryWatch_QueryOutputChanged, Sub(_EventArgs As Global.System.Data.SqlClient.SqlNotificationEventArgs) MsgBox("Type: " &amp; _EventArgs.Type.ToString())
- </summary>
-	<param name="_DatabaseName">Needed because a Queue will be registered with the ServiceBroker of this Database. The specified Database MUST have its Service Broker ENABLED. To enable the Service Broker: ALTER DATABASE [DBName] SET ENABLE_BROKER;</param>
-	<param name="_Query">E.g. SELECT "Name" FROM [dbo].[People];</param>
-	<param name="_SQLParameters">Any Parameters to be used in the SQL Command, accessible from the _Query in the format @ParameterName</param>
-	<remarks>
- Check Broker is enabled with "SELECT name, is_broker_enabled FROM sys.databases;"
- The database user must have the SUBSCRIBE QUERY NOTIFICATIONS permission
- 
- _Query cannot contain *, and must use fully-qualified Tablenames instead of just the Table Name on its own.
- INVALID:	SELECT * FROM Messages;
- VALID:		SELECT ID, Message FROM dbo.Messages;
- </remarks>
-</member><member name="P:MullNet.MetaUtilities.SQLQueryRunner.LocalSQLServerInstances(System.Boolean)">
-	<summary>Scans the Registry for all avaliable local SQL Server instances, returning their names.</summary>
-	<param name="_ReplaceMSSQLSERVERInstances_WithHostnameOnly">Using the default instance by name in a Connection String (e.g. "SpareLat\MSSQLSERVER") results in error 25, so specify this parameter as True, in order to have that instance returned as just "SpareLat". Default Instances with other names won't be detected.</param>
-</member><member name="T:MullNet.MetaUtilities.SQLQueryRunner">
-	<summary>Runs a Query on an SQL Server, returning the DataTable resulting from the Query</summary>
-</member><member name="M:MullNet.MetaUtilities.CMDApplicationUtilities.WriteFatalExceptionToConsole_AndEndProcess(System.Exception@)">
-	<summary>Writes the Exception to the Console in Red, and then Ends the Process with ExitCode -1</summary>
-</member><member name="M:MullNet.MetaUtilities.CMDApplicationUtilities.WriteRuntimeExeptionToSCTErrorsFile_AndEndProcess(System.String,System.Exception@)">
-	<summary>
- Writes the Exception - along with the _MNSCTBinaryName and a Timestamp - to _SCT_Errors.log, before ending the process with ExitCode 2 or 3
- </summary>
-	<param name="_MNSCTBinaryName">E.g. "PlayWav.exe"</param>
-	<param name="_Exception"></param>
-	<remarks></remarks>
-</member><member name="M:MullNet.MetaUtilities.CMDApplicationUtilities.WriteCLAsExeptionToSCTErrorsFile_AndEndProcess(System.String,System.Exception@)">
-	<summary>
- Writes the Exception - along with the _MNSCTBinaryName and a Timestamp - to _SCT_Errors.log, before ending the process with ExitCode 1 or 3
- </summary>
-	<param name="_MNSCTBinaryName">E.g. "PlayWav.exe"</param>
-	<param name="_Exception"></param>
-	<remarks></remarks>
-</member><member name="M:MullNet.MetaUtilities.CMDApplicationUtilities.WriteCLAsExeptionToConsole_AndEndProcess(System.Exception@)">
-	<summary>Writes the Exception - along with a Timestamp - to the Console Error, before ending the process with ExitCode 1</summary>
-</member><member name="M:MullNet.MetaUtilities.CMDApplicationUtilities.WriteRuntimeExeptionToConsole_AndEndProcess(System.Exception@)">
-	<summary>Writes the Exception - along with a Timestamp - to the Console Error, before ending the process with ExitCode 2</summary>
-</member><member name="M:MullNet.MetaUtilities.CMDApplicationUtilities.ConfigureCLAManager_ForSCTOutputDelegate(MullNet.MetaUtilities.CLAManager@)">
-	<summary>
- Sets the .OutputDelegate, and .UseCommandLineFormatting_ForHelpDictionary
- </summary>
-	<param name="_CLAManager"></param>
-	<remarks></remarks>
-</member><member name="T:MullNet.MetaUtilities.MicroHTTPServer.MicroHTTPServerMode">
-	<summary>Represents a mode of operation for the Server</summary>
-</member><member name="T:MullNet.MetaUtilities.MicroHTTPServer.HTTPRequestSnapshot">
-	<summary>Represents the URL$, UserAgent$, UserHostName$, and HTTPMethod$ or an incomming request</summary>
-</member><member name="F:MullNet.MetaUtilities.MicroHTTPServer.Port">
-	<summary>The logical port on which the Web Server listens. E.g. "900" in the URL "http://localhost:900/Help/".</summary>
-</member><member name="F:MullNet.MetaUtilities.MicroHTTPServer.VirtualPath">
-	<summary>The URL sub-path on which the Web Server listens. E.g. "Help" in the URL "http://localhost:900/Help/".</summary>
-</member><member name="F:MullNet.MetaUtilities.MicroHTTPServer.ResponseMIMEType">
-	<summary>The Multipurpose Internet Mail Extensions (MIME) Type describes what the response-bytes' represent. E.g. "text/plain" or "image/bmp". If this is NOTHING, then the MIME Type will be resolved automatically from a file extention where possible.</summary>
-</member><member name="F:MullNet.MetaUtilities.MicroHTTPServer.SuccessfullyHandledRequestsCount">
-	<summary>The Number of requests responded-to by the Web Server instance so-far. This is NOT readonly, so that it can be externally reset.</summary>
-</member><member name="E:MullNet.MetaUtilities.MicroHTTPServer.RequestReceived">
-	<summary>Occurs as soon as an incomming HTTP Request is received. The argument is a structure containing request data, including the URL, UserAgent, UserHostName, UserHostAddress, and HttpMethod.</summary>
-</member><member name="E:MullNet.MetaUtilities.MicroHTTPServer.RequestHandledSuccessfully">
-	<summary>Occurs directly after a HTTP Request is responded-to. The argument is a structure containing request data, including the URL, UserAgent, UserHostName, UserHostAddress, and HttpMethod.</summary>
-</member><member name="E:MullNet.MetaUtilities.MicroHTTPServer.RequestHandledUnsuccessfully">
-	<summary>Occurs when a request is received, but not responded-to correctly. The argument is an error message.</summary>
-</member><member name="F:MullNet.MetaUtilities.MicroHTTPServer.MIMETypesDictionary">
-	<summary>A mapping of FILE-EXTENTIONS to MIME-TYPES. E.g. {"HTM", "text/html"}, {"BMP", "image/bmp"}. If a request's File Extension dosen't appear in the Dictionary's Keys, then the default of "text/plain" is used.</summary>
-</member><member name="P:MullNet.MetaUtilities.MicroHTTPServer.SerialisedMIMETypesDictionary">
-	<summary>Serialises the MIMETypesDictionary</summary>
-</member><member name="P:MullNet.MetaUtilities.MicroHTTPServer.URL">
-	<summary>E.g. Port=8090 and VirtualPath="Help" would make a URL of http://localhost:8090/Help/</summary>
-</member><member name="M:MullNet.MetaUtilities.MicroHTTPServer.#ctor(System.UInt16,System.String,System.String,System.String)">
-	<summary>Mode 1: Constructs the MicroHTTPServer to serve a STRING. Example: Port=8090 and VirtualPath="Help" would make a URL of "http://localhost:8090/Help/"</summary>
-</member><member name="M:MullNet.MetaUtilities.MicroHTTPServer.#ctor(System.UInt16,System.IO.FileInfo,System.String,System.String)">
-	<summary>Mode 2: Constructs the MicroHTTPServer to serve a SINGLE FILE. If a _ResponseMIMEType is not specified, then the server uses the [MIMETypesDictionary] to derive a MIME-Type from the _FileToServe's Extention. Example: Port=8090 and VirtualPath="Help" would make a URL of "http://localhost:8090/Help/"</summary>
-</member><member name="M:MullNet.MetaUtilities.MicroHTTPServer.#ctor(System.UInt16,System.IO.DirectoryInfo,System.String,System.String)">
-	<summary>Mode 3: Constructs the MicroHTTPServer to serve FILES FROM A DIRECTORY. If a directory is requested, a dir-listing is generated. If a file is requested, it is served. If a _ResponseMIMEType is not specified, then the server uses the [MIMETypesDictionary] to derive a MIME-Type from the File-To-Serve's Extention.. Example: Port=8090 and VirtualPath="Help" would make a URL of "http://localhost:8090/Help/"</summary>
-</member><member name="M:MullNet.MetaUtilities.MicroHTTPServer.Run">
-	<summary>Initialises the HTTPListener and begins the request-handling loop. Each time a request is handled, the [RequestHandled] Event is raised.</summary>
-</member><member name="M:MullNet.MetaUtilities.MicroHTTPServer.StopRunning">
-	<summary>Shuts down the request-handling loop.</summary>
-</member><member name="T:MullNet.MetaUtilities.MicroHTTPServer">
-	<summary>
+<member name="T:MullNet.My.Resources.Resources">
+<summary>
+  A strongly-typed resource class, for looking up localized strings, etc.
+</summary>
+</member>
+<member name="P:MullNet.My.Resources.Resources.ResourceManager">
+<summary>
+  Returns the cached ResourceManager instance used by this class.
+</summary>
+</member>
+<member name="P:MullNet.My.Resources.Resources.Culture">
+<summary>
+  Overrides the current thread's CurrentUICulture property for all
+  resource lookups using this strongly typed resource class.
+</summary>
+</member>
+<member name="T:MullNet.MetaUtilities.MicroHTTPServer">
+ <summary>
  A lightweight HTTP Server, which can serve either a constant String, single File, or a file from a specified Directory.
  
  	<example>
@@ -122,96 +31,134 @@ MullNet.MetaUtilities
   	 	AddHandler _MicroServer.RequestHandledSuccessfully, Sub(_Request As System.Net.HttpListenerRequest) Console.Out.WriteLine(_Request.Url.ToString())
 		 	_MicroServer.Run()
  	</example>
-		<example>
+ 
+ 	<example>
  		Dim _MicroServer As New MicroHTTPServer(_Port:=9020, _DirectoryToServeFilesFrom:=New IO.DirectoryInfo("F:\"))
   	 	AddHandler _MicroServer.RequestHandledSuccessfully, Sub(_Request As System.Net.HttpListenerRequest) Console.Out.WriteLine(_Request.Url.ToString())
 		 	_MicroServer.Run()
  	</example>
-	</summary>
-</member><member name="F:MullNet.MetaUtilities.CLAManager.CLAKeyToActionMapping.Key">
-	<summary>The CLA Key E.g. "ShowLog". The forward slash / is not to be included in this string. NOTE: CLA Keys are not case-sensitive; /Name is the same as /NAmE</summary>
-</member><member name="F:MullNet.MetaUtilities.CLAManager.CLAKeyToActionMapping.ActionIfSpecified">
-	<summary>The Action to run if the Key is specified. The String Argument is the Value corrosponding to the Key, which could be [Nothing] (null) {nullptr} &lt;undefined&gt; if there is no Value corrosponding to the Key</summary>
-</member><member name="F:MullNet.MetaUtilities.CLAManager.CLAKeyToActionMapping.Description">
-	<summary>The Description used in the CLA Help Dictionary ( /? ). Default: "(No Description)"</summary>
-</member><member name="F:MullNet.MetaUtilities.CLAManager.CLAKeyToActionMapping.MustBeSpecified">
-	<summary>Indicates that the Key must be specified in the Command-Line Arguments provided to the CLAManager, otherwise an Exception is Thrown. Default: False</summary>
-</member><member name="F:MullNet.MetaUtilities.CLAManager.CLAKeyToActionMapping.MustHaveValue">
-	<summary>Indicates that if the Key is specified, then a corrosponding Value must also be specified, otherwise an Exception is Thrown. Default: False</summary>
-</member><member name="M:MullNet.MetaUtilities.CLAManager.CLAKeyToActionMapping.#ctor(System.String,System.Action{System.String})">
-	<summary>Constructs a new Object to represent the desired configuration for a single CLA Key (Specified in the Syntax /Key or /Key:Value or /Key:"Value")</summary>
-	<param name="_Key">The CLA Key E.g. "ShowLog". The forward slash / is not to be included in this string. NOTE: CLA Keys are not case-sensitive; /Name is the same as /NAmE</param>
-	<param name="_ActionIfSpecified">The Action to run if the Key is specified. The String Argument is the Value corrosponding to the Key, which could be [Nothing] (null) {nullptr} &lt;undefined&gt; if there is no Value corrosponding to the Key in the actual Command-Line Arguments.</param>
-</member><member name="T:MullNet.MetaUtilities.CLAManager.CLAKeyToActionMapping">
-	<summary>
- Represents a configuration for a single CLA key, and what to do if it's specified.
- (Specified in the Syntax /Key or /Key:Value or /Key:"Value")
- NOTE: CLA Keys are not case-sensitive; /Name is the same as /NAmE
+ 
  </summary>
-</member><member name="T:MullNet.MetaUtilities.CLAManager.CLAValueNotSpecifiedException">
-	<summary>Thrown when a Command-Line Argument is specified, but without a mandatory associated Value in the form /Key:Value or /Key:"Value".</summary>
-</member><member name="T:MullNet.MetaUtilities.CLAManager.CLANotSpecifiedException">
-	<summary>Thrown when a Command-Line Argument is mandatory, but not specified.</summary>
-</member><member name="F:MullNet.MetaUtilities.CLAManager.OutputDelegate">
-	<summary>The Sub to be called when the Help Dictionary is to be displayed. Use MessageBox.Show for a GUI Application. Default: AddressOf Console.Writeline</summary>
-</member><member name="F:MullNet.MetaUtilities.CLAManager.KeyToActionMappings">
-	<summary>The connections between registered Keys e.g /Name, and what to do when they are specified e.g. Sub (_Value$) Program.ProvidedName = _Value</summary>
-</member><member name="F:MullNet.MetaUtilities.CLAManager.CLAHelpDictionary_Description">
-	<summary>The Text displayed at the start of the CLA Help Dictionary, when it is displayed via the presence of the /? CLA</summary>
-</member><member name="F:MullNet.MetaUtilities.CLAManager.CLAHelpDictionary_Examples">
-	<summary>Example Calls to the Binary executable with CLAs. E.g. DSCLI.EXE /RunSourceFile:"X:\Programming\DocScript\HelloWorld.DS"</summary>
-</member><member name="F:MullNet.MetaUtilities.CLAManager.UseCommandLineFormatting_ForHelpDictionary">
-	<summary>
- Indicates that the Help Dictionary will have the Linebreaks and padding-whitespace automatically inserted.
- Use True, if this is a Console Application;
- If MsgBox()-ing out the /? Dictionary, then use False.
- Default: True
+</member>
+<member name="T:MullNet.MetaUtilities.MicroHTTPServer.MicroHTTPServerMode">
+ <summary>Represents a mode of operation for the Server</summary>
+</member>
+<member name="T:MullNet.MetaUtilities.MicroHTTPServer.HTTPRequestSnapshot">
+ <summary>Represents the URL$, UserAgent$, UserHostName$, and HTTPMethod$ or an incomming request</summary>
+</member>
+<member name="F:MullNet.MetaUtilities.MicroHTTPServer.Port">
+ <summary>The logical port on which the Web Server listens. E.g. "900" in the URL "http://localhost:900/Help/".</summary>
+</member>
+<member name="F:MullNet.MetaUtilities.MicroHTTPServer.VirtualPath">
+ <summary>The URL sub-path on which the Web Server listens. E.g. "Help" in the URL "http://localhost:900/Help/".</summary>
+</member>
+<member name="F:MullNet.MetaUtilities.MicroHTTPServer.ResponseMIMEType">
+ <summary>The Multipurpose Internet Mail Extensions (MIME) Type describes what the response-bytes' represent. E.g. "text/plain" or "image/bmp". If this is NOTHING, then the MIME Type will be resolved automatically from a file extention where possible.</summary>
+</member>
+<member name="F:MullNet.MetaUtilities.MicroHTTPServer.SuccessfullyHandledRequestsCount">
+ <summary>The Number of requests responded-to by the Web Server instance so-far. This is NOT readonly, so that it can be externally reset.</summary>
+</member>
+<member name="E:MullNet.MetaUtilities.MicroHTTPServer.RequestReceived">
+ <summary>Occurs as soon as an incomming HTTP Request is received. The argument is a structure containing request data, including the URL, UserAgent, UserHostName, UserHostAddress, and HttpMethod.</summary>
+</member>
+<member name="E:MullNet.MetaUtilities.MicroHTTPServer.RequestHandledSuccessfully">
+ <summary>Occurs directly after a HTTP Request is responded-to. The argument is a structure containing request data, including the URL, UserAgent, UserHostName, UserHostAddress, and HttpMethod.</summary>
+</member>
+<member name="E:MullNet.MetaUtilities.MicroHTTPServer.RequestHandledUnsuccessfully">
+ <summary>Occurs when a request is received, but not responded-to correctly. The argument is an error message.</summary>
+</member>
+<member name="F:MullNet.MetaUtilities.MicroHTTPServer.MIMETypesDictionary">
+ <summary>A mapping of FILE-EXTENTIONS to MIME-TYPES. E.g. {"HTM", "text/html"}, {"BMP", "image/bmp"}. If a request's File Extension dosen't appear in the Dictionary's Keys, then the default of "text/plain" is used.</summary>
+</member>
+<member name="P:MullNet.MetaUtilities.MicroHTTPServer.SerialisedMIMETypesDictionary">
+ <summary>Serialises the MIMETypesDictionary</summary>
+</member>
+<member name="P:MullNet.MetaUtilities.MicroHTTPServer.URL">
+ <summary>E.g. Port=8090 and VirtualPath="Help" would make a URL of http://localhost:8090/Help/</summary>
+</member>
+<member name="M:MullNet.MetaUtilities.MicroHTTPServer.#ctor(System.UInt16,System.String,System.String,System.String)">
+ <summary>Mode 1: Constructs the MicroHTTPServer to serve a STRING. Example: Port=8090 and VirtualPath="Help" would make a URL of "http://localhost:8090/Help/"</summary>
+</member>
+<member name="M:MullNet.MetaUtilities.MicroHTTPServer.#ctor(System.UInt16,System.IO.FileInfo,System.String,System.String)">
+ <summary>Mode 2: Constructs the MicroHTTPServer to serve a SINGLE FILE. If a _ResponseMIMEType is not specified, then the server uses the [MIMETypesDictionary] to derive a MIME-Type from the _FileToServe's Extention. Example: Port=8090 and VirtualPath="Help" would make a URL of "http://localhost:8090/Help/"</summary>
+</member>
+<member name="M:MullNet.MetaUtilities.MicroHTTPServer.#ctor(System.UInt16,System.IO.DirectoryInfo,System.String,System.String)">
+ <summary>Mode 3: Constructs the MicroHTTPServer to serve FILES FROM A DIRECTORY. If a directory is requested, a dir-listing is generated. If a file is requested, it is served. If a _ResponseMIMEType is not specified, then the server uses the [MIMETypesDictionary] to derive a MIME-Type from the File-To-Serve's Extention.. Example: Port=8090 and VirtualPath="Help" would make a URL of "http://localhost:8090/Help/"</summary>
+</member>
+<member name="M:MullNet.MetaUtilities.MicroHTTPServer.Run">
+ <summary>Initialises the HTTPListener and begins the request-handling loop. Each time a request is handled, the [RequestHandled] Event is raised.</summary>
+</member>
+<member name="M:MullNet.MetaUtilities.MicroHTTPServer.StopRunning">
+ <summary>Shuts down the request-handling loop.</summary>
+</member>
+<member name="M:MullNet.MetaUtilities.Processes.ResolveFullFilePath_FromFileName(System.String)">
+ <summary>Uses WHERE.EXE to resolve the path</summary>
+</member>
+<member name="M:MullNet.MetaUtilities.Processes.RunProcess_AndReturnOutput(System.String,System.String)">
+ <summary>Returns both the STDOUT and STDERR</summary>
+</member>
+<member name="M:MullNet.MetaUtilities.Processes.RunProcess_AndReturnOutput(System.Diagnostics.Process@)">
+ <summary>The ExitCode can be resolved from the input Process Object</summary>
+</member>
+<member name="M:MullNet.MetaUtilities.Screenshotting.GetScreenshot">
+ <summary>WARNING: Tends to cause an Exception after ~40+ calls, because of a bug in GDI+.</summary>
+</member>
+<member name="M:MullNet.MetaUtilities.Screenshotting.TakeAndSaveScreenshot(System.String)">
+ <summary>Does not cause a bug after some time, because the objects are properly disposed of, in each call.</summary>
+</member>
+<member name="T:MullNet.MetaUtilities.SQLQueryRunner">
+ <summary>Runs a Query on an SQL Server, returning the DataTable resulting from the Query</summary>
+</member>
+<member name="P:MullNet.MetaUtilities.SQLQueryRunner.QueryOutputDataTable">
+ <summary>The Table filled with the resultant output of the previous SQL Query. If no queries have been made yet, then it is Nothing/null.</summary>
+</member>
+<member name="M:MullNet.MetaUtilities.SQLQueryRunner.#ctor(System.String,System.String,System.String)">
+ <summary>CONSTRUCTOR FOR SQL SERVER AUTHENTICATION. Readies the Object with the specified arguments, but does not initiate any form of connection with the SQL Server at this point.</summary>
+</member>
+<member name="M:MullNet.MetaUtilities.SQLQueryRunner.#ctor(System.String)">
+ <summary>CONSTRUCTOR FOR WINDOWS AUTHENTICATION. Readies the Object with the specified arguments, but does not initiate any form of connection with the SQL Server at this point.</summary>
+</member>
+<member name="P:MullNet.MetaUtilities.SQLQueryRunner.ConnectionString">
+ <summary>Constructs the ConnectionString based on the current values of Fields in the Class. E.g. there are different ConnectionString Formats for Windows Authentication vs SQL Server Authentication.</summary>
+</member>
+<member name="M:MullNet.MetaUtilities.SQLQueryRunner.ExecuteQuery(System.String,System.Data.SqlClient.SqlParameter[])">
+ <summary>
+ Connects to the SQL Server, executes the T-SQL _Query, and returns the resultant DataTable.
+ Example Call:
+ _SQLQueryRunner.ExecuteQuery("SELECT * FROM [TestingDB].[dbo].[People] WHERE ""Name"" = @TargetName;", New Global.System.Data.SqlClient.SqlParameter() With {.ParameterName = "TargetName", .Value = "Ben", .DbType = DbType.String})
  </summary>
-</member><member name="M:MullNet.MetaUtilities.CLAManager.#ctor(System.String)">
-	<summary>
-		<para>Constructs a Command-Line Argument Manager, but doesn't parse the arguments until RunForTheseCLAs() is called.</para>
-		<para>If the Help Dictionary is displayed, then no other CLA Actions will be dealt with or run, and Environment.Exit(EXITCODE:=-1) is called.</para>
-		<para>NOTE: CLA Keys are not case-sensitive; /Name is the same as /NAmE</para>
- Make sure to set the [UseCommandLineFormatting_ForHelpDictionary] Property correctly, if writing a GUI Application.
+ <param name="_Query">The T-SQL Query to execute, e.g. "SELECT * FROM [DatabaseName].[dbo].[TableName];"</param>
+ <param name="_SQLParameters">(Optional) An array of SQLParameters, which are added to the connection object prior to executing the SQLCommand. They can be referanced in the _Query in the form @ParameterName. Each Parameter ought to have a ParameterName, Value, and DbType</param>
+ <returns>The DataTable filled with the output from the Command.</returns>
+ <remarks>There is potential for a blank DataTable to be returned here.</remarks>
+</member>
+<member name="M:MullNet.MetaUtilities.SQLQueryRunner.BeginQueryWatch(System.String,System.String,System.Data.SqlClient.SqlParameter[])">
+ <summary>
+ Begins listening for a change in the Output of the specified _Query. When a change occurs, the QueryWatch_QueryOutputChanged Event is Raised.
+ 
+ Example Call:
+ Dim _SQLQueryRunner As New SQLQueryRunner(_SQLServerName:=&quot;MNLT01\SQLEXPRESS&quot;)
+ _SQLQueryRunner.BeginQueryWatch(_DatabaseName:=&quot;QueryWatchTest&quot;, _Query:=&quot;SELECT &quot;&quot;Name&quot;&quot; FROM [dbo].[People];&quot;)
+ AddHandler _SQLQueryRunner.QueryWatch_QueryOutputChanged, Sub(_EventArgs As Global.System.Data.SqlClient.SqlNotificationEventArgs) MsgBox(&quot;Type: &quot; &amp; _EventArgs.Type.ToString())
  </summary>
-	<param name="_CLAHelpDictionary_Description">The Text displayed at the start of the CLA Help Dictionary, when it is displayed via the presence of the /? CLA</param>
-	<remarks></remarks>
-</member><member name="M:MullNet.MetaUtilities.CLAManager.RunForTheseCLAs(System.String[]@)">
-	<summary>
- Executes the [CLAKeyToActionMapping]s for the specified [_CommandLineArguments] argument. It is at this point, that any missing CLAs (whose MustBeSpecified Flags were set to True) cause an Exception to be Thrown.
- </summary>
-	<param name="_CommandLineArguments">The space-delimited arguments provided to the process, by the Operating System. 4E.g. My.Application.CommandLineArgs.ToArray() or an "args"/"_CLAs" Parameter</param>
-</member><member name="T:MullNet.MetaUtilities.CLAManager">
-	<summary>
- Manages the mappings between CLA Keys, and Actions-To-Run if a given Key is specified.
- The expected Command-line Argument Syntax is /Key or /Key:Value or /Key:"Value"
- Automatically generates and displays a Help-Dictionary when /? is specified.
- </summary>
-</member><member name="P:MullNet.My.Resources.Resources.ResourceManager">
-	<summary>
-  Returns the cached ResourceManager instance used by this class.
-</summary>
-</member><member name="P:MullNet.My.Resources.Resources.Culture">
-	<summary>
-  Overrides the current thread's CurrentUICulture property for all
-  resource lookups using this strongly typed resource class.
-</summary>
-</member><member name="T:MullNet.My.Resources.Resources">
-	<summary>
-  A strongly-typed resource class, for looking up localized strings, etc.
-</summary>
-</member><member name="M:MullNet.MetaUtilities.Processes.ResolveFullFilePath_FromFileName(System.String)">
-	<summary>Uses WHERE.EXE to resolve the path</summary>
-</member><member name="M:MullNet.MetaUtilities.Processes.RunProcess_AndReturnOutput(System.String,System.String)">
-	<summary>Returns both the STDOUT and STDERR</summary>
-</member><member name="M:MullNet.MetaUtilities.Processes.RunProcess_AndReturnOutput(System.Diagnostics.Process@)">
-	<summary>The ExitCode can be resolved from the input Process Object</summary>
-</member><member name="M:MullNet.MetaUtilities.Dialogs.ChooseFromListDialog`1.#ctor(`0[]@,System.String,System.Func{`0,System.String})">
-	<summary>Prepares a New ChooseFromListDialog for use</summary>
-	<param name="_ItemsToChooseFrom">The ToString() of each item is added to the ComboBox</param>
-	<param name="_EachItemIsA_Text">E.g. "Camera"</param>
-</member><member name="T:MullNet.MetaUtilities.Dialogs.ChooseFromListDialog`1">
-	<summary>
+ <param name="_DatabaseName">Needed because a Queue will be registered with the ServiceBroker of this Database. The specified Database MUST have its Service Broker ENABLED. To enable the Service Broker: ALTER DATABASE [DBName] SET ENABLE_BROKER;</param>
+ <param name="_Query">E.g. SELECT "Name" FROM [dbo].[People];</param>
+ <param name="_SQLParameters">Any Parameters to be used in the SQL Command, accessible from the _Query in the format @ParameterName</param>
+ <remarks>
+ Check Broker is enabled with "SELECT name, is_broker_enabled FROM sys.databases;"
+ The database user must have the SUBSCRIBE QUERY NOTIFICATIONS permission
+ 
+ _Query cannot contain *, and must use fully-qualified Tablenames instead of just the Table Name on its own.
+ INVALID:	SELECT * FROM Messages;
+ VALID:		SELECT ID, Message FROM dbo.Messages;
+ </remarks>
+</member>
+<member name="P:MullNet.MetaUtilities.SQLQueryRunner.LocalSQLServerInstances(System.Boolean)">
+ <summary>Scans the Registry for all avaliable local SQL Server instances, returning their names.</summary>
+ <param name="_ReplaceMSSQLSERVERInstances_WithHostnameOnly">Using the default instance by name in a Connection String (e.g. "SpareLat\MSSQLSERVER") results in error 25, so specify this parameter as True, in order to have that instance returned as just "SpareLat". Default Instances with other names won't be detected.</param>
+</member>
+<member name="T:MullNet.MetaUtilities.Dialogs.ChooseFromListDialog`1">
+ <summary>
  Enables one of a selection of Objects to be chosen, via a GUI.
  
  Example:
@@ -219,206 +166,386 @@ MullNet.MetaUtilities
      'User could have clicked [Cancel] or pressed [Esc]
      If Not ((_ChooseCameraDialog.ShowDialog() = (Windows.Forms.[DialogResult]).OK) AndAlso (_ChooseCameraDialog.ChosenItem IsNot Nothing)) Then Application.Exit()
  </summary>
-</member><member name="M:MullNet.CompilerExtentions.ObjectExtentions.MustBe``1(System.Object)">
-	<summary>
+</member>
+<member name="M:MullNet.MetaUtilities.Dialogs.ChooseFromListDialog`1.#ctor(`0[]@,System.String,System.Func{`0,System.String})">
+ <summary>Prepares a New ChooseFromListDialog for use</summary>
+ <param name="_ItemsToChooseFrom">The ToString() of each item is added to the ComboBox</param>
+ <param name="_EachItemIsA_Text">E.g. "Camera"</param>
+</member>
+<member name="T:MullNet.MetaUtilities.CLAManager">
+ <summary>
+ Manages the mappings between CLA Keys, and Actions-To-Run if a given Key is specified.
+ The expected Command-line Argument Syntax is /Key or /Key:Value or /Key:"Value"
+ Automatically generates and displays a Help-Dictionary when /? is specified.
+ </summary>
+</member>
+<member name="T:MullNet.MetaUtilities.CLAManager.CLAKeyToActionMapping">
+ <summary>
+ Represents a configuration for a single CLA key, and what to do if it's specified.
+ (Specified in the Syntax /Key or /Key:Value or /Key:"Value")
+ NOTE: CLA Keys are not case-sensitive; /Name is the same as /NAmE
+ </summary>
+</member>
+<member name="F:MullNet.MetaUtilities.CLAManager.CLAKeyToActionMapping.Key">
+ <summary>The CLA Key E.g. "ShowLog". The forward slash / is not to be included in this string. NOTE: CLA Keys are not case-sensitive; /Name is the same as /NAmE</summary>
+</member>
+<member name="F:MullNet.MetaUtilities.CLAManager.CLAKeyToActionMapping.ActionIfSpecified">
+ <summary>The Action to run if the Key is specified. The String Argument is the Value corrosponding to the Key, which could be [Nothing] (null) {nullptr} &lt;undefined&gt; if there is no Value corrosponding to the Key</summary>
+</member>
+<member name="F:MullNet.MetaUtilities.CLAManager.CLAKeyToActionMapping.Description">
+ <summary>The Description used in the CLA Help Dictionary ( /? ). Default: "(No Description)"</summary>
+</member>
+<member name="F:MullNet.MetaUtilities.CLAManager.CLAKeyToActionMapping.MustBeSpecified">
+ <summary>Indicates that the Key must be specified in the Command-Line Arguments provided to the CLAManager, otherwise an Exception is Thrown. Default: False</summary>
+</member>
+<member name="F:MullNet.MetaUtilities.CLAManager.CLAKeyToActionMapping.MustHaveValue">
+ <summary>Indicates that if the Key is specified, then a corrosponding Value must also be specified, otherwise an Exception is Thrown. Default: False</summary>
+</member>
+<member name="M:MullNet.MetaUtilities.CLAManager.CLAKeyToActionMapping.#ctor(System.String,System.Action{System.String})">
+ <summary>Constructs a new Object to represent the desired configuration for a single CLA Key (Specified in the Syntax /Key or /Key:Value or /Key:"Value")</summary>
+ <param name="_Key">The CLA Key E.g. "ShowLog". The forward slash / is not to be included in this string. NOTE: CLA Keys are not case-sensitive; /Name is the same as /NAmE</param>
+ <param name="_ActionIfSpecified">The Action to run if the Key is specified. The String Argument is the Value corrosponding to the Key, which could be [Nothing] (null) {nullptr} &lt;undefined&gt; if there is no Value corrosponding to the Key in the actual Command-Line Arguments.</param>
+</member>
+<member name="T:MullNet.MetaUtilities.CLAManager.CLAValueNotSpecifiedException">
+ <summary>Thrown when a Command-Line Argument is specified, but without a mandatory associated Value in the form /Key:Value or /Key:"Value".</summary>
+</member>
+<member name="T:MullNet.MetaUtilities.CLAManager.CLANotSpecifiedException">
+ <summary>Thrown when a Command-Line Argument is mandatory, but not specified.</summary>
+</member>
+<member name="F:MullNet.MetaUtilities.CLAManager.OutputDelegate">
+ <summary>The Sub to be called when the Help Dictionary is to be displayed. Use MessageBox.Show for a GUI Application. Default: AddressOf Console.Writeline</summary>
+</member>
+<member name="F:MullNet.MetaUtilities.CLAManager.KeyToActionMappings">
+ <summary>The connections between registered Keys e.g /Name, and what to do when they are specified e.g. Sub (_Value$) Program.ProvidedName = _Value</summary>
+</member>
+<member name="F:MullNet.MetaUtilities.CLAManager.CLAHelpDictionary_Description">
+ <summary>The Text displayed at the start of the CLA Help Dictionary, when it is displayed via the presence of the /? CLA</summary>
+</member>
+<member name="F:MullNet.MetaUtilities.CLAManager.CLAHelpDictionary_Examples">
+ <summary>Example Calls to the Binary executable with CLAs. E.g. DSCLI.EXE /RunSourceFile:"X:\Programming\DocScript\HelloWorld.DS"</summary>
+</member>
+<member name="F:MullNet.MetaUtilities.CLAManager.UseCommandLineFormatting_ForHelpDictionary">
+ <summary>
+ Indicates that the Help Dictionary will have the Linebreaks and padding-whitespace automatically inserted.
+ Use True, if this is a Console Application;
+ If MsgBox()-ing out the /? Dictionary, then use False.
+ Default: True
+ </summary>
+</member>
+<member name="M:MullNet.MetaUtilities.CLAManager.#ctor(System.String)">
+ <summary>
+ <para>Constructs a Command-Line Argument Manager, but doesn't parse the arguments until RunForTheseCLAs() is called.</para>
+ <para>If the Help Dictionary is displayed, then no other CLA Actions will be dealt with or run, and Environment.Exit(EXITCODE:=-1) is called.</para>
+ <para>NOTE: CLA Keys are not case-sensitive; /Name is the same as /NAmE</para>
+ Make sure to set the [UseCommandLineFormatting_ForHelpDictionary] Property correctly, if writing a GUI Application.
+ </summary>
+ <param name="_CLAHelpDictionary_Description">The Text displayed at the start of the CLA Help Dictionary, when it is displayed via the presence of the /? CLA</param>
+ <remarks></remarks>
+</member>
+<member name="M:MullNet.MetaUtilities.CLAManager.RunForTheseCLAs(System.String[]@)">
+ <summary>
+ Executes the [CLAKeyToActionMapping]s for the specified [_CommandLineArguments] argument. It is at this point, that any missing CLAs (whose MustBeSpecified Flags were set to True) cause an Exception to be Thrown.
+ </summary>
+ <param name="_CommandLineArguments">The space-delimited arguments provided to the process, by the Operating System. 4E.g. My.Application.CommandLineArgs.ToArray() or an "args"/"_CLAs" Parameter</param>
+</member>
+<member name="M:MullNet.MetaUtilities.CMDApplicationUtilities.WriteFatalExceptionToConsole_AndEndProcess(System.Exception@)">
+ <summary>Writes the Exception to the Console in Red, and then Ends the Process with ExitCode -1</summary>
+</member>
+<member name="M:MullNet.MetaUtilities.CMDApplicationUtilities.WriteRuntimeExeptionToSCTErrorsFile_AndEndProcess(System.String,System.Exception@)">
+ <summary>
+ Writes the Exception - along with the _MNSCTBinaryName and a Timestamp - to _SCT_Errors.log, before ending the process with ExitCode 2 or 3
+ </summary>
+ <param name="_MNSCTBinaryName">E.g. "PlayWav.exe"</param>
+ <param name="_Exception"></param>
+ <remarks></remarks>
+</member>
+<member name="M:MullNet.MetaUtilities.CMDApplicationUtilities.WriteCLAsExeptionToSCTErrorsFile_AndEndProcess(System.String,System.Exception@)">
+ <summary>
+ Writes the Exception - along with the _MNSCTBinaryName and a Timestamp - to _SCT_Errors.log, before ending the process with ExitCode 1 or 3
+ </summary>
+ <param name="_MNSCTBinaryName">E.g. "PlayWav.exe"</param>
+ <param name="_Exception"></param>
+ <remarks></remarks>
+</member>
+<member name="M:MullNet.MetaUtilities.CMDApplicationUtilities.WriteCLAsExeptionToConsole_AndEndProcess(System.Exception@)">
+ <summary>Writes the Exception - along with a Timestamp - to the Console Error, before ending the process with ExitCode 1</summary>
+</member>
+<member name="M:MullNet.MetaUtilities.CMDApplicationUtilities.WriteRuntimeExeptionToConsole_AndEndProcess(System.Exception@)">
+ <summary>Writes the Exception - along with a Timestamp - to the Console Error, before ending the process with ExitCode 2</summary>
+</member>
+<member name="M:MullNet.MetaUtilities.CMDApplicationUtilities.ConfigureCLAManager_ForSCTOutputDelegate(MullNet.MetaUtilities.CLAManager@)">
+ <summary>
+ Sets the .OutputDelegate, and .UseCommandLineFormatting_ForHelpDictionary
+ </summary>
+ <param name="_CLAManager"></param>
+ <remarks></remarks>
+</member>
+<member name="M:MullNet.CompilerExtentions.ObjectExtentions.MustBe``1(System.Object)">
+ <summary>
  (MullNet CompilerExtention) Ensures that the _Object is of Type _TSoughtType, returning it if it is, and Throwing a Exception if it isn't.
  This method is useful for converting an Interface-based Type to a Class-based one.
  </summary>
-	<typeparam name="_TSoughtType">If the _IDataValueObject isn't of this Type, then a Exception is Thrown.</typeparam>
-	<param name="_Object">The Object to ensure the Type of.</param>
-</member><member name="M:MullNet.CompilerExtentions.ObjectExtentions.Output``1(``0,System.Action{System.String},System.String)">
-	<summary>(MullNet CompilerExtention) Runs the ToString() of the _Object through the specified _Action</summary>
-</member><member name="M:MullNet.CompilerExtentions.ObjectExtentions.MustNotBeNothing``1(``0@,System.String)">
-	<summary>(MullNet CompilerExtention) Ensures that the _Object IsNot Nothing, Throwing a NullReferanceException with the _MessageIfNull if it is</summary>
-</member><member name="M:MullNet.CompilerExtentions.StringExtentions.SplitAtWithoutRemoving(System.String,System.Char[])">
-	<summary>
+ <typeparam name="_TSoughtType">If the _IDataValueObject isn't of this Type, then a Exception is Thrown.</typeparam>
+ <param name="_Object">The Object to ensure the Type of.</param>
+</member>
+<member name="M:MullNet.CompilerExtentions.ObjectExtentions.Output``1(``0,System.Action{System.String},System.String)">
+ <summary>(MullNet CompilerExtention) Runs the ToString() of the _Object through the specified _Action</summary>
+</member>
+<member name="M:MullNet.CompilerExtentions.ObjectExtentions.MustNotBeNothing``1(``0@,System.String)">
+ <summary>(MullNet CompilerExtention) Ensures that the _Object IsNot Nothing, Throwing a NullReferanceException with the _MessageIfNull if it is</summary>
+</member>
+<member name="M:MullNet.CompilerExtentions.StringExtentions.SplitAtWithoutRemoving(System.String,System.Char[])">
+ <summary>
  (MullNet CompilerExtention) Splits the String whenever one of the _CharsAtWhichToSplitString occours, but the _CharAtWhichToSplitString stays in each New String
  <example>
  "Hello, World; Today" and {","c, ";"c} Becomes {"Hello", ", World", "; Today"}
  </example>
-	</summary>
-	<returns>The _InputString split at each occourance of a _CharAtWhichToSplitString</returns>
-	<remarks></remarks>
-</member><member name="M:MullNet.CompilerExtentions.StringExtentions.WithLeadingWhiteSpaceRemoved(System.String)">
-	<summary>
+ </summary>
+ <returns>The _InputString split at each occourance of a _CharAtWhichToSplitString</returns>
+ <remarks></remarks>
+</member>
+<member name="M:MullNet.CompilerExtentions.StringExtentions.WithLeadingWhiteSpaceRemoved(System.String)">
+ <summary>
  (MullNet CompilerExtention) Returns a version of the string with any Spaces, Tabs, or LineBreak Characters which appear at the start of the String removed.
  </summary>
-	<param name="_InputString">The String which may contain Leading Whitespace Characters</param>
-	<returns>The String without the Leading (preceding) WhiteSpace Characters</returns>
-	<remarks>Only returns the resultant output; does not modify the Input String. Chars removed (ASCII): 09, 10, 11, 12, 13, 32</remarks>
-</member><member name="M:MullNet.CompilerExtentions.StringExtentions.WithTrailingWhiteSpaceRemoved(System.String)">
-	<summary>
+ <param name="_InputString">The String which may contain Leading Whitespace Characters</param>
+ <returns>The String without the Leading (preceding) WhiteSpace Characters</returns>
+ <remarks>Only returns the resultant output; does not modify the Input String. Chars removed (ASCII): 09, 10, 11, 12, 13, 32</remarks>
+</member>
+<member name="M:MullNet.CompilerExtentions.StringExtentions.WithTrailingWhiteSpaceRemoved(System.String)">
+ <summary>
  (MullNet CompilerExtention) Returns a version of the string with any Spaces, Tabs, or LineBreak Characters which appear at the end of the String removed.
  </summary>
-	<param name="_InputString">The String which may contain Trailing Whitespace Characters</param>
-	<returns>The String without the Trailing (following) WhiteSpace Characters</returns>
-	<remarks>Only returns the resultant output; does not modify the Input String. Chars removed (ASCII): 09, 10, 11, 12, 13, 32</remarks>
-</member><member name="M:MullNet.CompilerExtentions.StringExtentions.RemoveFirstCharacter(System.String@)">
-	<summary>
+ <param name="_InputString">The String which may contain Trailing Whitespace Characters</param>
+ <returns>The String without the Trailing (following) WhiteSpace Characters</returns>
+ <remarks>Only returns the resultant output; does not modify the Input String. Chars removed (ASCII): 09, 10, 11, 12, 13, 32</remarks>
+</member>
+<member name="M:MullNet.CompilerExtentions.StringExtentions.RemoveFirstCharacter(System.String@)">
+ <summary>
  (MullNet CompilerExtention) Removes the First Character from the String.
  Both Modifies the Parameter, and returns the post-computation Result.
  </summary>
-	<param name="_InputString"></param>
-	<returns></returns>
-	<remarks>Both Modifies the Parameter, and returns the post-computation Result</remarks>
-</member><member name="M:MullNet.CompilerExtentions.StringExtentions.RemoveLastCharacter(System.String@)">
-	<summary>
+ <param name="_InputString"></param>
+ <returns></returns>
+ <remarks>Both Modifies the Parameter, and returns the post-computation Result</remarks>
+</member>
+<member name="M:MullNet.CompilerExtentions.StringExtentions.RemoveLastCharacter(System.String@)">
+ <summary>
  (MullNet CompilerExtention) Removes the Last Character from the String.
  Both Modifies the Parameter, and returns the post-computation Result.
  </summary>
-	<param name="_InputString"></param>
-	<returns></returns>
-	<remarks>Both Modifies the Parameter, and returns the post-computation Result</remarks>
-</member><member name="M:MullNet.CompilerExtentions.StringExtentions.IsEmpty(System.String)">
-	<summary>
+ <param name="_InputString"></param>
+ <returns></returns>
+ <remarks>Both Modifies the Parameter, and returns the post-computation Result</remarks>
+</member>
+<member name="M:MullNet.CompilerExtentions.StringExtentions.IsEmpty(System.String)">
+ <summary>
  (MullNet CompilerExtention) Evaluates weather or not the String is Empty. (WhiteSpace does not count as Empty)
  </summary>
-	<param name="_InputString"></param>
-	<returns>Retruns True if the String is Empty</returns>
-	<remarks></remarks>
-</member><member name="M:MullNet.CompilerExtentions.StringExtentions.MatchesRegEx(System.String,System.String)">
-	<summary>
+ <param name="_InputString"></param>
+ <returns>Retruns True if the String is Empty</returns>
+ <remarks></remarks>
+</member>
+<member name="M:MullNet.CompilerExtentions.StringExtentions.MatchesRegEx(System.String,System.String)">
+ <summary>
  (MullNet CompilerExtention) Matches a String against a Regular Expression
  </summary>
-	<param name="_StringToValidate"></param>
-	<param name="_RegExPattern">The pattern to satisfy</param>
-	<returns>Returns True if the RegExp is satisfied by the Input String.</returns>
-	<remarks></remarks>
-</member><member name="M:MullNet.CompilerExtentions.StringExtentions.InSquares(System.String@)">
-	<summary>(MullNet CompilerExtention) Returns in the form [_InputString$]</summary>
-</member><member name="M:MullNet.CompilerExtentions.StringExtentions.InCurlies(System.String@)">
-	<summary>(MullNet CompilerExtention) Returns in the form {_InputString$}</summary>
-</member><member name="M:MullNet.CompilerExtentions.StringExtentions.InPointies(System.String@)">
-	<summary>(MullNet CompilerExtention) Returns in the form &lt;_InputString$&gt;</summary>
-</member><member name="M:MullNet.CompilerExtentions.StringExtentions.InBrackets(System.String@)">
-	<summary>(MullNet CompilerExtention) Returns in the form (_InputString$)</summary>
-</member><member name="M:MullNet.CompilerExtentions.StringExtentions.GetDigitChars(System.String@)">
-	<summary>(MullNet CompilerExtention) Returns a string containing any Digit Chars (0 to 9) which were found in the _InputString$</summary>
-</member><member name="M:MullNet.CompilerExtentions.StringExtentions.TabbedInBy(System.String,System.Byte)">
-	<summary>(MullNet CompilerExtention) Puts _NumberOfTabs Tabs at the start of each vbCrLf-delimited Line</summary>
-</member><member name="M:MullNet.CompilerExtentions.StringExtentions.OnlyAllowTheseChars(System.String,System.Char[])">
-	<summary>(MullNet CompilerExtention) Returns a version of the _InputString, where only chars also appearing in _AllowedChars make it through to the returned string</summary>
-</member><member name="M:MullNet.CompilerExtentions.StringExtentions.Glue(System.String,System.String[])">
-	<summary>(MullNet CompilerExtention) Returns a New String, directly joining in all the _SubsequentParts</summary>
-</member><member name="M:MullNet.CompilerExtentions.StringExtentions.GetMD5Hash(System.String)">
-	<summary>(MullNet CompilerExtention) Computes and Returns the MD5 hash for the _InputString</summary>
-</member><member name="M:MullNet.CompilerExtentions.StringExtentions.PlainText_ToBase64(System.String)">
-	<summary>(MullNet CompilerExtention) Computes and Returns the Base64-Representation of the _InputString</summary>
-</member><member name="M:MullNet.CompilerExtentions.StringExtentions.Base64_ToPlainText(System.String)">
-	<summary>(MullNet CompilerExtention) Computes and Returns the PlainText, from a Base64-Encoded _InputString</summary>
-</member><member name="M:MullNet.CompilerExtentions.StringExtentions.Extract_UInt32(System.String)">
-	<summary>(MullNet CompilerExtention) Filters for digit-chars, then attempts to parse an UInt32</summary>
-</member><member name="M:MullNet.CompilerExtentions.StringExtentions.Extract_UInt64(System.String)">
-	<summary>(MullNet CompilerExtention) Filters for digit-chars, then attempts to parse an UInt64</summary>
-</member><member name="M:MullNet.CompilerExtentions.StringExtentions.WithoutBackslashOnEnd(System.String)">
-	<summary>(MullNet CompilerExtention) If the _String ends with a [\], then returns the string without this.</summary>
-</member><member name="M:MullNet.CompilerExtentions.StringExtentions.WithBackslashOnEnd(System.String)">
-	<summary>(MullNet CompilerExtention) If the _String ends with a [\], then returns the string, otherwise returns the string concatenated with a [\].</summary>
-</member><member name="M:MullNet.CompilerExtentions.StringExtentions.WithoutForwardslashOnEnd(System.String)">
-	<summary>(MullNet CompilerExtention) If the _String ends with a [/], then returns the string without this.</summary>
-</member><member name="M:MullNet.CompilerExtentions.StringExtentions.WithForwardslashOnEnd(System.String)">
-	<summary>(MullNet CompilerExtention) If the _String ends with a [/], then returns the string, otherwise returns the string concatenated with a [/].</summary>
-</member><member name="M:MullNet.CompilerExtentions.StringExtentions.InTitleCase(System.String)">
-	<summary>(MullNet CompilerExtention) E.g. "hello world" → "Hello World". E.g. "HELLO WORLD" → "Hello World"</summary>
-</member><member name="M:MullNet.CompilerExtentions.StringExtentions.WithFirstCharacterRemoved(System.String)">
-	<summary>
+ <param name="_StringToValidate"></param>
+ <param name="_RegExPattern">The pattern to satisfy</param>
+ <returns>Returns True if the RegExp is satisfied by the Input String.</returns>
+ <remarks></remarks>
+</member>
+<member name="M:MullNet.CompilerExtentions.StringExtentions.InSquares(System.String@)">
+ <summary>(MullNet CompilerExtention) Returns in the form [_InputString$]</summary>
+</member>
+<member name="M:MullNet.CompilerExtentions.StringExtentions.InCurlies(System.String@)">
+ <summary>(MullNet CompilerExtention) Returns in the form {_InputString$}</summary>
+</member>
+<member name="M:MullNet.CompilerExtentions.StringExtentions.InPointies(System.String@)">
+ <summary>(MullNet CompilerExtention) Returns in the form &lt;_InputString$&gt;</summary>
+</member>
+<member name="M:MullNet.CompilerExtentions.StringExtentions.InBrackets(System.String@)">
+ <summary>(MullNet CompilerExtention) Returns in the form (_InputString$)</summary>
+</member>
+<member name="M:MullNet.CompilerExtentions.StringExtentions.GetDigitChars(System.String@)">
+ <summary>(MullNet CompilerExtention) Returns a string containing any Digit Chars (0 to 9) which were found in the _InputString$</summary>
+</member>
+<member name="M:MullNet.CompilerExtentions.StringExtentions.TabbedInBy(System.String,System.Byte)">
+ <summary>(MullNet CompilerExtention) Puts _NumberOfTabs Tabs at the start of each vbCrLf-delimited Line</summary>
+</member>
+<member name="M:MullNet.CompilerExtentions.StringExtentions.OnlyAllowTheseChars(System.String,System.Char[])">
+ <summary>(MullNet CompilerExtention) Returns a version of the _InputString, where only chars also appearing in _AllowedChars make it through to the returned string</summary>
+</member>
+<member name="M:MullNet.CompilerExtentions.StringExtentions.Glue(System.String,System.String[])">
+ <summary>(MullNet CompilerExtention) Returns a New String, directly joining in all the _SubsequentParts</summary>
+</member>
+<member name="M:MullNet.CompilerExtentions.StringExtentions.GetMD5Hash(System.String)">
+ <summary>(MullNet CompilerExtention) Computes and Returns the MD5 hash for the _InputString</summary>
+</member>
+<member name="M:MullNet.CompilerExtentions.StringExtentions.PlainText_ToBase64(System.String)">
+ <summary>(MullNet CompilerExtention) Computes and Returns the Base64-Representation of the _InputString</summary>
+</member>
+<member name="M:MullNet.CompilerExtentions.StringExtentions.Base64_ToPlainText(System.String)">
+ <summary>(MullNet CompilerExtention) Computes and Returns the PlainText, from a Base64-Encoded _InputString</summary>
+</member>
+<member name="M:MullNet.CompilerExtentions.StringExtentions.Extract_UInt32(System.String)">
+ <summary>(MullNet CompilerExtention) Filters for digit-chars, then attempts to parse an UInt32</summary>
+</member>
+<member name="M:MullNet.CompilerExtentions.StringExtentions.Extract_UInt64(System.String)">
+ <summary>(MullNet CompilerExtention) Filters for digit-chars, then attempts to parse an UInt64</summary>
+</member>
+<member name="M:MullNet.CompilerExtentions.StringExtentions.WithoutBackslashOnEnd(System.String)">
+ <summary>(MullNet CompilerExtention) If the _String ends with a [\], then returns the string without this.</summary>
+</member>
+<member name="M:MullNet.CompilerExtentions.StringExtentions.WithBackslashOnEnd(System.String)">
+ <summary>(MullNet CompilerExtention) If the _String ends with a [\], then returns the string, otherwise returns the string concatenated with a [\].</summary>
+</member>
+<member name="M:MullNet.CompilerExtentions.StringExtentions.WithoutForwardslashOnEnd(System.String)">
+ <summary>(MullNet CompilerExtention) If the _String ends with a [/], then returns the string without this.</summary>
+</member>
+<member name="M:MullNet.CompilerExtentions.StringExtentions.WithForwardslashOnEnd(System.String)">
+ <summary>(MullNet CompilerExtention) If the _String ends with a [/], then returns the string, otherwise returns the string concatenated with a [/].</summary>
+</member>
+<member name="M:MullNet.CompilerExtentions.StringExtentions.InTitleCase(System.String)">
+ <summary>(MullNet CompilerExtention) E.g. "hello world" → "Hello World". E.g. "HELLO WORLD" → "Hello World"</summary>
+</member>
+<member name="M:MullNet.CompilerExtentions.StringExtentions.WithFirstCharacterRemoved(System.String)">
+ <summary>
  (MullNet CompilerExtention) Removes the First Character from the String.
  Only returns the post-computation Result; does NOT modify the input.
  </summary>
-</member><member name="M:MullNet.CompilerExtentions.StringExtentions.WithLastCharacterRemoved(System.String)">
-	<summary>
+</member>
+<member name="M:MullNet.CompilerExtentions.StringExtentions.WithLastCharacterRemoved(System.String)">
+ <summary>
  (MullNet CompilerExtention) Removes the Last Character from the String.
  Only returns the post-computation Result; does NOT modify the input.
  </summary>
-</member><member name="M:MullNet.CompilerExtentions.DateTimeExtentions.GetLogSerialisation(System.DateTime@)">
-	<summary>(MullNet CompilerExtention) Gets a short Date and Time String suitable for Logs, in the form "21-07 12:00:08.625"</summary>
-</member><member name="M:MullNet.CompilerExtentions.CollectionTypeExtentions.TakeBlockFromEnd``1(``0[]@,System.UInt32)">
-	<summary>
+</member>
+<member name="M:MullNet.CompilerExtentions.DateTimeExtentions.GetLogSerialisation(System.DateTime@)">
+ <summary>(MullNet CompilerExtention) Gets a short Date and Time String suitable for Logs, in the form "21-07 12:00:08.625"</summary>
+</member>
+<member name="M:MullNet.CompilerExtentions.CollectionTypeExtentions.TakeBlockFromEnd``1(``0[]@,System.UInt32)">
+ <summary>
  (MullNet CompilerExtention) Returns the last _Count Elements from the _Array
  </summary>
-</member><member name="M:MullNet.CompilerExtentions.CollectionTypeExtentions.UpToButExcluding``1(``0[]@,System.Func{``0,System.Boolean})">
-	<summary>
+</member>
+<member name="M:MullNet.CompilerExtentions.CollectionTypeExtentions.UpToButExcluding``1(``0[]@,System.Func{``0,System.Boolean})">
+ <summary>
  (MullNet CompilerExtention) Returns all elements up to (but excluding) the first element where the _Condition is met.  Throws an Exception if there is not at least one element which meets the condition.
  </summary>
-</member><member name="M:MullNet.CompilerExtentions.CollectionTypeExtentions.UpToAndIncluding``1(``0[]@,System.Func{``0,System.Boolean})">
-	<summary>
+</member>
+<member name="M:MullNet.CompilerExtentions.CollectionTypeExtentions.UpToAndIncluding``1(``0[]@,System.Func{``0,System.Boolean})">
+ <summary>
  (MullNet CompilerExtention) Returns all elements up to (and including) the first element where the _Condition is met. Throws an Exception if there is not at least one element which meets the condition.
  </summary>
-</member><member name="M:MullNet.CompilerExtentions.CollectionTypeExtentions.UpToAndIncludingLast``1(``0[]@,System.Func{``0,System.Boolean})">
-	<summary>
+</member>
+<member name="M:MullNet.CompilerExtentions.CollectionTypeExtentions.UpToAndIncludingLast``1(``0[]@,System.Func{``0,System.Boolean})">
+ <summary>
  (MullNet CompilerExtention) Returns all elements up to (and including) the last element where the _Condition is met. Throws an Exception if there is not at least one element which meets the condition.
  </summary>
-</member><member name="M:MullNet.CompilerExtentions.CollectionTypeExtentions.UpToButExcludingLast``1(``0[]@,System.Func{``0,System.Boolean})">
-	<summary>
+</member>
+<member name="M:MullNet.CompilerExtentions.CollectionTypeExtentions.UpToButExcludingLast``1(``0[]@,System.Func{``0,System.Boolean})">
+ <summary>
  (MullNet CompilerExtention) Returns all elements up to (but excluding) the last element where the _Condition is met. Throws an Exception if there is not at least one element which meets the condition.
  </summary>
-</member><member name="M:MullNet.CompilerExtentions.CollectionTypeExtentions.SplitWhere``1(``0[]@,System.Func{``0,System.Boolean})">
-	<summary>
+</member>
+<member name="M:MullNet.CompilerExtentions.CollectionTypeExtentions.SplitWhere``1(``0[]@,System.Func{``0,System.Boolean})">
+ <summary>
  (MullNet CompilerExtention) Returns chunks of Elements split by any Element where the _Condition is met. None of the Elements which meet the _Condition will end up in the output groups
  </summary>
-</member><member name="M:MullNet.CompilerExtentions.CollectionTypeExtentions.ReplaceWhere``1(``0[],System.Func{``0,System.Boolean},``0)">
-	<summary>
+</member>
+<member name="M:MullNet.CompilerExtentions.CollectionTypeExtentions.ReplaceWhere``1(``0[],System.Func{``0,System.Boolean},``0)">
+ <summary>
  (MullNet CompilerExtention) Returns a version of the _Array wherein all Elements in the _Array which meet the _Condition are replaced with the _Replacement
  </summary>
-</member><member name="M:MullNet.CompilerExtentions.CollectionTypeExtentions.IndexOfFirstWhere``1(``0[],System.Func{``0,System.Boolean})">
-	<summary>
+</member>
+<member name="M:MullNet.CompilerExtentions.CollectionTypeExtentions.IndexOfFirstWhere``1(``0[],System.Func{``0,System.Boolean})">
+ <summary>
  (MullNet CompilerExtention) Returns the Index of the first element to satisfy the _Condition. Throws an Exception if no elements satisfy the _Condition.
  </summary>
-</member><member name="M:MullNet.CompilerExtentions.CollectionTypeExtentions.IndexOfLastWhere``1(``0[],System.Func{``0,System.Boolean})">
-	<summary>
+</member>
+<member name="M:MullNet.CompilerExtentions.CollectionTypeExtentions.IndexOfLastWhere``1(``0[],System.Func{``0,System.Boolean})">
+ <summary>
  (MullNet CompilerExtention) Returns the Index of the last element to satisfy the _Condition. Throws an Exception if no elements satisfy the _Condition.
  </summary>
-</member><member name="M:MullNet.CompilerExtentions.CollectionTypeExtentions.AllElementsAreUnique``1(``0[])">
-	<summary>(MullNet CompilerExtention) Evaluates weather or not each Element in the _Array is unique. In other words, False is Returned if two or more elements are the same.</summary>
-</member><member name="M:MullNet.CompilerExtentions.CollectionTypeExtentions.Repeat``1(``0,System.UInt64)">
-	<summary>(MullNet CompilerExtention) Repeats the _Element _Times times.</summary>
-</member><member name="M:MullNet.CompilerExtentions.CollectionTypeExtentions.GetStandardArraySerialisation``1(``0[],System.String)">
-	<summary>(MullNet CompilerExtention) Gets the ToString() of each Element in the _Array, and serialises these Strings into the form {String1, String2, String3}</summary>
-</member><member name="M:MullNet.CompilerExtentions.CollectionTypeExtentions.Intersperse``1(``0[],``0[],System.UInt32)">
-	<summary>
+</member>
+<member name="M:MullNet.CompilerExtentions.CollectionTypeExtentions.AllElementsAreUnique``1(``0[])">
+ <summary>(MullNet CompilerExtention) Evaluates weather or not each Element in the _Array is unique. In other words, False is Returned if two or more elements are the same.</summary>
+</member>
+<member name="M:MullNet.CompilerExtentions.CollectionTypeExtentions.Repeat``1(``0,System.UInt64)">
+ <summary>(MullNet CompilerExtention) Repeats the _Element _Times times.</summary>
+</member>
+<member name="M:MullNet.CompilerExtentions.CollectionTypeExtentions.GetStandardArraySerialisation``1(``0[],System.String)">
+ <summary>(MullNet CompilerExtention) Gets the ToString() of each Element in the _Array, and serialises these Strings into the form {String1, String2, String3}</summary>
+</member>
+<member name="M:MullNet.CompilerExtentions.CollectionTypeExtentions.Intersperse``1(``0[],``0[],System.UInt32)">
+ <summary>
  (MullNet CompilerExtention) Returns a version of the _Array where the _FillerBlock is inserted after each _HowOften elements.
  Does not insert any instances of the _FillerBlock past the end of the _Array's last Element
  </summary>
-</member><member name="M:MullNet.CompilerExtentions.CollectionTypeExtentions.AllButLast``1(``0[])">
-	<summary>(MullNet CompilerExtention) Returns all but the very last Element in the _Array</summary>
-</member><member name="M:MullNet.CompilerExtentions.CollectionTypeExtentions.GetAllKeys``2(System.Collections.ObjectModel.ReadOnlyCollection{System.Collections.Generic.KeyValuePair{``0,``1}})">
-	<summary>(MullNet CompilerExtention) Returns all the Keys in the Read-only Dictionary</summary>
-</member><member name="M:MullNet.CompilerExtentions.CollectionTypeExtentions.ForEachItem``1(System.Collections.ObjectModel.ReadOnlyCollection{``0}@,System.Action{``0})">
-	<summary>(MullNet CompilerExtention) Executes the _Action for each Element in the _ReadOnlyCollection(Of _TElement)</summary>
-</member><member name="M:MullNet.CompilerExtentions.CollectionTypeExtentions.GenerateUniqueString(System.String[]@,System.String)">
-	<summary>(MullNet CompilerExtention) Returns a value which isn't equal to any of the existing strings, based off of the _Seed.
+</member>
+<member name="M:MullNet.CompilerExtentions.CollectionTypeExtentions.AllButLast``1(``0[])">
+ <summary>(MullNet CompilerExtention) Returns all but the very last Element in the _Array</summary>
+</member>
+<member name="M:MullNet.CompilerExtentions.CollectionTypeExtentions.GetAllKeys``2(System.Collections.ObjectModel.ReadOnlyCollection{System.Collections.Generic.KeyValuePair{``0,``1}})">
+ <summary>(MullNet CompilerExtention) Returns all the Keys in the Read-only Dictionary</summary>
+</member>
+<member name="M:MullNet.CompilerExtentions.CollectionTypeExtentions.ForEachItem``1(System.Collections.ObjectModel.ReadOnlyCollection{``0}@,System.Action{``0})">
+ <summary>(MullNet CompilerExtention) Executes the _Action for each Element in the _ReadOnlyCollection(Of _TElement)</summary>
+</member>
+<member name="M:MullNet.CompilerExtentions.CollectionTypeExtentions.GenerateUniqueString(System.String[]@,System.String)">
+ <summary>(MullNet CompilerExtention) Returns a value which isn't equal to any of the existing strings, based off of the _Seed.
  The returned value will ALWAYS be the same length as the _Seed, but if it is not possible to create a new value within that number of characters, then this method will Throw an Exception.
  If the _Seed is empty, and still not contained in the _StringArray, then an Exception will be Thrown.
  The SubstitutionChars are 0123456789ABCDEFGHIJKLNMOPQRSTUVWXYZ</summary>
-</member><member name="M:MullNet.CompilerExtentions.CollectionTypeExtentions.SubstitutedAtIndex``1(``0[],System.Int32,``0)">
-	<summary>(MullNet CompilerExtention) Returns a version of the _Array wherein the Element at _Index is replaced with the _Substitution</summary>
-</member><member name="M:MullNet.CompilerExtentions.CollectionTypeExtentions.EachToUpper(System.String[]@)">
-	<summary>(MullNet CompilerExtention) Returns each String, in a ToUpper()-ed state</summary>
-</member><member name="M:MullNet.CompilerExtentions.CollectionTypeExtentions.WithRangeOverwritten``1(``0[],System.UInt16,System.UInt16,``0)">
-	<summary>(MullNet CompilerExtention) Returns the _Array, but with Elements inclusively between the indicies of _StartIndex and _EndIndex substituted for the _NewValue</summary>
-</member><member name="M:MullNet.CompilerExtentions.ControlExtentions.InvokeIfRequired(System.Windows.Forms.Control,System.Action)">
-	<summary>
+</member>
+<member name="M:MullNet.CompilerExtentions.CollectionTypeExtentions.SubstitutedAtIndex``1(``0[],System.Int32,``0)">
+ <summary>(MullNet CompilerExtention) Returns a version of the _Array wherein the Element at _Index is replaced with the _Substitution</summary>
+</member>
+<member name="M:MullNet.CompilerExtentions.CollectionTypeExtentions.EachToUpper(System.String[]@)">
+ <summary>(MullNet CompilerExtention) Returns each String, in a ToUpper()-ed state</summary>
+</member>
+<member name="M:MullNet.CompilerExtentions.CollectionTypeExtentions.WithRangeOverwritten``1(``0[],System.UInt16,System.UInt16,``0)">
+ <summary>(MullNet CompilerExtention) Returns the _Array, but with Elements inclusively between the indicies of _StartIndex and _EndIndex substituted for the _NewValue</summary>
+</member>
+<member name="M:MullNet.CompilerExtentions.ControlExtentions.InvokeIfRequired(System.Windows.Forms.Control,System.Action)">
+ <summary>
  (MullNet CompilerExtention) Invokes the Control if required, and runs the specified _Action
  </summary>
-</member><member name="M:MullNet.CompilerExtentions.XMLObjectExtentions.WrapIn(System.Xml.Linq.XElement,System.String)">
-	<summary>(MullNet CompilerExtention) Returns a version of the _XElement wrapped in an XML Parent Node with name _OuterNodeName$</summary>
-</member><member name="M:MullNet.CompilerExtentions.XMLObjectExtentions.WrapIn(System.Xml.Linq.XElement[],System.String)">
-	<summary>(MullNet CompilerExtention) Returns a new XElement which contains the _XElements</summary>
-</member><member name="M:MullNet.CompilerExtentions.UsefulMethods.ConsoleWriteLineInColour(System.String,System.ConsoleColor)">
-	<summary>(MullNet UsefulMethod) Writes the _Text to the _Console in the specified _ConsoleColour</summary>
-</member><member name="M:MullNet.CompilerExtentions.UsefulMethods.ConsoleWriteLineInColour(System.String,System.ConsoleColor,System.ConsoleColor)">
-	<summary>(MullNet UsefulMethod) Writes the _Text to the _Console in the specified _ForegroundColour, and using the specified _BackgroundColour</summary>
-</member><member name="M:MullNet.CompilerExtentions.UsefulMethods.ConsoleWriteInColour(System.String,System.ConsoleColor)">
-	<summary>(MullNet UsefulMethod) Writes the _Text to the _Console in the specified _ConsoleColour, without a LineBreak on the end</summary>
-	<remarks>DSCompilation's DSPackage.VB mechanism releis on this method!</remarks>
-</member><member name="M:MullNet.CompilerExtentions.UsefulMethods.ConsoleWriteInColour(System.String,System.ConsoleColor,System.ConsoleColor)">
-	<summary>(MullNet UsefulMethod) Writes the _Text to the _Console in the specified _ForegroundColour (without a LineBreak on the end), and using the specified _BackgroundColour</summary>
-</member><member name="M:MullNet.CompilerExtentions.UsefulMethods.ConsoleErrorWriteLineInColour(System.String,System.ConsoleColor)">
-	<summary>(MullNet UsefulMethod) Writes the _Text to the _Console in the specified _ConsoleColour</summary>
-</member><member name="M:MullNet.CompilerExtentions.UsefulMethods.ConsoleErrorWriteInColour(System.String,System.ConsoleColor)">
-	<summary>(MullNet UsefulMethod) Writes the _Text to the _Console in the specified _ConsoleColour, without a LineBreak on the end</summary>
-</member><member name="M:MullNet.CompilerExtentions.UsefulMethods.ContainsWellBalencedPairs``1(``0[],System.Tuple{``0,``0}[])">
-	<summary>
+</member>
+<member name="M:MullNet.CompilerExtentions.XMLObjectExtentions.WrapIn(System.Xml.Linq.XElement,System.String)">
+ <summary>(MullNet CompilerExtention) Returns a version of the _XElement wrapped in an XML Parent Node with name _OuterNodeName$</summary>
+</member>
+<member name="M:MullNet.CompilerExtentions.XMLObjectExtentions.WrapIn(System.Xml.Linq.XElement[],System.String)">
+ <summary>(MullNet CompilerExtention) Returns a new XElement which contains the _XElements</summary>
+</member>
+<member name="T:MullNet.CompilerExtentions.UsefulMethods">
+ <summary>
+ Non-CompilerExtention Useful Methods which need to be accessible without Namespace qualification
+ Some of these can't be CompilerExtentions E.g. because they take in a ParamArray as the first Argument
+ </summary>
+</member>
+<member name="M:MullNet.CompilerExtentions.UsefulMethods.ConsoleWriteLineInColour(System.String,System.ConsoleColor)">
+ <summary>(MullNet UsefulMethod) Writes the _Text to the _Console in the specified _ConsoleColour</summary>
+</member>
+<member name="M:MullNet.CompilerExtentions.UsefulMethods.ConsoleWriteLineInColour(System.String,System.ConsoleColor,System.ConsoleColor)">
+ <summary>(MullNet UsefulMethod) Writes the _Text to the _Console in the specified _ForegroundColour, and using the specified _BackgroundColour</summary>
+</member>
+<member name="M:MullNet.CompilerExtentions.UsefulMethods.ConsoleWriteInColour(System.String,System.ConsoleColor)">
+ <summary>(MullNet UsefulMethod) Writes the _Text to the _Console in the specified _ConsoleColour, without a LineBreak on the end</summary>
+ <remarks>DSCompilation's DSPackage.VB mechanism releis on this method!</remarks>
+</member>
+<member name="M:MullNet.CompilerExtentions.UsefulMethods.ConsoleWriteInColour(System.String,System.ConsoleColor,System.ConsoleColor)">
+ <summary>(MullNet UsefulMethod) Writes the _Text to the _Console in the specified _ForegroundColour (without a LineBreak on the end), and using the specified _BackgroundColour</summary>
+</member>
+<member name="M:MullNet.CompilerExtentions.UsefulMethods.ConsoleErrorWriteLineInColour(System.String,System.ConsoleColor)">
+ <summary>(MullNet UsefulMethod) Writes the _Text to the _Console in the specified _ConsoleColour</summary>
+</member>
+<member name="M:MullNet.CompilerExtentions.UsefulMethods.ConsoleErrorWriteInColour(System.String,System.ConsoleColor)">
+ <summary>(MullNet UsefulMethod) Writes the _Text to the _Console in the specified _ConsoleColour, without a LineBreak on the end</summary>
+</member>
+<member name="M:MullNet.CompilerExtentions.UsefulMethods.ContainsWellBalencedPairs``1(``0[],System.Tuple{``0,``0}[])">
+ <summary>
  (MullNet UsefulMethod)
  Ensures that for each opening component in the _Pairs, there is an instance of the corrosponding closing component.
  Also makes sure that the _Pairs components are opened in a ballenced fashion.
@@ -434,73 +561,74 @@ MullNet.MetaUtilities
  If the Item is a Closing Component (_Pair.Item2) then pop from stack and if the popped Item is the matching Opening Component then fine, but otherwise the Items are not balanced
  After complete traversal, if there is an Opening Component left in stack then the source is not balanced
  </summary>
-	<typeparam name="_TItems">The DataType of each Item in the _AllItems, and of a component in the _Pairs</typeparam>
-	<param name="_AllItems">A List of _TItems, not all of which have to be Items seen in the _Pairs. E.g. could be all source token even if you just want to validate the balencedness of brackets.</param>
-	<param name="_Pairs">The Pairs which have to be balenced. Item1 = the Opening Component E.g. "("; Item2 = the Closing Component E.g. ")"</param>
-	<returns>Weather or not _AllItems contained well-balenced Pairs</returns>
-	<remarks>Implemented 24-08-2022 so that Brackets and Statements may make use of it</remarks>
-</member><member name="M:MullNet.CompilerExtentions.UsefulMethods.AllocConsole">
-	<summary>(MullNet UsefulMethod) For Procuring a Win32 Console, even if the Process isn't a Console Application</summary>
-</member><member name="M:MullNet.CompilerExtentions.UsefulMethods.FreeConsole">
-	<summary>(MullNet UsefulMethod) Hides the active console window; the opposite of AllocConsole()</summary>
-</member><member name="M:MullNet.CompilerExtentions.UsefulMethods.SetForegroundWindow(System.IntPtr)">
-	<summary>
+ <typeparam name="_TItems">The DataType of each Item in the _AllItems, and of a component in the _Pairs</typeparam>
+ <param name="_AllItems">A List of _TItems, not all of which have to be Items seen in the _Pairs. E.g. could be all source token even if you just want to validate the balencedness of brackets.</param>
+ <param name="_Pairs">The Pairs which have to be balenced. Item1 = the Opening Component E.g. "("; Item2 = the Closing Component E.g. ")"</param>
+ <returns>Weather or not _AllItems contained well-balenced Pairs</returns>
+ <remarks>Implemented 24-08-2022 so that Brackets and Statements may make use of it</remarks>
+</member>
+<member name="M:MullNet.CompilerExtentions.UsefulMethods.AllocConsole">
+ <summary>(MullNet UsefulMethod) For Procuring a Win32 Console, even if the Process isn't a Console Application</summary>
+</member>
+<member name="M:MullNet.CompilerExtentions.UsefulMethods.FreeConsole">
+ <summary>(MullNet UsefulMethod) Hides the active console window; the opposite of AllocConsole()</summary>
+</member>
+<member name="M:MullNet.CompilerExtentions.UsefulMethods.SetForegroundWindow(System.IntPtr)">
+ <summary>
      Brings the thread that created the specified window into the foreground and activates the window. Keyboard input is
      directed to the window, and various visual cues are changed for the user. The system assigns a slightly higher
      priority to the thread that created the foreground window than it does to other threads.
      <para>See for https://msdn.microsoft.com/en-us/library/windows/desktop/ms633539%28v=vs.85%29.aspx more information.</para>
-	</summary>
-	<param name="hWnd">
-     C++ ( hWnd [in]. Type: HWND )<br/>A handle to the window that should be activated and brought to the foreground.
+  </summary>
+ <param name="hWnd">
+     C++ ( hWnd [in]. Type: HWND )<br />A handle to the window that should be activated and brought to the foreground.
  </param>
-	<returns>
-		<c>true</c> or nonzero if the window was brought to the foreground, <c>false</c> or zero If the window was not
+ <returns>
+     <c>true</c> or nonzero if the window was brought to the foreground, <c>false</c> or zero If the window was not
      brought to the foreground.
  </returns>
-	<remarks>
+ <remarks>
      The system restricts which processes can set the foreground window. A process can set the foreground window only if
      one of the following conditions is true:
      <list type="bullet">
-			<listheader>
-				<term>Conditions</term><description></description>
-			</listheader>
-			<item>The process is the foreground process.</item>
-			<item>The process was started by the foreground process.</item>
-			<item>The process received the last input event.</item>
-			<item>There is no foreground process.</item>
-			<item>The process is being debugged.</item>
-			<item>The foreground process is not a Modern Application or the Start Screen.</item>
-			<item>The foreground is not locked (see LockSetForegroundWindow).</item>
-			<item>The foreground lock time-out has expired (see SPI_GETFOREGROUNDLOCKTIMEOUT in SystemParametersInfo).</item>
-			<item>No menus are active.</item>
-		</list>
-		<para>
+     <listheader>
+         <term>Conditions</term><description></description>
+     </listheader>
+     <item>The process is the foreground process.</item>
+     <item>The process was started by the foreground process.</item>
+     <item>The process received the last input event.</item>
+     <item>There is no foreground process.</item>
+     <item>The process is being debugged.</item>
+     <item>The foreground process is not a Modern Application or the Start Screen.</item>
+     <item>The foreground is not locked (see LockSetForegroundWindow).</item>
+     <item>The foreground lock time-out has expired (see SPI_GETFOREGROUNDLOCKTIMEOUT in SystemParametersInfo).</item>
+     <item>No menus are active.</item>
+     </list>
+     <para>
      An application cannot force a window to the foreground while the user is working with another window.
      Instead, Windows flashes the taskbar button of the window to notify the user.
      </para>
-		<para>
+     <para>
      A process that can set the foreground window can enable another process to set the foreground window by
      calling the AllowSetForegroundWindow function. The process specified by dwProcessId loses the ability to set
      the foreground window the next time the user generates input, unless the input is directed at that process, or
      the next time a process calls AllowSetForegroundWindow, unless that process is specified.
      </para>
-		<para>
+     <para>
      The foreground process can disable calls to SetForegroundWindow by calling the LockSetForegroundWindow
      function.
      </para>
-	</remarks>
-</member><member name="M:MullNet.CompilerExtentions.UsefulMethods.GetRandomString(System.UInt16)">
-	<summary>(MullNet UsefulMethod) Returns a random String using the Chars 0123456789ABCDEFGHIJKLNMOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz</summary>
-</member><member name="M:MullNet.CompilerExtentions.UsefulMethods.RequestFolderPath(System.String,System.Tuple{System.String,System.String}[])">
-	<summary>(MullNet UsefulMethod) Uses an STA Thread (Message-Pumping) to display a SaveFileDialog, and returns the Selected File, or NOTHING.</summary>
-	<param name="_TargetFileExtentions">E.g. ("Hypertext Markup", "HTML") or ("Plaintext", "TXT"). The [All Files (*.*)] Option is automatically added by this method. Instanciation: New Tuple(Of String, String)("All Files", "*")</param>
-</member><member name="M:MullNet.CompilerExtentions.UsefulMethods.IncrementNumericalValue(System.String,System.String)">
-	<summary>Increments a numerical magnitude represented in the place-value (positional-notation) system. E.g. IncrementNumericalValue("100", "01") → "101"</summary>
-</member><member name="T:MullNet.CompilerExtentions.UsefulMethods">
-	<summary>
- Non-CompilerExtention Useful Methods which need to be accessible without Namespace qualification
- Some of these can't be CompilerExtentions E.g. because they take in a ParamArray as the first Argument
- </summary>
+ </remarks>
+</member>
+<member name="M:MullNet.CompilerExtentions.UsefulMethods.GetRandomString(System.UInt16)">
+ <summary>(MullNet UsefulMethod) Returns a random String using the Chars 0123456789ABCDEFGHIJKLNMOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz</summary>
+</member>
+<member name="M:MullNet.CompilerExtentions.UsefulMethods.RequestFolderPath(System.String,System.Tuple{System.String,System.String}[])">
+ <summary>(MullNet UsefulMethod) Uses an STA Thread (Message-Pumping) to display a SaveFileDialog, and returns the Selected File, or NOTHING.</summary>
+ <param name="_TargetFileExtentions">E.g. ("Hypertext Markup", "HTML") or ("Plaintext", "TXT"). The [All Files (*.*)] Option is automatically added by this method. Instanciation: New Tuple(Of String, String)("All Files", "*")</param>
+</member>
+<member name="M:MullNet.CompilerExtentions.UsefulMethods.IncrementNumericalValue(System.String,System.String)">
+ <summary>Increments a numerical magnitude represented in the place-value (positional-notation) system. E.g. IncrementNumericalValue("100", "01") → "101"</summary>
 </member>
 </members>
 </doc>

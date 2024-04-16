@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "SmartcardInfo": {
+      "commandName": "Project",
+      "commandLineArgs": "/ListReaders"
+    }
+  }
+}

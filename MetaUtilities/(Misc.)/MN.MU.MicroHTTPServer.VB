@@ -255,24 +255,24 @@
 		Protected Shared ReadOnly Property HTMLDirectoryListingFor_(ByVal _Directory As IO.DirectoryInfo, ByVal _CurrentURL$) As [String]
 			Get
 
-				Return
-				  <html>
-					  <head><title>Index Of <%= _Directory.FullName.WithBackslashOnEnd() %></title></head>
-					  <body>
-						  <h1>Index Of <%= _Directory.FullName.WithBackslashOnEnd() %></h1>
-						  <ol>
-							  <%=
-								  From _SubDirectory As IO.DirectoryInfo In _Directory.GetDirectories()
-								  Select <li><a href=<%= _CurrentURL.WithForwardslashOnEnd() & _SubDirectory.Name.WithForwardslashOnEnd() %>><%= _SubDirectory.Name.WithBackslashOnEnd() %></a></li>
-																																							  %>
-							  <%=
-								  From _File As IO.FileInfo In _Directory.GetFiles()
-								  Select <li><a href=<%= _CurrentURL.WithForwardslashOnEnd() & _File.Name %>><%= _File.Name %></a></li>
-																											  %>
-						  </ol>
-					  </body>
-				  </html>
-				.ToString()
+				Return (
+					<html>
+						<head><title>Index Of <%= _Directory.FullName.WithBackslashOnEnd() %></title></head>
+						<body>
+							<h1>Index Of <%= _Directory.FullName.WithBackslashOnEnd() %></h1>
+							<ol>
+								<%=
+									From _SubDirectory As IO.DirectoryInfo In _Directory.GetDirectories()
+									Select <li><a href=<%= _CurrentURL.WithForwardslashOnEnd() & _SubDirectory.Name.WithForwardslashOnEnd() %>><%= _SubDirectory.Name.WithBackslashOnEnd() %></a></li>
+								%>
+								<%=
+									From _File As IO.FileInfo In _Directory.GetFiles()
+									Select <li><a href=<%= _CurrentURL.WithForwardslashOnEnd() & _File.Name %>><%= _File.Name %></a></li>
+								%>
+							</ol>
+						</body>
+					</html>
+				).ToString()
 
 			End Get
 		End Property
