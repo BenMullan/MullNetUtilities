@@ -1,7 +1,7 @@
 ﻿Namespace MetaUtilities
 	Public Module CMDApplicationUtilities
 
-		REM Common Procexx Exit Codes
+		REM Common Process Exit Codes
 		Public Const ExitCode_GenericFatalError As Int32 = -1
 		Public Const ExitCode_RanSuccessfully As Int32 = 0
 

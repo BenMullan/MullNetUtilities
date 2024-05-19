@@ -45,6 +45,7 @@
   <ItemGroup>
     <Using Include="MullNet.CompilerExtentions" />
     <Using Include="MullNet.MetaUtilities" />
+    <Using Include="System.Xml.Linq" />
   </ItemGroup>
 
 </Project>

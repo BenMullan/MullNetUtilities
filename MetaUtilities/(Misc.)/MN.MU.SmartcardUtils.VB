@@ -3,9 +3,13 @@
 	''' <summary>Contains logic for interfacing with PCSC Smartcards and Readers</summary>
 	Public Module SmartcardUtils
 
-		''' <summary>Encapsulates all data read from an EMV Smartcard</summary>
+		''' <summary>An immutable representation of data read from an EMV Smartcard; like an ISO file of a smartcard.</summary>
 		Public Class SmartcardDataSnapshot
+
 			Public ReadOnly CardholderName$, BankName$
+
+
+
 		End Class
 
 		''' <summary>When a LibPCSC.PCSCReader is instanciated, it starts a card-insertion-listening thread. If this encounters an exception, here's a handler for it.</summary>

@@ -213,6 +213,7 @@ Namespace MetaUtilities
 		End Function
 
 		REM Writes the CLA Help Dictionary to the OutputDelegate if the /? CLA is specified
+		<CodeAnalysis.SuppressMessage("Style", "IDE0059:Unnecessary assignment of a value", Justification:="`_IOEx` is needed, to catch the IOException resulting from there being no console.")>
 		Protected Sub DisplayHelpDictionary_()
 
 			Dim _CLAHelpDictionaryText$
@@ -237,28 +238,26 @@ Namespace MetaUtilities
 				'/ShowLog				(Optional) Shows the Log during Interpretation
 
 
-				REM ↓ The number of chars wide the console is treated as
+				REM ↓ The number of chars wide the console is treated as.
 				REM ↓ If the process isn't being run from a console,
-				REM   (e.g. because it's being run through Doorman or VS-Immediate-Window)
+				REM   (e.g. because it's being run through Doorman or the VS Immediate-Window)
 				REM   then there is no Handle to a Console, so Console.WindowWidth raises an IOException
 				Dim _ConsoleWidth_InChars As UInt16
-				Try : _ConsoleWidth_InChars = Convert.ToUInt16(System.Console.WindowWidth)
+				Try : _ConsoleWidth_InChars = Convert.ToUInt16(System.Console.WindowWidth - 1)
 				Catch _IOEx As System.IO.IOException : _ConsoleWidth_InChars = 80US : End Try
 
 				_CLAHelpDictionaryText$ =
-<String>
-	Description:
-	<%= "-"c.Repeat(_ConsoleWidth_InChars) & vbCrLf & vbCrLf %>
-	<%= Me.CLAHelpDictionary_Description %>
+$"
+Description:
+{ "-"c.Repeat(_ConsoleWidth_InChars) }
+{Me.CLAHelpDictionary_Description}
 
-	Examples:
-	<%= "-"c.Repeat(_ConsoleWidth_InChars) & vbCrLf %>
-	<%= Me.CLAHelpDictionary_Examples.JoinAsStrings(vbCrLf) %>
+Examples:
+{ "-"c.Repeat(_ConsoleWidth_InChars) & vbCrLf & Me.CLAHelpDictionary_Examples.JoinAsStrings(vbCrLf) }
 
-	Argument Usage: (Keys are case-insensitive)
-	<%= "-"c.Repeat(_ConsoleWidth_InChars) %>
-</String>.Value.Split({vbLf}, StringSplitOptions.None).Select(Of [String])(Function(_Line$) _Line.Trim()).ToArray().JoinAsStrings(vbCrLf)
-
+Argument Usage:  (Keys are case-insensitive)
+{ "-"c.Repeat(_ConsoleWidth_InChars) }
+"
 
 				For Each _CLAKeyToActionMapping As CLAKeyToActionMapping In Me.KeyToActionMappings
 

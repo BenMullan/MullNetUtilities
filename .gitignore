@@ -1,5 +1,5 @@
-# .gitignore
-# The moronic creater of this file format perpended the name with a dot (.), so it isn't seen correctly by Visual Studio.
+# System-specific Files
+*.suo
 
 # Debugging Resources
 [Dd]ebug/

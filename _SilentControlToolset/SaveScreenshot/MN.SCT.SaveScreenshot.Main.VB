@@ -64,6 +64,7 @@
 					Dim _ConsecutiveScreenshotErrors As New List(Of Exception)()
 
 					Do
+
 						Try
 
 							REM Determine whether the Maximum Number of Screenshots exists in the folder (0 = never-overwrite)

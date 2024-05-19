@@ -11,14 +11,144 @@ public static class SmartcardInfo {
 		GetCardInfo         = 4,
 	}
 
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0047:Remove unnecessary parentheses", Justification = "<Pending>")]
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0047:Remove unnecessary parentheses", Justification = "I want my extra brackets, thank you very much.")]
 	public static Int32 Main(String[] _CLAs) {
 
 		ActionWhenReady _ActionWhenReady            = ActionWhenReady.Unresolved;
 		Byte?           _TargetPCSCReader_Index     = null;
 		Boolean         _OutputAsXML                = false;
 
-		// Try... to understand the command-line arguments (CLAs)
+		#region Declare methods needed for the possible Actions
+
+		void _ListReaders() {
+
+			if (_OutputAsXML) {
+
+				(
+					new XElement(
+						"AvaliableSmartcardReaders",
+						MetaUtilities.SmartcardUtils.AvaliableSmartcardReaders.Select<String, XElement>(
+							(String _ReaderName, Int32 _Index) => new XElement(
+								"SmartcardReader",
+								new XAttribute("Index", _Index),
+								new XAttribute("Name", _ReaderName)
+							)
+						)
+					)
+				).WriteToConsoleWithXMLColourFormatting();
+
+			} else {
+
+				global::System.Console.Out.Write(
+					String.Join(
+						"\r\n",
+						MetaUtilities.SmartcardUtils.AvaliableSmartcardReaders.Select<String, String>(
+							(String _ReaderName, Int32 _Index) => $"[{_Index}] \t {_ReaderName}"
+						)
+					)
+				);
+
+			}
+
+		}
+
+		void _HandleSmartcardInsertion(String _ReaderName, Byte[] _ATR) {
+
+			if (_TargetPCSCReader_Index is null || Convert.ToInt32(_ReaderName) == _TargetPCSCReader_Index) {
+
+				if (_OutputAsXML) {
+
+					(
+						new XElement(
+							"SmartcardInsertion",
+							new XAttribute("AnswerToReset", System.BitConverter.ToString(_ATR)),
+							(
+								new XElement(
+									"SmartcardReader",
+									new XAttribute("Index", MetaUtilities.SmartcardUtils.AvaliableSmartcardReaders.ToList().IndexOf(_ReaderName)),
+									new XAttribute("Name", _ReaderName)
+								)
+							).WrapIn("TargetReader")
+						)
+					).WriteToConsoleWithXMLColourFormatting();
+
+				} else {
+
+					global::System.Console.Out.Write(
+						$@"Smartcard inserted into reader [{MetaUtilities.SmartcardUtils.AvaliableSmartcardReaders.ToList().IndexOf(_ReaderName)}] ""{_ReaderName}"", producing Answer-To-Reset ""{System.BitConverter.ToString(_ATR)}"""
+					);
+
+				}
+
+				Environment.Exit(0);
+
+			}
+
+		}
+
+		void _HandleSmartcardRemoval(String _ReaderName) {
+
+			if (_OutputAsXML) {
+
+				(
+					new XElement(
+						"SmartcardRemoval",
+						(
+							new XElement(
+								"SmartcardReader",
+								new XAttribute("Index", MetaUtilities.SmartcardUtils.AvaliableSmartcardReaders.ToList().IndexOf(_ReaderName)),
+								new XAttribute("Name", _ReaderName)
+							)
+						).WrapIn("TargetReader")
+					)
+				).WriteToConsoleWithXMLColourFormatting();
+
+			} else {
+
+				global::System.Console.Out.Write(
+					$@"Smartcard removed from reader [{MetaUtilities.SmartcardUtils.AvaliableSmartcardReaders.ToList().IndexOf(_ReaderName)}] ""{_ReaderName}"""
+				);
+
+			}
+
+			Environment.Exit(0);
+
+		}
+
+		void _OutputSmartcardInfo() {
+
+			if (_OutputAsXML) {
+
+				(
+					new XElement(
+						"SmartcardInfo",
+						new XAttribute("", "")
+					)
+				).WriteToConsoleWithXMLColourFormatting();
+
+			} else {
+
+				Console.Out.Write(
+$@"
+┌─────────────────────────────┐ 
+│  Bank:       {"",-10}│▒
+│  Cardholder: {2}            │▒
+│                             │▒
+│  ATR:        {2}            │▒
+│  Hash:       {2}            │▒
+│                             │▒
+└─────────────────────────────┘▒
+ ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
+"
+				);
+
+			}
+
+		}
+
+		#endregion
+
+		#region Understand the command-line arguments (CLAs)
 		try {
 
 			String _CurrentExeName = System.Diagnostics.Process.GetCurrentProcess().ProcessName ?? throw new Exception("Unresolvable current assembly (exe) name");
@@ -51,37 +181,26 @@ public static class SmartcardInfo {
 			UsefulMethods.ConsoleErrorWriteLineInColour($"Command-line Arguments' Error: {_CLAsEx.Message}", ConsoleColor.Red);
 			return 2;
 		}
+		#endregion
 
-		// Try... to perform what the CLAs indicated
+		#region Perform what the CLAs indicated
 		try {
 
 			switch (_ActionWhenReady) {
 				case ActionWhenReady.ListReaders: {
 
-					global::System.Console.Out.Write(
-						_OutputAsXML ? String.Join(
-							"\r\n",
-							MetaUtilities.SmartcardUtils.AvaliableSmartcardReaders.Select<String, String>(
-								(String _ReaderName, Int32 _Index) => $"[{_Index}] \t {_ReaderName}"
-							)
-						) : (
-							""
-						)
-					);
-
+					_ListReaders();
 					break;
+
 				}
 				case ActionWhenReady.AwaitCardInsertion: {
 
 					global::LibPCSC.PCSCReader _SmartcardReader = new();
 
-					_SmartcardReader.CardInserted += (String _ReaderName, Byte[] _ATR) => {
-						if (_TargetPCSCReader_Index is null || Convert.ToInt32(_ReaderName) == _TargetPCSCReader_Index) {
-							Console.Out.WriteLine($"Smartcard inserted into reader [{MetaUtilities.SmartcardUtils.AvaliableSmartcardReaders.ToList().IndexOf(_ReaderName)}] \"{_ReaderName}\", producing Answer-To-Reset \"{System.BitConverter.ToString(_ATR)}\"");
-							Environment.Exit(0);
-						}
-					};
+					_SmartcardReader.CardInserted += _HandleSmartcardInsertion;
 
+					// Hang around until a smartcard is inserted.
+					// The above delegate will then run on a different thread.
 					while (true) { Thread.Sleep(100); }
 
 				}
@@ -89,11 +208,10 @@ public static class SmartcardInfo {
 
 					global::LibPCSC.PCSCReader _SmartcardReader = new();
 
-					_SmartcardReader.CardRemoved += (String _ReaderName) => {
-						Console.Out.WriteLine($"Smartcard removed from reader [{MetaUtilities.SmartcardUtils.AvaliableSmartcardReaders.ToList().IndexOf(_ReaderName)}] \"{_ReaderName}\"");
-						Environment.Exit(0);
-					};
+					_SmartcardReader.CardRemoved += _HandleSmartcardRemoval;
 
+					// Hang around until a smartcard is removed.
+					// The above delegate will then run on a different thread.
 					while (true) { Thread.Sleep(100); }
 
 				}
@@ -103,19 +221,7 @@ public static class SmartcardInfo {
 						_TargetPCSCReader_Index ?? throw new MetaUtilities.CLAManager.CLANotSpecifiedException("No /TargetReaderIndex was specified.")
 					);
 
-					Console.Out.Write(
-$@"
-┌─────────────────────────────┐ 
-│  Bank:       {"",-10}│▒
-│  Cardholder: {2}            │▒
-│                             │▒
-│  ATR:        {2}            │▒
-│  Hash:       {2}            │▒
-│                             │▒
-└─────────────────────────────┘▒
- ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
-"
-					);
+					_OutputSmartcardInfo();
 
 					break;
 
@@ -131,5 +237,6 @@ $@"
 		return 0;
 
 	}
+	#endregion
 
 }

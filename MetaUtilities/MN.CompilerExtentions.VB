@@ -41,13 +41,6 @@ Namespace CompilerExtentions
 			Return _Object
 		End Function
 
-		''' <summary>(MullNet CompilerExtention) Ensures that the _Object IsNot Nothing, Throwing a NullReferanceException with the _MessageIfNull if it is</summary>
-		<System.Runtime.CompilerServices.Extension()>
-		Public Function MustNotBeNothing(Of _TObject)(ByRef _Object As _TObject, Optional ByVal _MsgIfNull$ = "") As _TObject
-			If _Object Is Nothing Then Throw New NullReferenceException("The Object was [Nothing]. " & _MsgIfNull)
-			Return _Object
-		End Function
-
 		''' <summary>(MullNet CompilerExtention) Repeats the _Element _Times times.</summary>
 		<Global.System.Runtime.CompilerServices.Extension()>
 		Public Function Repeat(Of _TElement)(ByVal _Element As _TElement, ByVal _Times As UInt64) As _TElement()
@@ -58,6 +51,26 @@ Namespace CompilerExtentions
 
 			Return _ElementsToReturn.ToArray()
 
+		End Function
+
+		''' <summary>(MullNet CompilerExtention) Ensures that the _Object IsNot Nothing, Throwing a NullReferanceException with the _MessageIfNull if it is</summary>
+		<System.Runtime.CompilerServices.Extension()>
+		Public Function MustNotBeNothing(Of _TObject)(ByRef _Object As _TObject, Optional ByVal _MsgIfNull$ = "") As _TObject
+			If _Object Is Nothing Then Throw New NullReferenceException("The Object was [Nothing]. " & _MsgIfNull)
+			Return _Object
+		End Function
+
+		''' <summary>(MullNet CompilerExtention) Determines if the _Object Is Nothing, Invoke()-ing the _ActionIfNull if it is</summary>
+		<System.Runtime.CompilerServices.Extension()>
+		Public Function MustNotBeNothing(Of _TObject)(ByRef _Object As _TObject, ByVal _ActionIfNull As Action) As _TObject
+			If _Object Is Nothing Then _ActionIfNull.Invoke()
+			Return _Object
+		End Function
+
+		''' <summary>(MullNet CompilerExtention) Determines if the _Object Implements _TInterface</summary>
+		<System.Runtime.CompilerServices.Extension()>
+		Public Function ImplementsInterface(Of _TInterface)(ByVal _Object As [Object]) As [Boolean]
+			Return (TypeOf _Object Is _TInterface)
 		End Function
 
 	End Module
@@ -194,6 +207,19 @@ Namespace CompilerExtentions
 		End Function
 
 		''' <summary>
+		''' (MullNet CompilerExtention) Removes the First Character from the String.
+		''' Only returns the post-computation Result; does NOT modify the input.
+		''' </summary>
+		<Global.System.Runtime.CompilerServices.Extension()>
+		Public Function WithFirstCharacterRemoved$(ByVal _InputString$)
+
+			'If the String is Empty, we wouldn't be able to Remove the FirstChar
+			If _InputString.IsEmpty() Then Throw New Exception("The First Character could not be removed from the String, because the String is empty.")
+			Return _InputString.Remove(0I, 1I)
+
+		End Function
+
+		''' <summary>
 		''' (MullNet CompilerExtention) Removes the Last Character from the String.
 		''' Both Modifies the Parameter, and returns the post-computation Result.
 		''' </summary>
@@ -209,6 +235,19 @@ Namespace CompilerExtentions
 			'If we've gotten to here, the String must have at least 1 Character, so Remove the LastChar
 			_InputString = _InputString.Remove(_InputString.Length - 1, 1I)
 			Return _InputString
+
+		End Function
+
+		''' <summary>
+		''' (MullNet CompilerExtention) Removes the Last Character from the String.
+		''' Only returns the post-computation Result; does NOT modify the input.
+		''' </summary>
+		<Global.System.Runtime.CompilerServices.Extension()>
+		Public Function WithLastCharacterRemoved$(ByVal _InputString$)
+
+			'If the String is Empty, we wouldn't be able to Remove the LastChar
+			If _InputString.IsEmpty() Then Throw New Exception("The Last Character could not be removed from the String, because the String is empty.")
+			Return _InputString.Remove(_InputString.Length - 1, 1I)
 
 		End Function
 
@@ -269,7 +308,7 @@ Namespace CompilerExtentions
 		<Global.System.Runtime.CompilerServices.Extension()>
 		Public Function TabbedInBy(ByVal _Lines$, ByVal _NumberOfTabs As Byte) As String
 
-			Const _TabChar As Char = Chr(9)
+			Const _TabChar As [Char] = Chr(9)
 
 			Dim _SplitLines$() = _Lines.Split({vbCrLf}, System.StringSplitOptions.None)
 			Dim _TabbedInLines_ToReturn$ = ""
@@ -303,12 +342,12 @@ Namespace CompilerExtentions
 			Try
 
 				Return New Security.Cryptography.MD5CryptoServiceProvider() _
-				 .ComputeHash(System.Text.Encoding.ASCII.GetBytes(_InputString$)) _
-				 .Aggregate(Of String, String)(
-				   seed:="",
-				   func:=Function(_CollectedSoFar$, _CurrentByte As Byte) _CollectedSoFar & _CurrentByte.ToString("x2"),
-				   resultSelector:=Function(_FinalString$) _FinalString.ToUpper()
-				)
+					.ComputeHash(System.Text.Encoding.ASCII.GetBytes(_InputString$)) _
+					.Aggregate(Of [String], [String])(
+						seed:="",
+						func:=Function(_CollectedSoFar$, _CurrentByte As [Byte]) _CollectedSoFar & _CurrentByte.ToString("x2"),
+						resultSelector:=Function(_FinalString$) _FinalString.ToUpper()
+					)
 
 			Catch _Ex As Exception : Throw New Exception("@GetMD5Hash (CompilerExtention): " & _Ex.Message, _Ex) : End Try
 		End Function
@@ -373,36 +412,59 @@ Namespace CompilerExtentions
 		<Global.System.Runtime.CompilerServices.Extension()>
 		Public Function InTitleCase$(ByVal _Input$)
 			Try
-
 				Return New System.Globalization.CultureInfo("en-GB", useUserOverride:=False).TextInfo.ToTitleCase(_Input.ToLower())
-
 			Catch _Ex As Exception : Throw New Exception("@InTitleCase (CompilerExtention): " & _Ex.Message, _Ex) : End Try
 		End Function
 
-		''' <summary>
-		''' (MullNet CompilerExtention) Removes the First Character from the String.
-		''' Only returns the post-computation Result; does NOT modify the input.
-		''' </summary>
+		''' <summary>(MullNet CompilerExtention) E.g. "hello world" → "Hello World". E.g. "HELLO WORLD" → "Hello World"</summary>
 		<Global.System.Runtime.CompilerServices.Extension()>
-		Public Function WithFirstCharacterRemoved$(ByVal _InputString$)
+		Public Function IsValidFilePath_AndThatFileExists(ByVal _Path$) As [Boolean]
+			Try
 
-			'If the String is Empty, we wouldn't be able to Remove the FirstChar
-			If _InputString.IsEmpty() Then Throw New Exception("The First Character could not be removed from the String, because the String is empty.")
-			Return _InputString.Remove(0I, 1I)
+				REM To account for the specific case of not treating a CLA such as...
+				REM /OpenSourceFile:D:\Benedict\Documents\SchoolWork\Projects\DocScript\DocScriptPrograms\LightswitchProblem.DS
+				REM ...As a valid File path, and NOT throwing an exception whilst checking (as this disrupts the debugger-attached startup of DSIDE),
+				REM ...We shall ensure that the _Path dosen't match the RegExp ^(\/\w+:[a-zA-Z0-9_\\:.\+\-\*\/&=\(\)\^%\$£"!`¬<>\[\]\{\};'@#~\?\|]+)$
+
+				If _Path.MatchesRegEx("^\/\w+:[a-zA-Z0-9_\\:.\+\-\*\/&=\(\)\^%\$£""!`¬<>\[\]\{\};'@#~\?\|]+$") Then Return False
+
+				If _Path.ToCharArray().Any(AddressOf IO.Path.GetInvalidPathChars().Contains) Then Return False
+
+				Return New IO.FileInfo(_Path).Exists
+
+			Catch _Ex As Exception
+				Debug.WriteLine("The File path [" & _Path & "] is not valid or does not exist: " & _Ex.Message)
+				Return False
+			End Try
+		End Function
+
+		''' <summary>(MullNet CompilerExtention) Returns the Text from the _FilePath</summary>
+		<Global.System.Runtime.CompilerServices.Extension()>
+		Public Function ReadTextFromThisFile$(ByVal _FilePath$)
+			Try
+				Return My.Computer.FileSystem.ReadAllText(_FilePath)
+			Catch _Ex As Exception : Throw New Exception("@ReadTextFromThisFile (CompilerExtention): " & _Ex.Message, _Ex) : End Try
+		End Function
+
+		''' <summary>(MullNet CompilerExtention) E.g. "MyNameIsBen" → "My Name Is Ben"</summary>
+		<Global.System.Runtime.CompilerServices.Extension()>
+		Public Function CamelCaseToSpacedString$(ByVal _CamelCaseString$)
+
+			Return [String].Join(
+				"",
+				_CamelCaseString.ToCharArray().Select(Of [String])(Function(_Char As [Char]) If([Char].IsUpper(_Char), " "c & _Char, _Char.ToString())).ToArray()
+			).WithLeadingWhiteSpaceRemoved()
 
 		End Function
 
-		''' <summary>
-		''' (MullNet CompilerExtention) Removes the Last Character from the String.
-		''' Only returns the post-computation Result; does NOT modify the input.
-		''' </summary>
+	End Module
+
+	Public Module NumericExtentions
+
+		''' <summary>(MullNet CompilerExtention) Determines if _Number is a Po2, via: (x &amp; (x - 1)) == 0</summary>
 		<Global.System.Runtime.CompilerServices.Extension()>
-		Public Function WithLastCharacterRemoved$(ByVal _InputString$)
-
-			'If the String is Empty, we wouldn't be able to Remove the LastChar
-			If _InputString.IsEmpty() Then Throw New Exception("The Last Character could not be removed from the String, because the String is empty.")
-			Return _InputString.Remove(_InputString.Length - 1, 1I)
-
+		Public Function IsPowerOfTwo(ByVal _Number As UInt32) As [Boolean]
+			Return (_Number And _Number - 1) = 0
 		End Function
 
 	End Module
@@ -417,8 +479,128 @@ Namespace CompilerExtentions
 
 	End Module
 
-	'Removed: Public Module ControlExtentions
-	'Removed: Public Module WebObjectExtentions
+	Public Module WebObjectExtentions
+
+		''' <summary>
+		''' (MullNet CompilerExtention) Writes to, and then Ends the Response Stream
+		''' </summary>
+		''' <remarks></remarks>
+		<Global.System.Runtime.CompilerServices.Extension()>
+		Public Sub WriteAndEnd(ByRef _ResponseObject As Web.HttpResponse, ByVal _String$)
+
+			Try
+				_ResponseObject.Write(_String) : _ResponseObject.SafelyEnd()
+			Catch _Ex As Exception When True
+				_ResponseObject.SafelyEnd()
+			End Try
+
+		End Sub
+
+		''' <summary>
+		''' (MullNet CompilerExtention) Clears, Writes to, and then Ends the Response Stream
+		''' </summary>
+		''' <remarks></remarks>
+		<Global.System.Runtime.CompilerServices.Extension()>
+		Public Sub ClearAndWriteAndEnd(ByRef _ResponseObject As Web.HttpResponse, ByVal _String$)
+
+			Try
+				_ResponseObject.Clear() : _ResponseObject.Write(_String) : _ResponseObject.SafelyEnd()
+			Catch _Ex As Exception When True
+				_ResponseObject.SafelyEnd()
+			End Try
+
+		End Sub
+
+		''' <summary>
+		''' (MullNet CompilerExtention) Ends the Response Stream, without Throwing the "Thread was being aborted" Exception
+		''' </summary>
+		''' <remarks></remarks>
+		<Global.System.Runtime.CompilerServices.Extension()>
+		<CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification:="The parameter is needed, to be able to call the method from that object type as an extension.")>
+		Public Sub [SafelyEnd](ByRef _ResponseObject As Web.HttpResponse)
+
+			Web.HttpContext.Current.Response.Flush() 'Sends all currently buffered output to the client.
+			Web.HttpContext.Current.Response.SuppressContent = True 'Gets or sets a value indicating whether to send HTTP content to the client.
+			Web.HttpContext.Current.ApplicationInstance.CompleteRequest() 'Causes ASP.NET to bypass all events and filtering in the HTTP pipeline chain of execution and directly execute the EndRequest event.
+
+			Return
+
+		End Sub
+
+		''' <summary>
+		''' (MullNet CompilerExtention) Checks that the Specified QueryString is contained in the current Request Object.
+		''' </summary>
+		''' <param name="_RequestObject"></param>
+		''' <remarks></remarks>
+		<Global.System.Runtime.CompilerServices.Extension()>
+		Public Function QueryStringIsSpecified(ByRef _RequestObject As Web.HttpRequest, ByVal _QueryStringKey$) As [Boolean]
+			Try
+
+				'Return _RequestObject.QueryString.AllKeys.Contains(_QueryStringKey)
+
+				'A case-insensitive version:
+
+				If (_QueryStringKey = Nothing) OrElse (_QueryStringKey Is Nothing) Then Throw New Web.HttpException("The specified _QueryStringKey Argument [Is Nothing].")
+
+				_QueryStringKey = _QueryStringKey.[ToUpper]()
+
+				For Each _Key$ In _RequestObject.QueryString.AllKeys
+					If (_Key = Nothing) OrElse (_Key Is Nothing) Then Throw New Exception("At least one QueryString Key was [Nothing]. The QueryString may have ended with an [&] or may not have had an [=Value] after the Key.")
+					If _Key.ToUpper() = _QueryStringKey Then Return True
+				Next
+
+				Return False
+
+			Catch _Ex As Exception : Throw New Exception("@QueryStringIsSpecified (CompilerExtention): " & _Ex.Message, _Ex) : End Try
+		End Function
+
+		''' <summary>
+		''' (MullNet CompilerExtention) Checks that the Specified PostData Item is contained in the current Request Object.
+		''' </summary>
+		''' <param name="_RequestObject"></param>
+		''' <remarks></remarks>
+		<Global.System.Runtime.CompilerServices.Extension()>
+		Public Function PostDataItemIsSpecified(ByRef _RequestObject As Web.HttpRequest, ByVal _PostDataItemKey$) As [Boolean]
+
+			'Return _RequestObject.Form.AllKeys.Contains(_PostDataItemKey$)
+
+			'A case-insensitive version:
+
+			_PostDataItemKey = _PostDataItemKey.[ToUpper]()
+
+			For Each _Key$ In _RequestObject.Form.AllKeys
+				If _Key.ToUpper() = _PostDataItemKey Then Return True
+			Next
+
+			Return False
+
+		End Function
+
+		''' <summary>
+		''' (MullNet CompilerExtention) Checks that the Specified QueryString is contained in the current Request Object, and that it has a Value.
+		''' </summary>
+		''' <param name="_RequestObject"></param>
+		''' <remarks></remarks>
+		<Global.System.Runtime.CompilerServices.Extension()>
+		Public Function QueryStringIsSpecifiedAndHasValue(ByRef _RequestObject As Web.HttpRequest, ByVal _QueryStringKey$) As [Boolean]
+
+			Return _RequestObject.QueryStringIsSpecified(_QueryStringKey) AndAlso (Not String.IsNullOrEmpty(_RequestObject.QueryString(_QueryStringKey)))
+
+		End Function
+
+		''' <summary>
+		''' (MullNet CompilerExtention) Checks that the Specified PostData Item is contained in the current Request Object, and that it has a Value.
+		''' </summary>
+		''' <param name="_RequestObject"></param>
+		''' <remarks></remarks>
+		<Global.System.Runtime.CompilerServices.Extension()>
+		Public Function PostDataItemIsSpecifiedAndHasValue(ByRef _RequestObject As Web.HttpRequest, ByVal _PostDataItemKey$) As [Boolean]
+
+			Return _RequestObject.PostDataItemIsSpecified(_PostDataItemKey) AndAlso (Not String.IsNullOrEmpty(_RequestObject.Form(_PostDataItemKey$)))
+
+		End Function
+
+	End Module
 
 	Public Module CollectionTypeExtentions
 
@@ -617,7 +799,23 @@ Namespace CompilerExtentions
 		''' <summary>(MullNet CompilerExtention) Evaluates weather or not each Element in the _Array is unique. In other words, False is Returned if two or more elements are the same.</summary>
 		<Global.System.Runtime.CompilerServices.Extension()>
 		Public Function AllElementsAreUnique(Of _TElement)(ByVal _Array As _TElement()) As Boolean
+
+			REM Any two of the same Element in the _Array would produce the same Hash,
+			REM and therefore be put into the same place in the HashSet, making it's size less than that of the _Array,
+			REM meaning that the Boolean Expression would resolve to False
 			Return New HashSet(Of _TElement)(_Array).Count = _Array.Length
+
+		End Function
+
+		''' <summary>(MullNet CompilerExtention) Returns the Elements starting at _StartIndex, and including all Elements up to _EndIndex</summary>
+		<Global.System.Runtime.CompilerServices.Extension()>
+		Public Function GetInclusiveRange(Of TItems)(ByVal _InputList As List(Of TItems), ByVal _StartIndex As UInt16, ByVal _EndIndex As UInt16) As List(Of TItems)
+
+			If (_StartIndex > (_InputList.Count - 1)) OrElse (_EndIndex > (_InputList.Count - 1)) Then Throw New ArgumentException("The Range could not be extracted from the List because either the _StartIndex (" & _StartIndex.ToString() & ") or the _EndIndex (" & _EndIndex.ToString() & ") was greater than the Maximum Index of the List (" & (_InputList.Count - 1).ToString() & ")")
+			If _EndIndex < _StartIndex Then Throw New ArgumentException("The Range could not be extracted from the List because the _EndIndex (" & _EndIndex.ToString() & ") was lower than the _StartIndex (" & _StartIndex.ToString() & ").", "_StartIndex, _EndIndex")
+
+			Return _InputList.GetRange(_StartIndex, _EndIndex - _StartIndex)
+
 		End Function
 
 		''' <summary>
@@ -728,6 +926,23 @@ Namespace CompilerExtentions
 			Catch _Ex As Exception : Throw New Exception("@EachToUpper (CompilerExtention): " & _Ex.Message, _Ex) : End Try
 		End Function
 
+		''' <summary>(MullNet CompilerExtention) Returns a new Array, wherein _NumElementsToRemoveFromEnd have been chopped off of the end of the input _Array</summary>
+		<Global.System.Runtime.CompilerServices.Extension()>
+		Public Function RemoveFromEnd(Of _TElement)(ByVal _Array As _TElement(), ByVal _NumElementsToRemoveFromEnd As UInt32) As _TElement()
+			Try
+
+				If _NumElementsToRemoveFromEnd > _Array.Length Then Throw New Exception("The Number-of-elements-to-remove-from-the-end-of-the-array " & _NumElementsToRemoveFromEnd.ToString().InBrackets() & " cannot be greater than the number of elements in the array " & _Array.Length.ToString().InBrackets())
+				Return _Array.Take(CInt(_Array.Length - _NumElementsToRemoveFromEnd)).ToArray()
+
+			Catch _Ex As Exception : Throw New Exception("@RemoveFromEnd (CompilerExtention): " & _Ex.Message, _Ex) : End Try
+		End Function
+
+		''' <summary>(MullNet CompilerExtention) Returns the Value corrosponding to _Key, unless the _Dictionary dosen't contain _Key, in which case _DefaultValue is returned</summary>
+		<Global.System.Runtime.CompilerServices.Extension()>
+		Public Function ItemOrDefault(Of _TKey, _TValue)(ByRef _Dictionary As Dictionary(Of _TKey, _TValue), ByVal _Key As _TKey, ByVal _DefaultValue As _TValue) As _TValue
+			If Not _Dictionary.ContainsKey(_Key) Then Return _DefaultValue Else Return _Dictionary.Item(_Key)
+		End Function
+
 		''' <summary>(MullNet CompilerExtention) Returns the _Array, but with Elements inclusively between the indicies of _StartIndex and _EndIndex substituted for the _NewValue</summary>
 		<Global.System.Runtime.CompilerServices.Extension()>
 		Public Function WithRangeOverwritten(Of _TElement)(ByVal _Array As _TElement(), ByVal _StartIndex As UInt16, ByVal _EndIndex As UInt16, ByVal _NewValue As _TElement) As _TElement()
@@ -766,6 +981,16 @@ Namespace CompilerExtentions
 
 	End Module
 
+	Public Module IOObjectExtentions
+
+		''' <summary>(MullNet CompilerExtention) Returns an IO.FileInfo pointing to the file with that name, within the _Directory</summary>
+		<Global.System.Runtime.CompilerServices.Extension()>
+		Public Function FileHereIn(ByRef _Directory As IO.DirectoryInfo, ByVal _FileName$) As IO.FileInfo
+			Return New IO.FileInfo(IO.Path.Combine(_Directory.FullName, _FileName))
+		End Function
+
+	End Module
+
 	Public Module ControlExtentions
 
 		''' <summary>
@@ -779,6 +1004,50 @@ Namespace CompilerExtentions
 				_Action.Invoke()
 			End If
 		End Sub
+
+		''' <summary>
+		''' (MullNet CompilerExtention) Invokes the Control if required, and runs the specified _Action
+		''' </summary>
+		<Global.System.Runtime.CompilerServices.Extension()>
+		Public Sub InvokeIfRequired(ByRef _Control As System.Windows.Controls.Control, ByRef _Action As Action)
+			If Not _Control.Dispatcher.CheckAccess() Then
+				_Control.Dispatcher.BeginInvoke(_Action)
+			Else
+				_Action.Invoke()
+			End If
+		End Sub
+
+		''' <summary>(MullNet CompilerExtention) Returns the Text from the RichTextBox</summary>
+		<Global.System.Runtime.CompilerServices.Extension()>
+		Public Function GetText(ByRef _RichTextBox As Windows.Controls.RichTextBox) As [String]
+			Try
+				Return New Windows.Documents.TextRange(_RichTextBox.Document.ContentStart, _RichTextBox.Document.ContentEnd).Text
+			Catch _Ex As Exception : Throw New Exception("@GetText (CompilerExtention): " & _Ex.Message, _Ex) : End Try
+		End Function
+
+		''' <summary>(MullNet CompilerExtention) Returns the Item1=Line and Item2=Column of the Caret in the RichTextBox</summary>
+		<Global.System.Runtime.CompilerServices.Extension()>
+		Public Function GetCaretLineAndColumn(ByRef _RichTextBox As Windows.Controls.RichTextBox) As Tuple(Of Int32, Int32)
+			Try
+
+				'int lineNumber;
+				'textBox.CaretPosition.GetLineStartPosition(-int.MaxValue, out lineNumber);
+				'int columnNumber = richTextBox.CaretPosition.GetLineStartposition(0).GetOffsetToPosition(richTextBox.CaretPosition);
+				'if (lineNumber == 0)
+				'    columnNumber--;
+
+				'statusBarLineColumn.Content = string.Format("Line {0}, Column {1}", -lineNumber + 1, columnNumber + 1);
+
+				Dim _LineNumber%
+				_RichTextBox.CaretPosition.GetLineStartPosition(-Int32.MaxValue, _LineNumber)
+
+				Dim _ColumnNumber% = _RichTextBox.CaretPosition.GetLineStartPosition(0).GetOffsetToPosition(_RichTextBox.CaretPosition)
+				If _LineNumber = 0 Then _ColumnNumber -= 1
+
+				Return New Tuple(Of Int32, Int32)(-_LineNumber + 1, _ColumnNumber + 1)
+
+			Catch _Ex As Exception : Throw New Exception("@GetCaretLineAndColumn (CompilerExtention): " & _Ex.Message, _Ex) : End Try
+		End Function
 
 	End Module
 
@@ -806,6 +1075,132 @@ Namespace CompilerExtentions
 			Catch _Ex As Exception : Throw New Exception("@WrapIn (Array-Version) (CompilerExtention): " & _Ex.Message, _Ex) : End Try
 		End Function
 
+		''' <summary>(MullNet CompilerExtention) Returns the first in the series of XElements, otherwise an XElement that looks like: &lt;Empty/&gt;</summary>
+		<Global.System.Runtime.CompilerServices.Extension()>
+		Public Function FirstOrEmptyNode(ByVal _XElements As IEnumerable(Of XElement)) As XElement
+			Try
+
+				Return If(
+				 (_XElements IsNot Nothing) AndAlso (_XElements.Count() > 0),
+				 _XElements.First(),
+				 <Empty/>
+				)
+
+			Catch _Ex As Exception : Throw New Exception("@FirstOrEmptyNode (CompilerExtention): " & _Ex.Message, _Ex) : End Try
+		End Function
+
+		''' <summary>(MullNet CompilerExtention) Writes the XElement onto the current Process's Console, using coloured formatting.</summary>
+		''' <param name="_TabChar">The character to use for Indenting the XML</param>
+		<Global.System.Runtime.CompilerServices.Extension()>
+		Public Sub WriteToConsoleWithXMLColourFormatting(ByVal _XElement As XElement, Optional ByVal _TabChar$ = vbTab)
+			Try
+
+				REM _XElement might look like:
+				'	<DSFunction Identifier="Main" ReturnType="VOID">
+				'	    <Parameters />
+				'	    <Contents>
+				'	        <FunctionCall TargetFunction_Identifier="Output">
+				'	            <Arguments>
+				'	                <LiteralExpr LiteralType="STRING" LiteralValue="&quot;Hello, World!&quot;" />
+				'	            </Arguments>
+				'	        </FunctionCall>
+				'	    </Contents>
+				'	</DSFunction>
+
+				REM XMLComponent to ConsoleColors mapping for Light-backgrounds:
+				'	</>=		Blue
+				'	TagName		DarkRed
+				'	AttrKey		Red
+				'	"AttrValue"	Blue
+
+				REM _ConsoleColour_*
+				Dim _CC_XMLGrammarChar, _CC_TagName, _CC_AttrKey, _CC_AttrValue As ConsoleColor
+
+				If Convert.ToInt32(Console.BackgroundColor) < 7 Then
+					'The Console has a dark Background: https://journaldev.nyc3.digitaloceanspaces.com/2018/03/android-daynightmode-colors-nightmode.png
+					_CC_XMLGrammarChar = ConsoleColor.Yellow
+					_CC_TagName = ConsoleColor.Yellow
+					_CC_AttrKey = ConsoleColor.White
+					_CC_AttrValue = ConsoleColor.Green
+				Else
+					'The Console has a light Background: https://help.seagullscientific.com/2019/en/Content/Resources/Images/XML_sample_file.GIF
+					_CC_XMLGrammarChar = ConsoleColor.Blue
+					_CC_TagName = ConsoleColor.DarkRed
+					_CC_AttrKey = ConsoleColor.Red
+					_CC_AttrValue = ConsoleColor.Blue
+				End If
+
+				Dim _XElementStringChars As [Char]() = _XElement.ToTabFormattedString(_TabChar).ToCharArray()
+				Dim _CurrentlyInStringLiteral As [Boolean] = False          'Either on a " or in the middle of two of them
+				Dim _CurrentlyBetweenSpaceAndEquals As [Boolean] = False    'Indicates that we've currently on an AttrName
+
+				For _CharIndex% = 0 To _XElementStringChars.Length - 1 Step +1
+					Dim _Char As [Char] = _XElementStringChars.ElementAt(_CharIndex)
+					Select Case True
+
+						Case _Char = """"c
+							'If this is the start of a StringLiteral, then _CurrentlyInStringLiteral becomes True
+							'If this is the  end  of a StringLiteral, then _CurrentlyInStringLiteral becomes False
+							_CurrentlyInStringLiteral = Not _CurrentlyInStringLiteral
+							UsefulMethods.ConsoleWriteInColour(_Char, _CC_AttrValue)
+
+						Case _CurrentlyInStringLiteral
+							'In the Middle of a String Literal (AttrValue)
+							UsefulMethods.ConsoleWriteInColour(_Char, _CC_AttrValue)
+
+						Case (_Char = " "c) AndAlso
+							Not {"/"c, " "c}.Contains(_XElementStringChars.ElementAtOrDefault(_CharIndex + 1)) _
+						   AndAlso (_XElementStringChars.ElementAtOrDefault(_CharIndex - 1) <> " "c)
+
+							'Start of AttrName like <TagName AttrName="Value" />
+							'The check above [1] prevents us from entering here on an ending space like <TagName />
+							'The check above [2] prevents any leading spaces before     <Element/> from flagging as the beginning of an AttrName
+							'It reads: "The current character is a space" And "The next character is not a space or /" And "The previous character is not a space"
+							_CurrentlyBetweenSpaceAndEquals = True
+							UsefulMethods.ConsoleWriteInColour(_Char, ConsoleColor.White)
+
+						Case _Char = "="c
+							'End of AttrName
+							_CurrentlyBetweenSpaceAndEquals = False
+							UsefulMethods.ConsoleWriteInColour(_Char, _CC_XMLGrammarChar)
+
+						Case _CurrentlyBetweenSpaceAndEquals
+							'In the Middle of an AttrName (Key)
+							UsefulMethods.ConsoleWriteInColour(_Char, _CC_AttrKey)
+
+						Case {"<"c, ">"c, "/"c}.Contains(_Char)
+							'XML Grammar Char
+							UsefulMethods.ConsoleWriteInColour(_Char, _CC_XMLGrammarChar)
+
+						Case Else
+							'XML TagName
+							UsefulMethods.ConsoleWriteInColour(_Char, _CC_TagName)
+
+							'Case Else : Throw New Exception("The character in the XML represented an unaccounted-for syntax component: " & _Char)
+					End Select
+				Next _CharIndex
+
+			Catch _Ex As Exception : Throw New Exception("@PrintToConsoleWithColourFormatting (CompilerExtention): " & _Ex.Message, _Ex) : End Try
+		End Sub
+
+		''' <summary>(MullNet CompilerExtention) Produces a properly-formatted Tabbed-in serialisation of _XElement</summary>
+		''' <param name="_TabChar">The character to use for Indenting the XML</param>
+		<Global.System.Runtime.CompilerServices.Extension()>
+		Public Function ToTabFormattedString(ByVal _XElement As XElement, Optional ByVal _TabChar$ = vbTab) As [String]
+			Try
+
+				REM For every 2 spaces, use a Tab
+
+				Return System.Text.RegularExpressions.Regex.Replace(
+				 input:=_XElement.ToString(),
+				 pattern:="^(\s\s)+",
+				 evaluator:=Function(_Match As System.Text.RegularExpressions.Match) [String].Join("", _TabChar.Repeat(Convert.ToUInt64(_Match.Length \ 2))),
+				 options:=Text.RegularExpressions.RegexOptions.Multiline
+				)
+
+			Catch _Ex As Exception : Throw New Exception("@ToTabFormattedString (CompilerExtention): " & _Ex.Message, _Ex) : End Try
+		End Function
+
 	End Module
 
 	''' <summary>
@@ -819,7 +1214,7 @@ Namespace CompilerExtentions
 
 			Dim _PreviousConsoleColour As ConsoleColor = Console.ForegroundColor
 			Console.ForegroundColor = _ConsoleColour
-			Console.WriteLine(_Text)
+			Console.Out.WriteLine(_Text)
 			Console.ForegroundColor = _PreviousConsoleColour
 
 		End Sub
@@ -832,7 +1227,7 @@ Namespace CompilerExtentions
 
 			Console.ForegroundColor = _ForegroundColour
 			Console.BackgroundColor = _BackgroundColour
-			Console.WriteLine(_Text)
+			Console.Out.WriteLine(_Text)
 
 			Console.ForegroundColor = _PreviousForegroundColour
 			Console.BackgroundColor = _PreviousBackgroundColour
@@ -845,7 +1240,7 @@ Namespace CompilerExtentions
 
 			Dim _PreviousConsoleColour As ConsoleColor = Console.ForegroundColor
 			Console.ForegroundColor = _ConsoleColour
-			Console.Write(_Text)
+			Console.Out.Write(_Text)
 			Console.ForegroundColor = _PreviousConsoleColour
 
 		End Sub
@@ -858,7 +1253,7 @@ Namespace CompilerExtentions
 
 			Console.ForegroundColor = _ForegroundColour
 			Console.BackgroundColor = _BackgroundColour
-			Console.Write(_Text)
+			Console.Out.Write(_Text)
 
 			Console.ForegroundColor = _PreviousForegroundColour
 			Console.BackgroundColor = _PreviousBackgroundColour
@@ -1016,11 +1411,16 @@ Namespace CompilerExtentions
 		Public Function SetForegroundWindow(ByVal hWnd As IntPtr) As <System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.Bool)> Boolean
 		End Function
 
+		''' <summary>(MullNet UsefulMethod) Returns: 0123456789ABCDEFGHIJKLNMOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz</summary>
+		Public Function GetAlphabetAndNumericChars() As [Char]()
+			GetAlphabetAndNumericChars = "0123456789ABCDEFGHIJKLNMOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".ToCharArray()
+		End Function
+
 		''' <summary>(MullNet UsefulMethod) Returns a random String using the Chars 0123456789ABCDEFGHIJKLNMOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz</summary>
 		Public Function GetRandomString(Optional ByVal _WantedLength As UInt16 = 8US) As String
 
 			Dim _StringToReturn$ = String.Empty
-			Dim _PossibleCharacters As Char() = "0123456789ABCDEFGHIJKLNMOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".ToCharArray()
+			Dim _PossibleCharacters As [Char]() = UsefulMethods.GetAlphabetAndNumericChars()
 			Dim _RandomNumber As New Random(Seed:=DateTime.Now.Millisecond)
 
 			For _CurrentCharacter% = 1 To _WantedLength Step +1
@@ -1033,7 +1433,42 @@ Namespace CompilerExtentions
 
 		''' <summary>(MullNet UsefulMethod) Uses an STA Thread (Message-Pumping) to display a SaveFileDialog, and returns the Selected File, or NOTHING.</summary>
 		''' <param name="_TargetFileExtentions">E.g. ("Hypertext Markup", "HTML") or ("Plaintext", "TXT"). The [All Files (*.*)] Option is automatically added by this method. Instanciation: New Tuple(Of String, String)("All Files", "*")</param>
-		Public Function RequestFolderPath(ByVal _FileDialog_Title$, ByVal ParamArray _TargetFileExtentions As Tuple(Of String, String)()) As IO.FileInfo
+		''' <param name="_InitialDirectory">E.g. Environment.GetFolderPath(Environment.SpecialFolder.MyComputer)</param>
+		''' <remarks>
+		''' E.g. UsefulMethods.RequestFilePath_WithSaveFileDialog("Browse for EXE Output File...", {New Tuple(Of [String], [String])("PE Binary Executables", "EXE")})
+		''' </remarks>
+		Public Function RequestFilePath_WithSaveFileDialog(ByVal _FileDialog_Title$, ByVal _TargetFileExtentions As Tuple(Of String, String)(), Optional ByVal _InitialDirectory$ = Nothing) As IO.FileInfo
+			Try
+
+				Dim _ProvidedFilePath As [String] = Nothing
+
+				REM ↓ E.g.	Hypertext Markup (*.HTML)|*.HTML|All files (*.*)|*.*
+				Dim _FileDialog_Filter As [String] = String.Join("|", (
+				 From _DescriptionAndExtention As Tuple(Of [String], [String])
+				 In _TargetFileExtentions.Concat({New Tuple(Of [String], [String])("All Files", "*")})
+				 Select [String].Format("{0} (*.{1})|*.{1}", _DescriptionAndExtention.Item1, _DescriptionAndExtention.Item2)
+				).ToArray())
+
+				Dim _STAThread As New Threading.Thread(
+				Sub()
+					Dim _SaveFileDialog As New Windows.Forms.SaveFileDialog() _
+					With {.Title = _FileDialog_Title, .Filter$ = _FileDialog_Filter$, .InitialDirectory = If(_InitialDirectory, Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)), .AutoUpgradeEnabled = True, .ValidateNames = True}
+					If _SaveFileDialog.ShowDialog() = Windows.Forms.DialogResult.OK Then _ProvidedFilePath = _SaveFileDialog.FileName
+				End Sub)
+
+				_STAThread.SetApartmentState(Threading.ApartmentState.STA)
+				_STAThread.Start()
+				_STAThread.Join()
+
+				Return If(_ProvidedFilePath = Nothing, Nothing, New IO.FileInfo(_ProvidedFilePath))
+
+			Catch _Ex As Exception : Throw New Exception("@RequestFilePath_WithSaveFileDialog: " & _Ex.Message, _Ex) : End Try
+		End Function
+
+		''' <summary>(MullNet UsefulMethod) Uses an STA Thread (Message-Pumping) to display a OpenFileDialog, and returns the Selected File, or NOTHING.</summary>
+		''' <param name="_TargetFileExtentions">E.g. ("Hypertext Markup", "HTML") or ("Plaintext", "TXT"). The [All Files (*.*)] Option is automatically added by this method. Instanciation: New Tuple(Of [String], [String])("All Files", "*")</param>
+		''' <param name="_InitialDirectory">E.g. Environment.GetFolderPath(Environment.SpecialFolder.MyComputer)</param>
+		Public Function RequestFilePath_WithOpenFileDialog(ByVal _FileDialog_Title$, ByVal _TargetFileExtentions As Tuple(Of String, String)(), Optional ByVal _InitialDirectory$ = Nothing) As IO.FileInfo
 			Try
 
 				Dim _ProvidedFilePath As [String] = Nothing
@@ -1047,9 +1482,9 @@ Namespace CompilerExtentions
 
 				Dim _STAThread As New Threading.Thread(
 				Sub()
-					Dim _SaveFileDialog As New Windows.Forms.SaveFileDialog() _
-					With {.Title = _FileDialog_Title, .Filter$ = _FileDialog_Filter$, .InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyComputer)}
-					If _SaveFileDialog.ShowDialog() = Windows.Forms.DialogResult.OK Then _ProvidedFilePath = _SaveFileDialog.FileName
+					Dim _OpenFileDialog As New Windows.Forms.OpenFileDialog() _
+					With {.Title = _FileDialog_Title, .Filter$ = _FileDialog_Filter$, .InitialDirectory = If(_InitialDirectory, Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)), .AutoUpgradeEnabled = True, .ValidateNames = True}
+					If _OpenFileDialog.ShowDialog() = Windows.Forms.DialogResult.OK Then _ProvidedFilePath = _OpenFileDialog.FileName
 				End Sub)
 
 				_STAThread.SetApartmentState(Threading.ApartmentState.STA)
@@ -1058,7 +1493,76 @@ Namespace CompilerExtentions
 
 				Return If(_ProvidedFilePath = Nothing, Nothing, New IO.FileInfo(_ProvidedFilePath))
 
-			Catch _Ex As Exception : Throw New Exception("@RequestFolderPath: " & _Ex.Message, _Ex) : End Try
+			Catch _Ex As Exception : Throw New Exception("@RequestFilePath_WithOpenFileDialog: " & _Ex.Message, _Ex) : End Try
+		End Function
+
+		''' <summary>(MullNet UsefulMethod) Returns the directory of the current exe</summary>
+		Public Function GetExecutingAssemblyDirectory() As IO.DirectoryInfo
+
+			Dim _CodeBase$ = System.Reflection.Assembly.GetExecutingAssembly().CodeBase 'Looks like: "file:///C:/Windows/assembly/GAC_MSIL/Microsoft.VisualStudio.HostingProcess.Utilities/10.0.0.0__b03f5f7f11d50a3a/Microsoft.VisualStudio.HostingProcess.Utilities.dll"
+			Dim _UriBuilder As New UriBuilder(_CodeBase)
+			Return New IO.DirectoryInfo(IO.Path.GetDirectoryName(Uri.UnescapeDataString(_UriBuilder.Path)))
+
+		End Function
+
+		''' <summary>(MullNet UsefulMethod) Returns the file (path) of the current exe</summary>
+		Public Function GetExecutingAssemblyFilePath() As IO.FileInfo
+			Return New IO.FileInfo(System.Reflection.Assembly.GetEntryAssembly().Location)
+		End Function
+
+		''' <summary>(MullNet UsefulMethod) Executes the process, capturing and returning the CLI Output. Returns both the STDOUT and STDERR.</summary>
+		Public Function RunProcess_AndReturnCommandLineOutput(ByVal _ProcessImageFile As IO.FileInfo, Optional ByVal _Process_CLAs$ = "") As String
+			Try
+				With New System.Diagnostics.Process()
+
+					.StartInfo.UseShellExecute = False
+					.StartInfo.FileName = _ProcessImageFile.FullName
+					.StartInfo.Arguments = _Process_CLAs
+					.StartInfo.RedirectStandardOutput = True
+					.StartInfo.RedirectStandardError = True
+
+					.Start()
+					Dim _ProcessOutput$ = .StandardOutput.ReadToEnd()
+					Dim _ErrorOutput$ = .StandardError.ReadToEnd()
+					.WaitForExit()
+
+					If String.IsNullOrEmpty(_ProcessOutput) AndAlso (Not String.IsNullOrEmpty(_ErrorOutput)) Then : Return _ErrorOutput
+					ElseIf String.IsNullOrEmpty(_ErrorOutput) AndAlso (Not String.IsNullOrEmpty(_ProcessOutput)) Then : Return _ProcessOutput
+					ElseIf (Not String.IsNullOrEmpty(_ErrorOutput)) AndAlso (Not String.IsNullOrEmpty(_ProcessOutput)) Then : Return _ProcessOutput & vbCrLf & _ErrorOutput
+					ElseIf String.IsNullOrEmpty(_ErrorOutput) AndAlso String.IsNullOrEmpty(_ProcessOutput) Then : Return String.Empty
+					Else : Throw New Exception("Unaccounted-for Process Error/Output eventuality")
+					End If
+
+				End With
+			Catch _Ex As Exception : Throw New Exception("@RunProcess_AndReturnCommandLineOutput: " & _Ex.Message, _Ex) : End Try
+		End Function
+
+		''' <summary>(MullNet UsefulMethod) Executes the process, capturing and returning the CLI Output. The ExitCode can be resolved from the input Process Object. Waits for the process to exit completely before returning any output.</summary>
+		Public Function RunProcess_AndReturnCommandLineOutput(ByRef _InputProcess As Process) As [String]
+			Try
+				With _InputProcess
+
+					.StartInfo.UseShellExecute = False
+					.StartInfo.RedirectStandardOutput = True
+					.StartInfo.RedirectStandardError = True
+
+					.Start()
+					Dim _ProcessOutput$ = .StandardOutput.ReadToEnd()
+					Dim _ErrorOutput$ = .StandardError.ReadToEnd()
+					.WaitForExit()
+
+					Dim _Process_StdOut_AndStdErr$
+					If String.IsNullOrEmpty(_ProcessOutput) AndAlso (Not String.IsNullOrEmpty(_ErrorOutput)) Then : _Process_StdOut_AndStdErr$ = _ErrorOutput
+					ElseIf String.IsNullOrEmpty(_ErrorOutput) AndAlso (Not String.IsNullOrEmpty(_ProcessOutput)) Then : _Process_StdOut_AndStdErr$ = _ProcessOutput
+					ElseIf (Not String.IsNullOrEmpty(_ErrorOutput)) AndAlso (Not String.IsNullOrEmpty(_ProcessOutput)) Then : _Process_StdOut_AndStdErr$ = _ProcessOutput & vbCrLf & _ErrorOutput
+					ElseIf String.IsNullOrEmpty(_ErrorOutput) AndAlso String.IsNullOrEmpty(_ProcessOutput) Then : _Process_StdOut_AndStdErr$ = String.Empty
+					Else : Throw New Exception("Unaccounted-for Process Error/Output eventuality")
+					End If
+
+					Return _Process_StdOut_AndStdErr
+
+				End With
+			Catch _Ex As Exception : Throw New Exception("@RunProcess_AndReturnCommandLineOutput: " & _Ex.Message, _Ex) : End Try
 		End Function
 
 		''' <summary>Increments a numerical magnitude represented in the place-value (positional-notation) system. E.g. IncrementNumericalValue("100", "01") → "101"</summary>
@@ -1121,6 +1625,111 @@ Namespace CompilerExtentions
 			Return New [String](_OutputValue.ToArray())
 
 		End Function
+
+		''' <summary>(MullNet UsefulMethod) Attempts to resolve the Function to a value of type Boolean, but returns False if an Exception is Thrown whilst attempting to perform this resolution</summary>
+		<Global.System.Runtime.CompilerServices.Extension()>
+		Public Function Result_OrFalseOnException(ByRef _Function As Func(Of [Boolean])) As [Boolean]
+
+			Try : Return _Function.Invoke()
+			Catch : Return False
+			End Try
+
+		End Function
+
+		''' <summary>(MullNet UsefulMethod) Shows the _Text in a Form with a Copy and SaveAs button at the top. This is all done in a NEW STA Thread.</summary>
+		<Global.System.Runtime.CompilerServices.Extension()>
+		Public Sub ShowTextInNewWindow(ByVal _WindowTitle$, ByVal _Text$)
+
+			Dim _STAThread As New Threading.Thread(
+			 Sub()
+
+				 'Form
+				 Dim _SimpleTextForm As New Windows.Forms.Form() With {.Text = _WindowTitle, .Width = 800, .Height = 400, .Icon = Nothing, .ShowIcon = False, .ShowInTaskbar = False, .KeyPreview = True}
+				 _SimpleTextForm.Controls.Add(New Windows.Forms.TextBox() With {.Multiline = True, .Dock = System.Windows.Forms.DockStyle.Fill, .Text = _Text, .ReadOnly = True, .ScrollBars = Windows.Forms.ScrollBars.Both, .Font = New Drawing.Font("Consolas", 12)})
+				 AddHandler _SimpleTextForm.KeyDown, Sub(_Sender As [Object], _KeyEventArgs As Windows.Forms.KeyEventArgs) If _KeyEventArgs.KeyCode = Windows.Forms.Keys.Escape Then _SimpleTextForm.Close()
+
+				 'MenuStrip, with Copy-Button and SaveAs-Button
+				 Dim _MainMenuStrip As New Windows.Forms.MenuStrip() With {.BackColor = System.Drawing.SystemColors.GradientInactiveCaption}
+				 _MainMenuStrip.Items.Add(New Windows.Forms.ToolStripMenuItem("&Copy", image:=Nothing, onClick:=
+				   Sub()
+					   My.Computer.Clipboard.SetText(_Text) : MsgBox("The text was copied to the Clipboard", MsgBoxStyle.Information)
+				   End Sub
+				  ))
+				 _MainMenuStrip.Items.Add(New Windows.Forms.ToolStripMenuItem("&Save As...", image:=Nothing, onClick:=
+				   Sub()
+					   Try
+						   Call (Sub(_SelectedFile As IO.FileInfo) If _SelectedFile IsNot Nothing Then My.Computer.FileSystem.WriteAllText(_SelectedFile.FullName, _Text, False)).Invoke(UsefulMethods.RequestFilePath_WithSaveFileDialog("Save Text As...", {}))
+					   Catch _Ex As Exception : MsgBox("The File could not be saved" & vbCrLf & _Ex.Message, MsgBoxStyle.Critical, _Ex.GetType().Name) : End Try
+				   End Sub
+				   ))
+
+				 _SimpleTextForm.Controls.Add(_MainMenuStrip) : _SimpleTextForm.MainMenuStrip = _MainMenuStrip
+				 Call _SimpleTextForm.ShowDialog()
+
+			 End Sub)
+
+			_STAThread.SetApartmentState(Threading.ApartmentState.STA) : _STAThread.Start()
+
+		End Sub
+
+		''' <summary>(MullNet UsefulMethod) Shows the _Image in a Form with a Copy and SaveAs button at the top. This is all done in a NEW STA Thread.</summary>
+		<Global.System.Runtime.CompilerServices.Extension()>
+		Public Sub ShowImageInNewWindow(ByVal _WindowTitle$, ByVal _Image As Drawing.Bitmap)
+
+			Dim _STAThread As New Threading.Thread(AddressOf UsefulMethods.ConstructImageWindow(_WindowTitle, _Image).ShowDialog)
+			_STAThread.SetApartmentState(Threading.ApartmentState.STA) : _STAThread.Start()
+
+		End Sub
+
+		''' <summary>(MullNet UsefulMethod) Constructs a Window for the _Image, with a Copy and SaveAs button at the top.</summary>
+		<Global.System.Runtime.CompilerServices.Extension()>
+		Public Function ConstructImageWindow(ByVal _WindowTitle$, ByVal _Image As Drawing.Bitmap) As Windows.Forms.Form
+
+			'Form
+			Dim _SimpleImageForm As New Windows.Forms.Form() With {.Text = _WindowTitle, .Width = 850, .Height = 650, .Icon = Nothing, .ShowIcon = False, .ShowInTaskbar = False, .KeyPreview = True}
+			_SimpleImageForm.Controls.Add(New Windows.Forms.PictureBox() With {.Dock = System.Windows.Forms.DockStyle.Fill, .Image = _Image, .SizeMode = Windows.Forms.PictureBoxSizeMode.Zoom})
+			AddHandler _SimpleImageForm.KeyDown, Sub(_Sender As [Object], _KeyEventArgs As Windows.Forms.KeyEventArgs) If _KeyEventArgs.KeyCode = Windows.Forms.Keys.Escape Then _SimpleImageForm.Close()
+
+			'MenuStrip, with Copy-Button and SaveAs-Button
+			Dim _MainMenuStrip As New Windows.Forms.MenuStrip() With {.BackColor = System.Drawing.SystemColors.GradientInactiveCaption}
+			_MainMenuStrip.Items.Add(New Windows.Forms.ToolStripMenuItem("&Copy", image:=Nothing, onClick:=
+			  Sub()
+				  My.Computer.Clipboard.SetImage(_Image) : MsgBox("The Bitmap was copied to the Clipboard", MsgBoxStyle.Information)
+			  End Sub
+			 ))
+			_MainMenuStrip.Items.Add(New Windows.Forms.ToolStripMenuItem("&Save As...", image:=Nothing, onClick:=
+			  Sub()
+				  Try
+					  Dim _SelectedFile As IO.FileInfo = UsefulMethods.RequestFilePath_WithSaveFileDialog("Save Text As...", {New Tuple(Of [String], [String])("Portable Network Graphics", "PNG")})
+					  If _SelectedFile IsNot Nothing Then _Image.Save(_SelectedFile.FullName, Drawing.Imaging.ImageFormat.Png)
+				  Catch _Ex As Exception : MsgBox("The File could not be saved" & vbCrLf & _Ex.Message, MsgBoxStyle.Critical, _Ex.GetType().Name) : End Try
+			  End Sub
+			  ))
+
+			_SimpleImageForm.Controls.Add(_MainMenuStrip) : _SimpleImageForm.MainMenuStrip = _MainMenuStrip
+			Return _SimpleImageForm
+
+		End Function
+
+		''' <summary>(MullNet UsefulMethod) Shows the Contents of the URL (a Web address, local HTML file, or file directory) in a Form. This is all done in a NEW STA Thread.</summary>
+		<Global.System.Runtime.CompilerServices.Extension()>
+		Public Sub ShowURLContentsInNewWindow(ByVal _WindowTitle$, ByVal _URL$)
+
+			Dim _STAThread As New Threading.Thread(
+			 Sub()
+
+				 'Form
+				 Dim _SimpleIExploreForm As New Windows.Forms.Form() With {.Text = _WindowTitle, .Width = 600, .Height = 400, .Icon = Nothing, .ShowIcon = False, .ShowInTaskbar = False, .KeyPreview = True}
+				 _SimpleIExploreForm.Controls.Add(New Windows.Forms.WebBrowser() With {.Dock = System.Windows.Forms.DockStyle.Fill, .Url = New System.Uri(_URL)})
+				 AddHandler _SimpleIExploreForm.KeyDown, Sub(_Sender As [Object], _KeyEventArgs As Windows.Forms.KeyEventArgs) If _KeyEventArgs.KeyCode = Windows.Forms.Keys.Escape Then _SimpleIExploreForm.Close()
+
+				 Call _SimpleIExploreForm.ShowDialog()
+
+			 End Sub)
+
+			_STAThread.SetApartmentState(Threading.ApartmentState.STA) : _STAThread.Start()
+
+		End Sub
 
 	End Module
 
