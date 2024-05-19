@@ -169,9 +169,9 @@ Namespace MetaUtilities
 			REM Ensure the Mandatory Keys have been specified, and execute the Actions on derivable <Value>s
 			For Each _CLAKeyToActionMapping As CLAKeyToActionMapping In Me.KeyToActionMappings
 
-				If _CLAKeyToActionMapping.MustBeSpecified Then _
-				 If Not CLAsContainsKey_(_CommandLineArguments, _CLAKeyToActionMapping.Key) _
-				  Then Throw New CLANotSpecifiedException("The mandatory Command-Line Argument with Key """ & _CLAKeyToActionMapping.Key & """ was not specified. Command-Line Arguments must be provided in the syntax  /Key  or  /Key:Value  or  /Key:""Value"" . NOTE: CLA Keys are not case-sensitive;  /Name  is the same as  /NAmE .")
+				If _CLAKeyToActionMapping.MustBeSpecified _
+					Then If Not CLAsContainsKey_(_CommandLineArguments, _CLAKeyToActionMapping.Key) _
+						Then Throw New CLANotSpecifiedException("The mandatory Command-Line Argument with Key """ & _CLAKeyToActionMapping.Key & """ was not specified. Command-Line Arguments must be provided in the syntax  /Key  or  /Key:Value  or  /Key:""Value"" . NOTE: CLA Keys are not case-sensitive;  /Name  is the same as  /NAmE .")
 
 				'Here, we know that *if* the _CLAKeyToActionMapping was mandatory, then it has been specified
 				'If it hasn't been specified, then we don't need to do anything about it
@@ -184,12 +184,12 @@ Namespace MetaUtilities
 
 					Dim _LambdaCopyOf_CLAKeyToActionMapping As CLAKeyToActionMapping = _CLAKeyToActionMapping
 
-					Dim _CLAWithMatchingKey_Resolver As Func(Of String, Boolean) =
-					   Function(_CLA$) _CLA.ToUpper().StartsWith((CLAKeyStartChar_ & _LambdaCopyOf_CLAKeyToActionMapping.Key & CLAValueStartChar_).ToUpper()) AndAlso (_CLA.Length > (CLAKeyStartChar_ & _LambdaCopyOf_CLAKeyToActionMapping.Key & CLAValueStartChar_).Length)
+					Dim _CLAWithMatchingKey_Resolver As Func(Of [String], [Boolean]) _
+						= Function(_CLA$) _CLA.ToUpper().StartsWith((CLAKeyStartChar_ & _LambdaCopyOf_CLAKeyToActionMapping.Key & CLAValueStartChar_).ToUpper()) AndAlso (_CLA.Length > (CLAKeyStartChar_ & _LambdaCopyOf_CLAKeyToActionMapping.Key & CLAValueStartChar_).Length)
 
 					'Ensure that there is a Value
-					If Not _CommandLineArguments.Where(_CLAWithMatchingKey_Resolver).Count() = 1 Then _
-					 Throw New CLAValueNotSpecifiedException("The Command-Line Argument with Key """ & _CLAKeyToActionMapping.Key & """ declared that a corrosponding Value was mandatory, but no recognisable value was provided in the Syntax /Key:Value or /Key:""Value"".")
+					If Not _CommandLineArguments.Where(_CLAWithMatchingKey_Resolver).Count() = 1 _
+						Then Throw New CLAValueNotSpecifiedException("The Command-Line Argument with Key """ & _CLAKeyToActionMapping.Key & """ declared that a corrosponding Value was mandatory, but no recognisable value was provided in the Syntax /Key:Value or /Key:""Value"".")
 
 					'Extract the :Value or :"Value"
 					_CorrospondingValue = New [String](_CommandLineArguments.First(_CLAWithMatchingKey_Resolver).ToCharArray().Skip(_CommandLineArguments.First(_CLAWithMatchingKey_Resolver).ToCharArray().ToList().IndexOf(CLAValueStartChar_) + 1).ToArray())
@@ -236,37 +236,46 @@ Namespace MetaUtilities
 				'						t it wraps around after 80 columns (in total)
 				'/ShowLog				(Optional) Shows the Log during Interpretation
 
+
+				REM ↓ The number of chars wide the console is treated as
+				REM ↓ If the process isn't being run from a console,
+				REM   (e.g. because it's being run through Doorman or VS-Immediate-Window)
+				REM   then there is no Handle to a Console, so Console.WindowWidth raises an IOException
+				Dim _ConsoleWidth_InChars As UInt16
+				Try : _ConsoleWidth_InChars = Convert.ToUInt16(System.Console.WindowWidth)
+				Catch _IOEx As System.IO.IOException : _ConsoleWidth_InChars = 80US : End Try
+
 				_CLAHelpDictionaryText$ =
-				 "Description:" & vbCrLf &
-				 "-"c.Repeat(80) & vbCrLf &
-				 Me.CLAHelpDictionary_Description & vbCrLf & vbCrLf &
-				 "Examples:" & vbCrLf &
-				 "-"c.Repeat(80) & vbCrLf
+<String>
+	Description:
+	<%= "-"c.Repeat(_ConsoleWidth_InChars) & vbCrLf & vbCrLf %>
+	<%= Me.CLAHelpDictionary_Description %>
 
-				For Each _Example$ In Me.CLAHelpDictionary_Examples
-					_CLAHelpDictionaryText &= _Example & vbCrLf
-				Next
+	Examples:
+	<%= "-"c.Repeat(_ConsoleWidth_InChars) & vbCrLf %>
+	<%= Me.CLAHelpDictionary_Examples.JoinAsStrings(vbCrLf) %>
 
-				_CLAHelpDictionaryText &= vbCrLf &
-				 "Argument Usage: (Keys are case-insensitive)" & vbCrLf &
-				 "-"c.Repeat(80) & vbCrLf
+	Argument Usage: (Keys are case-insensitive)
+	<%= "-"c.Repeat(_ConsoleWidth_InChars) %>
+</String>.Value.Split({vbLf}, StringSplitOptions.None).Select(Of [String])(Function(_Line$) _Line.Trim()).ToArray().JoinAsStrings(vbCrLf)
+
 
 				For Each _CLAKeyToActionMapping As CLAKeyToActionMapping In Me.KeyToActionMappings
 
-					Const _KeyAndValuePart_TargetLength% = 30
-					Const _DescriptionPart_MaxColumnWidth% = 80 - _KeyAndValuePart_TargetLength
+					Const _KeyAndValuePart_TargetLength As UInt16 = 30US
+					Dim _DescriptionPart_MaxColumnWidth As UInt16 = _ConsoleWidth_InChars - _KeyAndValuePart_TargetLength
 
 					'E.g. /RunFile:<Value>
 					Dim _KeyAndValuePart$ = CLAKeyStartChar_ & _CLAKeyToActionMapping.Key & If(_CLAKeyToActionMapping.MustHaveValue, CLAValueStartChar_ & "<Value>", String.Empty)
 
 					'E.g. (Optional) Shows the Log during Interpretation
-					Dim _DescriptionPart$ = If(Not _CLAKeyToActionMapping.MustBeSpecified, "(Optional) ", String.Empty) & _CLAKeyToActionMapping.Description
+					Dim _DescriptionPart$ = If(Not _CLAKeyToActionMapping.MustBeSpecified, "(Optional) ", "") & _CLAKeyToActionMapping.Description
 
 					REM Start the Descriptions 30 Chars in, and put a {LineBreak} and {30 Spaces} every 50 chars.
 					_CLAHelpDictionaryText &=
-					 _KeyAndValuePart.PadRight(_KeyAndValuePart_TargetLength, " "c) &
-					 _DescriptionPart.ToCharArray().Intersperse((vbCrLf & " "c.Repeat(_KeyAndValuePart_TargetLength)).ToCharArray(), _DescriptionPart_MaxColumnWidth) &
-					 vbCrLf
+						 _KeyAndValuePart.PadRight(_KeyAndValuePart_TargetLength, " "c) &
+						_DescriptionPart.ToCharArray().Intersperse((vbCrLf & " "c.Repeat(_KeyAndValuePart_TargetLength)).ToCharArray(), _DescriptionPart_MaxColumnWidth) &
+						vbCrLf
 
 				Next
 
@@ -288,9 +297,7 @@ Namespace MetaUtilities
 				 "Description:" & vbCrLf & Me.CLAHelpDictionary_Description & vbCrLf & vbCrLf &
 				 "Examples:" & vbCrLf
 
-				For Each _Example$ In Me.CLAHelpDictionary_Examples
-					_CLAHelpDictionaryText &= _Example & vbCrLf
-				Next
+				_CLAHelpDictionaryText &= Me.CLAHelpDictionary_Examples.JoinAsStrings(vbCrLf)
 
 				_CLAHelpDictionaryText &= vbCrLf &
 				 "Argument Usage: (Keys are case-insensitive)" & vbCrLf
@@ -309,8 +316,8 @@ Namespace MetaUtilities
 
 			End If
 
-			REM The OutputDelegate will usually be Console.WriteLine, to write the CLAHD to the std out stream.
-			REM Sometimes though, e.g. in the case of a Windows Application, a MessageBox may be shown instead.
+			REM The OutputDelegate will usually be `AddressOf Console.WriteLine`, to write the CLAs' HD to stdout.
+			REM Sometimes though, e.g. in the case of a Windows Application, it might be e.g. `AddressOf MessageBox.Show`.
 			Me.OutputDelegate.Invoke(_CLAHelpDictionaryText)
 
 			Return

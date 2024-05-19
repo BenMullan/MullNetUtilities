@@ -106,6 +106,21 @@ MullNet.MetaUtilities
 <member name="M:MullNet.MetaUtilities.Screenshotting.TakeAndSaveScreenshot(System.String)">
  <summary>Does not cause a bug after some time, because the objects are properly disposed of, in each call.</summary>
 </member>
+<member name="T:MullNet.MetaUtilities.SmartcardUtils">
+ <summary>Contains logic for interfacing with PCSC Smartcards and Readers</summary>
+</member>
+<member name="T:MullNet.MetaUtilities.SmartcardUtils.SmartcardDataSnapshot">
+ <summary>Encapsulates all data read from an EMV Smartcard</summary>
+</member>
+<member name="F:MullNet.MetaUtilities.SmartcardUtils.SmartcardInsertionException_Handler_">
+ <summary>When a LibPCSC.PCSCReader is instanciated, it starts a card-insertion-listening thread. If this encounters an exception, here's a handler for it.</summary>
+</member>
+<member name="P:MullNet.MetaUtilities.SmartcardUtils.AvaliableSmartcardReaders">
+ <summary>Returns the names of all installed PCSC Smartcard Readers on the current system</summary>
+</member>
+<member name="M:MullNet.MetaUtilities.SmartcardUtils.ReadSmartcard(System.Byte)">
+ <summary>Sends a series of APDU-Commands to the Smartcard in the specified reader, to build a SmartcardDataSnapshot</summary>
+</member>
 <member name="T:MullNet.MetaUtilities.SQLQueryRunner">
  <summary>Runs a Query on an SQL Server, returning the DataTable resulting from the Query</summary>
 </member>
@@ -294,6 +309,9 @@ MullNet.MetaUtilities
 <member name="M:MullNet.CompilerExtentions.ObjectExtentions.MustNotBeNothing``1(``0@,System.String)">
  <summary>(MullNet CompilerExtention) Ensures that the _Object IsNot Nothing, Throwing a NullReferanceException with the _MessageIfNull if it is</summary>
 </member>
+<member name="M:MullNet.CompilerExtentions.ObjectExtentions.Repeat``1(``0,System.UInt64)">
+ <summary>(MullNet CompilerExtention) Repeats the _Element _Times times.</summary>
+</member>
 <member name="M:MullNet.CompilerExtentions.StringExtentions.SplitAtWithoutRemoving(System.String,System.Char[])">
  <summary>
  (MullNet CompilerExtention) Splits the String whenever one of the _CharsAtWhichToSplitString occours, but the _CharAtWhichToSplitString stays in each New String
@@ -472,12 +490,6 @@ MullNet.MetaUtilities
 <member name="M:MullNet.CompilerExtentions.CollectionTypeExtentions.AllElementsAreUnique``1(``0[])">
  <summary>(MullNet CompilerExtention) Evaluates weather or not each Element in the _Array is unique. In other words, False is Returned if two or more elements are the same.</summary>
 </member>
-<member name="M:MullNet.CompilerExtentions.CollectionTypeExtentions.Repeat``1(``0,System.UInt64)">
- <summary>(MullNet CompilerExtention) Repeats the _Element _Times times.</summary>
-</member>
-<member name="M:MullNet.CompilerExtentions.CollectionTypeExtentions.GetStandardArraySerialisation``1(``0[],System.String)">
- <summary>(MullNet CompilerExtention) Gets the ToString() of each Element in the _Array, and serialises these Strings into the form {String1, String2, String3}</summary>
-</member>
 <member name="M:MullNet.CompilerExtentions.CollectionTypeExtentions.Intersperse``1(``0[],``0[],System.UInt32)">
  <summary>
  (MullNet CompilerExtention) Returns a version of the _Array where the _FillerBlock is inserted after each _HowOften elements.
@@ -507,6 +519,15 @@ MullNet.MetaUtilities
 </member>
 <member name="M:MullNet.CompilerExtentions.CollectionTypeExtentions.WithRangeOverwritten``1(``0[],System.UInt16,System.UInt16,``0)">
  <summary>(MullNet CompilerExtention) Returns the _Array, but with Elements inclusively between the indicies of _StartIndex and _EndIndex substituted for the _NewValue</summary>
+</member>
+<member name="M:MullNet.CompilerExtentions.CollectionTypeExtentions.JoinAsStrings``1(``0[],System.String)">
+ <summary>
+ (MullNet CompilerExtention) Returns the `ToString()` of each `_Element`, joined by the `_Seperator`
+ <example>JoinAsStrings(Of Int32)({12, 34, &amp;H20}) → "12, 34, 32"</example>
+ </summary>
+</member>
+<member name="M:MullNet.CompilerExtentions.CollectionTypeExtentions.GetStandardArraySerialisation``1(``0[],System.String)">
+ <summary>(MullNet CompilerExtention) Gets the ToString() of each Element in the _Array, and serialises these Strings into the form {String1, String2, String3}</summary>
 </member>
 <member name="M:MullNet.CompilerExtentions.ControlExtentions.InvokeIfRequired(System.Windows.Forms.Control,System.Action)">
  <summary>
@@ -544,15 +565,15 @@ MullNet.MetaUtilities
 <member name="M:MullNet.CompilerExtentions.UsefulMethods.ConsoleErrorWriteInColour(System.String,System.ConsoleColor)">
  <summary>(MullNet UsefulMethod) Writes the _Text to the _Console in the specified _ConsoleColour, without a LineBreak on the end</summary>
 </member>
-<member name="M:MullNet.CompilerExtentions.UsefulMethods.ContainsWellBalencedPairs``1(``0[],System.Tuple{``0,``0}[])">
+<member name="M:MullNet.CompilerExtentions.UsefulMethods.ContainsProperlyNestedPairs``1(``0[],System.Tuple{``0,``0}[])">
  <summary>
  (MullNet UsefulMethod)
  Ensures that for each opening component in the _Pairs, there is an instance of the corrosponding closing component.
  Also makes sure that the _Pairs components are opened in a ballenced fashion.
  E.g. if done with brackets, then "([])" would be valid, whereas "([)]" would not be (even though there are the same number of brackets and squares in the latter).
  
- Example Call: ContainsWellBalencedPairs(Of String)({"Open", "Null", "Null", "Close", "Null", "Close"}, New Tuple(Of String, String)("Open", "Close"))
- <example>ContainsWellBalencedPairs(Of String)({"Open", "Null", "Null", "Close", "Null", "Close"}, New Tuple(Of String, String)("Open", "Close"))</example>
+ Example Call: ContainsProperlyNestedPairs(Of String)({"Open", "Null", "Null", "Close", "Null", "Close"}, New Tuple(Of String, String)("Open", "Close"))
+ <example>ContainsProperlyNestedPairs(Of String)({"Open", "Null", "Null", "Close", "Null", "Close"}, New Tuple(Of String, String)("Open", "Close"))</example>
  
  How this Function works:
  'Declare a _TItems Stack

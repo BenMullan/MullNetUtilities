@@ -1,0 +1,14 @@
+# Stop VS removing my lovely extra brackets!
+[*.{cs,vb}]
+dotnet_diagnostic.IDE0047.severity = none
+dotnet_diagnostic.IDE0048.severity = none
+dotnet_diagnostic.IDE0055.severity = none
+
+# Indentation and spacing
+indent_size = 4
+indent_style = tab
+tab_width = 4
+
+# New line preferences
+end_of_line = crlf
+insert_final_newline = false

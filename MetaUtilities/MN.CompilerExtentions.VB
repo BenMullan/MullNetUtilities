@@ -48,6 +48,18 @@ Namespace CompilerExtentions
 			Return _Object
 		End Function
 
+		''' <summary>(MullNet CompilerExtention) Repeats the _Element _Times times.</summary>
+		<Global.System.Runtime.CompilerServices.Extension()>
+		Public Function Repeat(Of _TElement)(ByVal _Element As _TElement, ByVal _Times As UInt64) As _TElement()
+
+			Dim _ElementsToReturn As New List(Of _TElement)()
+
+			For _Index As UInt64 = 0 To Convert.ToUInt64(_Times - 1) Step +1 : _ElementsToReturn.Add(_Element) : Next
+
+			Return _ElementsToReturn.ToArray()
+
+		End Function
+
 	End Module
 
 	Public Module StringExtentions
@@ -405,7 +417,8 @@ Namespace CompilerExtentions
 
 	End Module
 
-	'Public Module ControlExtentions
+	'Removed: Public Module ControlExtentions
+	'Removed: Public Module WebObjectExtentions
 
 	Public Module CollectionTypeExtentions
 
@@ -607,26 +620,6 @@ Namespace CompilerExtentions
 			Return New HashSet(Of _TElement)(_Array).Count = _Array.Length
 		End Function
 
-		''' <summary>(MullNet CompilerExtention) Repeats the _Element _Times times.</summary>
-		<Global.System.Runtime.CompilerServices.Extension()>
-		Public Function Repeat(Of _TElement)(ByVal _Element As _TElement, ByVal _Times As UInt64) As _TElement()
-
-			Dim _ElementsToReturn As New List(Of _TElement)()
-
-			For _Index As UInt64 = 0 To Convert.ToUInt64(_Times - 1) Step +1 : _ElementsToReturn.Add(_Element) : Next
-
-			Return _ElementsToReturn.ToArray()
-
-		End Function
-
-		''' <summary>(MullNet CompilerExtention) Gets the ToString() of each Element in the _Array, and serialises these Strings into the form {String1, String2, String3}</summary>
-		<Global.System.Runtime.CompilerServices.Extension()>
-		Public Function GetStandardArraySerialisation(Of _TElement)(ByVal _Array As _TElement(), Optional ByVal _Seperator$ = ", ") As String
-
-			Return String.Join(_Seperator, _Array.Select(Function(_Element As _TElement) _Element.ToString())).InCurlies()
-
-		End Function
-
 		''' <summary>
 		''' (MullNet CompilerExtention) Returns a version of the _Array where the _FillerBlock is inserted after each _HowOften elements.
 		''' Does not insert any instances of the _FillerBlock past the end of the _Array's last Element
@@ -634,6 +627,7 @@ Namespace CompilerExtentions
 		<Global.System.Runtime.CompilerServices.Extension()>
 		Public Function Intersperse(Of _TElement)(ByVal _Array As _TElement(), ByVal _FillerBlock As _TElement(), ByVal _HowOften As UInt32) As _TElement()
 			Try
+
 				If _HowOften = 0 Then Throw New ArgumentException("_HowOften cannot be 0", "_HowOften")
 				If _Array.Length = 0 Then Return _Array
 
@@ -748,9 +742,29 @@ Namespace CompilerExtentions
 			Catch _Ex As Exception : Throw New Exception("@WithRangeOverwritten (CompilerExtention): " & _Ex.Message, _Ex) : End Try
 		End Function
 
-	End Module
+		''' <summary>
+		''' (MullNet CompilerExtention) Returns the `ToString()` of each `_Element`, joined by the `_Seperator`
+		''' <example>JoinAsStrings(Of Int32)({12, 34, &amp;H20}) → "12, 34, 32"</example>
+		''' </summary>
+		<Global.System.Runtime.CompilerServices.Extension()>
+		Public Function JoinAsStrings(Of _TEachElement)(ByVal _Elements As _TEachElement(), Optional ByVal _Seperator$ = ", ") As [String]
 
-	'Public Module WebObjectExtentions
+			If _Elements Is Nothing Then Return [String].Empty
+
+			Return [String].Join(
+				_Seperator,
+				_Elements.Select(Of [String])(Function(_Element As _TEachElement) _Element.ToString())
+			)
+
+		End Function
+
+		''' <summary>(MullNet CompilerExtention) Gets the ToString() of each Element in the _Array, and serialises these Strings into the form {String1, String2, String3}</summary>
+		<Global.System.Runtime.CompilerServices.Extension()>
+		Public Function GetStandardArraySerialisation(Of _TEachElement)(ByVal _Array As _TEachElement(), Optional ByVal _Seperator$ = ", ") As String
+			Return _Array.JoinAsStrings(_Seperator).InCurlies()
+		End Function
+
+	End Module
 
 	Public Module ControlExtentions
 
@@ -877,8 +891,8 @@ Namespace CompilerExtentions
 		''' Also makes sure that the _Pairs components are opened in a ballenced fashion.
 		''' E.g. if done with brackets, then "([])" would be valid, whereas "([)]" would not be (even though there are the same number of brackets and squares in the latter).
 		''' 
-		''' Example Call: ContainsWellBalencedPairs(Of String)({"Open", "Null", "Null", "Close", "Null", "Close"}, New Tuple(Of String, String)("Open", "Close"))
-		''' <example>ContainsWellBalencedPairs(Of String)({"Open", "Null", "Null", "Close", "Null", "Close"}, New Tuple(Of String, String)("Open", "Close"))</example>
+		''' Example Call: ContainsProperlyNestedPairs(Of String)({"Open", "Null", "Null", "Close", "Null", "Close"}, New Tuple(Of String, String)("Open", "Close"))
+		''' <example>ContainsProperlyNestedPairs(Of String)({"Open", "Null", "Null", "Close", "Null", "Close"}, New Tuple(Of String, String)("Open", "Close"))</example>
 		''' 
 		''' How this Function works:
 		''' 'Declare a _TItems Stack
@@ -892,7 +906,7 @@ Namespace CompilerExtentions
 		''' <param name="_Pairs">The Pairs which have to be balenced. Item1 = the Opening Component E.g. "("; Item2 = the Closing Component E.g. ")"</param>
 		''' <returns>Weather or not _AllItems contained well-balenced Pairs</returns>
 		''' <remarks>Implemented 24-08-2022 so that Brackets and Statements may make use of it</remarks>
-		Public Function ContainsWellBalencedPairs(Of _TItems)(ByVal _AllItems As _TItems(), ByVal ParamArray _Pairs As Tuple(Of _TItems, _TItems)()) As Boolean
+		Public Function ContainsProperlyNestedPairs(Of _TItems)(ByVal _AllItems As _TItems(), ByVal ParamArray _Pairs As Tuple(Of _TItems, _TItems)()) As Boolean
 			Try
 
 				'Declare a _TItems Stack
@@ -940,7 +954,7 @@ Namespace CompilerExtentions
 				Debug.WriteLine(String.Format("Determined that {0} relevant Item(s) out of {1} total Item(s) were well-balenced with {2} Opening Component(s) and {3} Closing Component(s) from {4} Pair(s)", _JustTheRelevantItems.Length.ToString(), _AllItems.Length.ToString(), _NoOpeningComponents.ToString(), _NoClosingComponents.ToString(), _Pairs.Length.ToString()))
 				Return True
 
-			Catch _Ex As Exception : Throw New Exception("@IsStackBalenced(Of " & GetType(_TItems).Name & "): " & _Ex.Message, _Ex) : End Try
+			Catch _Ex As Exception : Throw New Exception("@ContainsProperlyNestedPairs(Of " & GetType(_TItems).Name & "): " & _Ex.Message, _Ex) : End Try
 		End Function
 
 		''' <summary>(MullNet UsefulMethod) For Procuring a Win32 Console, even if the Process isn't a Console Application</summary>

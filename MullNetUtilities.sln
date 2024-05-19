@@ -9,6 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MathematicalUtilities", "Ma
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Resources", "_Resources", "{4B415B07-AA91-47E6-89BA-A25C3604E871}"
 	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
 		(Resources)\Graveyard.txt = (Resources)\Graveyard.txt
 		ReadMe.MD = ReadMe.MD
 		ReadMe.txt = ReadMe.txt
@@ -52,7 +53,12 @@ Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Doorman", "_SystemUtilities
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SmartcardUtilities", "SmartcardUtilities", "{4BC31692-ED9E-423E-A91B-8836F7B8F380}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartcardInfo", "_SystemUtilities\_SmartcardUtilities\SmartcardInfo\SmartcardInfo.csproj", "{CA2594EB-ED20-48F2-8D88-93C2E8477524}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartcardInfo", "_SystemUtilities\_SmartcardUtilities\SmartcardInfo\SmartcardInfo.csproj", "{CA2594EB-ED20-48F2-8D88-93C2E8477524}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Misc.", "Misc.", "{E1EC1030-BE52-4835-9BA6-B201D6CA58AC}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

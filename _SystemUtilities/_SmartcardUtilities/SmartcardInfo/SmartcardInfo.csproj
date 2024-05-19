@@ -11,10 +11,25 @@
     <NoWin32Manifest>true</NoWin32Manifest>
     <Title>EMV Smartcard Info</Title>
     <RootNamespace>MullNet</RootNamespace>
+    <PublishAot>True</PublishAot>
+    <Authors>Ben Mullan</Authors>
+    <Version>1.2.0.0</Version>
+    <Company>MullNet .NET</Company>
+    <Description>Displays useful information for an inserted EMV Smartcard, including the Bank- &amp; Cardholder-Name</Description>
+    <Copyright>(c) MNDN 2024</Copyright>
+    <PackageProjectUrl>//benmullan.github.io/_/</PackageProjectUrl>
+    <PackageIcon>Smartcard_3.png</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
     <Content Include="Smartcard_6.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\..\..\..\..\..\Pictures\PigeonHoles\Icons\Smartcard_3.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
@@ -23,7 +38,7 @@
 
   <ItemGroup>
     <Reference Include="LibPCSC">
-      <HintPath>..\_References\LibPCSC.dll</HintPath>
+      <HintPath>..\..\..\(Resources)\References\LibPCSC.dll</HintPath>
     </Reference>
   </ItemGroup>
 

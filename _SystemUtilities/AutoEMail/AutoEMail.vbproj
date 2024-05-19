@@ -97,7 +97,9 @@
     <Compile Include="HelpAndAbout.Designer.VB">
       <DependentUpon>HelpAndAbout.VB</DependentUpon>
     </Compile>
-    <Compile Include="HelpAndAbout.VB" />
+    <Compile Include="HelpAndAbout.VB">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Home.VB">
       <SubType>Form</SubType>
     </Compile>

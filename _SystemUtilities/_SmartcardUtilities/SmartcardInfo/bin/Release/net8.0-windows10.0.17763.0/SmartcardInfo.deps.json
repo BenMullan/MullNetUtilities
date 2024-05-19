@@ -9,7 +9,7 @@
       "SmartcardInfo/1.0.0": {
         "dependencies": {
           "MetaUtilities": "1.0.0",
-          "LibPCSC": "2.1.0.0",
+          "LibPCSC": "2.8.1.0",
           "runtimepack.Microsoft.Windows.SDK.NET.Ref": "10.0.17763.31"
         },
         "runtime": {
@@ -33,11 +33,11 @@
           "MullNet.MetaUtilities.dll": {}
         }
       },
-      "LibPCSC/2.1.0.0": {
+      "LibPCSC/2.8.1.0": {
         "runtime": {
           "LibPCSC.dll": {
-            "assemblyVersion": "2.1.0.0",
-            "fileVersion": "2.1.0.0"
+            "assemblyVersion": "2.8.1.0",
+            "fileVersion": "2.8.1.0"
           }
         }
       }
@@ -59,7 +59,7 @@
       "serviceable": false,
       "sha512": ""
     },
-    "LibPCSC/2.1.0.0": {
+    "LibPCSC/2.8.1.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""

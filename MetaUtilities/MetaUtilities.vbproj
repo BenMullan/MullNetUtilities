@@ -46,6 +46,9 @@
     <OptionInfer>On</OptionInfer>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="LibPCSC">
+      <HintPath>..\(Resources)\References\LibPCSC.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -73,6 +76,7 @@
     <Compile Include="%28Misc.%29\MN.MU.NTPServerUtils.VB" />
     <Compile Include="%28Misc.%29\MN.MU.Processes.VB" />
     <Compile Include="%28Misc.%29\MN.MU.Screenshotting.VB" />
+    <Compile Include="%28Misc.%29\MN.MU.SmartcardUtils.VB" />
     <Compile Include="%28Misc.%29\MN.MU.SQLQueryRunner.VB" />
     <Compile Include="Dialogs\MN.MU.Dialogs.BaseDialog.Designer.VB">
       <DependentUpon>MN.MU.Dialogs.BaseDialog.VB</DependentUpon>
