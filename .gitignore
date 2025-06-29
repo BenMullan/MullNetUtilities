@@ -1,3 +1,5 @@
+.gitExclude/
+
 # System-specific Files
 *.suo
 

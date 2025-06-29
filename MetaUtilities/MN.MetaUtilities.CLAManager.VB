@@ -85,7 +85,7 @@ Namespace MetaUtilities
 		Public Class CLAValueNotSpecifiedException : Inherits System.Exception
 
 			Public Sub New(ByVal _Message$)
-				MyBase.New("[DSCLAValueNotSpecifiedException] " & _Message)
+				MyBase.New("[CLAValueNotSpecifiedException] " & _Message)
 			End Sub
 
 		End Class
@@ -94,7 +94,7 @@ Namespace MetaUtilities
 		Public Class CLANotSpecifiedException : Inherits System.Exception
 
 			Public Sub New(ByVal _Message$)
-				MyBase.New("[DSCLANotSpecifiedException] " & _Message)
+				MyBase.New("[CLANotSpecifiedException] " & _Message)
 			End Sub
 
 		End Class
@@ -171,7 +171,7 @@ Namespace MetaUtilities
 
 				If _CLAKeyToActionMapping.MustBeSpecified _
 					Then If Not CLAsContainsKey_(_CommandLineArguments, _CLAKeyToActionMapping.Key) _
-						Then Throw New CLANotSpecifiedException("The mandatory Command-Line Argument with Key """ & _CLAKeyToActionMapping.Key & """ was not specified. Command-Line Arguments must be provided in the syntax  /Key  or  /Key:Value  or  /Key:""Value"" . NOTE: CLA Keys are not case-sensitive;  /Name  is the same as  /NAmE .")
+						Then Throw New CLANotSpecifiedException("A ""/" & _CLAKeyToActionMapping.Key & """ command-line argument is required. Command-Line Arguments must be provided in the syntax  /Key  or  /Key:Value  or  /Key:""Value"" . CLA Keys are not case-sensitive;  /Name  is the same as  /NAmE .")
 
 				'Here, we know that *if* the _CLAKeyToActionMapping was mandatory, then it has been specified
 				'If it hasn't been specified, then we don't need to do anything about it
@@ -189,7 +189,7 @@ Namespace MetaUtilities
 
 					'Ensure that there is a Value
 					If Not _CommandLineArguments.Where(_CLAWithMatchingKey_Resolver).Count() = 1 _
-						Then Throw New CLAValueNotSpecifiedException("The Command-Line Argument with Key """ & _CLAKeyToActionMapping.Key & """ declared that a corrosponding Value was mandatory, but no recognisable value was provided in the Syntax /Key:Value or /Key:""Value"".")
+						Then Throw New CLAValueNotSpecifiedException("A corrosponding value is required for the ""/" & _CLAKeyToActionMapping.Key & """ command-line argument. (No recognisable value has been provided, in the syntax /Key:Value or /Key:""Value"")")
 
 					'Extract the :Value or :"Value"
 					_CorrospondingValue = New [String](_CommandLineArguments.First(_CLAWithMatchingKey_Resolver).ToCharArray().Skip(_CommandLineArguments.First(_CLAWithMatchingKey_Resolver).ToCharArray().ToList().IndexOf(CLAValueStartChar_) + 1).ToArray())
@@ -217,25 +217,39 @@ Namespace MetaUtilities
 		Protected Sub DisplayHelpDictionary_()
 
 			Dim _CLAHelpDictionaryText$
+			Dim _ProgramTitleVersionText$ = $"{ System.AppDomain.CurrentDomain.FriendlyName } - v{ System.Diagnostics.Process.GetCurrentProcess().MainModule.FileVersionInfo.FileVersion }"
 
 			If Me.UseCommandLineFormatting_ForHelpDictionary Then
 
 				REM CLA Help Dictionary Format: CommandLineFormatting=True
+				REM ↓ Example ↓
 
-				'Description:
-				'----------------------------------------
-				'{Description}
 				'
-				'Examples:
-				'----------------------------------------
-				'{Examples}
-				'
-				'Argument Usage:
-				'----------------------------------------
-				'/RunFile:<Value>		The File to Execute (*.DS)
-				'/Debug					(Optional) Shows Debugging Logging Messages. More text can go here, bu
-				'						t it wraps around after 80 columns (in total)
-				'/ShowLog				(Optional) Shows the Log during Interpretation
+				'	┌──────────────────────────┐
+				'	│ SmartcardInfo - v1.2.0.0 │
+				'	└──────────────────────────┘
+				'	
+				'	Description:
+				'	------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+				'	Displays useful information for an inserted EMV Smartcard, including the Bank- & Cardholder-Name
+				'	
+				'	
+				'	Examples:
+				'	------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+				'	SmartcardInfo /ListReaders
+				'	SmartcardInfo /AwaitCardInsertion /TargetReaderIndex:1
+				'	SmartcardInfo /AwaitCardInsertion /TargetReaderIndex:1 /GetCardInfo /AsXML
+				'	
+				'	
+				'	Argument Usage:  (Keys are case-insensitive)
+				'	------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+				'	/AwaitCardRemoval             [Action] Waits for a Smartcard to be removed (from the reader at /TargetReaderIndex if specified, otherwise any installed reader), then exits.
+				'	
+				'	/GetCardInfo                  [Action] Awaits insertion of a smartcard into any installed reader (unless a smartcard is already inserted), then reads & displays information including the Bank- & Cardholder-Name.
+				'	
+				'	/TargetReaderIndex:<Value>    [Datum]  Specifies the index of a PCSC Smartcard reader (as shown by /ListReaders), to use for the /GetCardInfo, /AwaitCardInsertion, or /AwaitCardRemoval actions.
+				'	
+				'	/AsXML                        [Flag]   Indicates that Actions' stdout output will be in syntax-highlighted XML (instead of plaintext or ASCII art).
 
 
 				REM ↓ The number of chars wide the console is treated as.
@@ -248,15 +262,22 @@ Namespace MetaUtilities
 
 				_CLAHelpDictionaryText$ =
 $"
+┌{ "─"c.Repeat(Convert.ToUInt64(_ProgramTitleVersionText.Length + 2)) & "" }┐
+│ { _ProgramTitleVersionText } │
+└{ "─"c.Repeat(Convert.ToUInt64(_ProgramTitleVersionText.Length + 2)) & "" }┘
+
 Description:
-{ "-"c.Repeat(_ConsoleWidth_InChars) }
-{Me.CLAHelpDictionary_Description}
+{ "-"c.Repeat(_ConsoleWidth_InChars) & "" }
+{ Me.CLAHelpDictionary_Description }
+
 
 Examples:
-{ "-"c.Repeat(_ConsoleWidth_InChars) & vbCrLf & Me.CLAHelpDictionary_Examples.JoinAsStrings(vbCrLf) }
+{ "-"c.Repeat(_ConsoleWidth_InChars) & "" }
+{ Me.CLAHelpDictionary_Examples.JoinAsStrings(vbCrLf) }
+
 
 Argument Usage:  (Keys are case-insensitive)
-{ "-"c.Repeat(_ConsoleWidth_InChars) }
+{ "-"c.Repeat(_ConsoleWidth_InChars) & "" }
 "
 
 				For Each _CLAKeyToActionMapping As CLAKeyToActionMapping In Me.KeyToActionMappings
@@ -268,13 +289,13 @@ Argument Usage:  (Keys are case-insensitive)
 					Dim _KeyAndValuePart$ = CLAKeyStartChar_ & _CLAKeyToActionMapping.Key & If(_CLAKeyToActionMapping.MustHaveValue, CLAValueStartChar_ & "<Value>", String.Empty)
 
 					'E.g. (Optional) Shows the Log during Interpretation
-					Dim _DescriptionPart$ = If(Not _CLAKeyToActionMapping.MustBeSpecified, "(Optional) ", "") & _CLAKeyToActionMapping.Description
+					Dim _DescriptionPart$ = If(Not _CLAKeyToActionMapping.MustBeSpecified, "", "(Required) ") & _CLAKeyToActionMapping.Description
 
 					REM Start the Descriptions 30 Chars in, and put a {LineBreak} and {30 Spaces} every 50 chars.
 					_CLAHelpDictionaryText &=
-						 _KeyAndValuePart.PadRight(_KeyAndValuePart_TargetLength, " "c) &
+						_KeyAndValuePart.PadRight(_KeyAndValuePart_TargetLength, " "c) &
 						_DescriptionPart.ToCharArray().Intersperse((vbCrLf & " "c.Repeat(_KeyAndValuePart_TargetLength)).ToCharArray(), _DescriptionPart_MaxColumnWidth) &
-						vbCrLf
+						vbCrLf & vbCrLf
 
 				Next
 
@@ -293,13 +314,16 @@ Argument Usage:  (Keys are case-insensitive)
 				'/ShowLog → (Optional) Shows the Log during Interpretation
 
 				_CLAHelpDictionaryText$ =
-				 "Description:" & vbCrLf & Me.CLAHelpDictionary_Description & vbCrLf & vbCrLf &
-				 "Examples:" & vbCrLf
+					_ProgramTitleVersionText & vbCrLf & vbCrLf &
+					"Description:" & vbCrLf & Me.CLAHelpDictionary_Description & vbCrLf & vbCrLf &
+					"Examples:" & vbCrLf
 
-				_CLAHelpDictionaryText &= Me.CLAHelpDictionary_Examples.JoinAsStrings(vbCrLf)
+				_CLAHelpDictionaryText &=
+					Me.CLAHelpDictionary_Examples.JoinAsStrings(vbCrLf)
 
-				_CLAHelpDictionaryText &= vbCrLf &
-				 "Argument Usage: (Keys are case-insensitive)" & vbCrLf
+				_CLAHelpDictionaryText &=
+					vbCrLf &
+					"Argument Usage: (Keys are case-insensitive)" & vbCrLf
 
 				For Each _CLAKeyToActionMapping As CLAKeyToActionMapping In Me.KeyToActionMappings
 
@@ -307,7 +331,7 @@ Argument Usage:  (Keys are case-insensitive)
 					Dim _KeyAndValuePart$ = CLAKeyStartChar_ & _CLAKeyToActionMapping.Key & If(_CLAKeyToActionMapping.MustHaveValue, CLAValueStartChar_ & "<Value>", String.Empty)
 
 					'E.g. (Optional) Shows the Log during Interpretation
-					Dim _DescriptionPart$ = If(Not _CLAKeyToActionMapping.MustBeSpecified, "(Optional) ", String.Empty) & _CLAKeyToActionMapping.Description
+					Dim _DescriptionPart$ = If(Not _CLAKeyToActionMapping.MustBeSpecified, "", "(Required) ") & _CLAKeyToActionMapping.Description
 
 					_CLAHelpDictionaryText &= _KeyAndValuePart & " → " & _DescriptionPart & vbCrLf
 

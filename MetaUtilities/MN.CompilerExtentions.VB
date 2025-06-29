@@ -457,6 +457,92 @@ Namespace CompilerExtentions
 
 		End Function
 
+		''' <summary>(MullNet CompilerExtention) Only chars in the range 32 to 126 (inclusive) make it through</summary>
+		<Global.System.Runtime.CompilerServices.Extension()>
+		Public Function ToReadableASCIIString$(ByVal _Bytes As [Byte]())
+
+			Return New [String](
+				New System.Text.ASCIIEncoding().GetString(_Bytes).Where(
+					Function(_Char As [Char]) (Asc(_Char) >= 32) AndAlso (Asc(_Char) <= 126)
+				).ToArray()
+			)
+
+		End Function
+
+		''' <summary>
+		''' (MullNet CompilerExtention) E.g. substitutes any occarence of `44-65-62-69-74-20-4D-61-73-74-65-72-63-61-72-64` with `"Debit Mastercard"`
+		''' If a series of bytes represent a string without chars in the range 32 to 126 (inclusive), then the original bytes' string is left in, instead of being substituted.
+		''' </summary>
+		<Global.System.Runtime.CompilerServices.Extension()>
+		Public Function SubstituteByteStrings_WithHumanReadableStrings(ByVal _InputString$, Optional ByVal _HumanReadableSubstitution_Wrapper$ = """"c) As [String]
+
+			Return System.Text.RegularExpressions.Regex.Replace(
+				input:=_InputString,
+				pattern:="[0-9A-F]{2}(-[0-9A-F]{2})*",
+				evaluator:=
+					Function(_Match As System.Text.RegularExpressions.Match)
+
+						' _Match.Value looketh like:	"44-65-62-69-74-20-4D-61-73-74-65-72-63-61-72-64"
+						' Return a string like:			"""Debit Mastercard"""
+
+						' But if _Match.Value's decoded-value conteineth no human-readable ASCII chars (in range 32 to 126),
+						'  then return the original bytes' string
+
+						Dim _StringRepresentedByBytes$ = _Match.Value.GetBytesBeingRepresented().ToReadableASCIIString()
+
+						Return If(
+							[String].IsNullOrEmpty(_StringRepresentedByBytes),
+							_Match.Value,
+							[String].Format("{1}{0}{1}", _StringRepresentedByBytes, _HumanReadableSubstitution_Wrapper)
+						)
+
+					End Function,
+				options:=System.Text.RegularExpressions.RegexOptions.IgnoreCase
+			)
+
+		End Function
+
+		''' <summary>(MullNet CompilerExtention) E.g. "44-65-62-69-74-20-4D-61-73-74-65-72-63-61-72-64" → "Debit Mastercard"</summary>
+		<Global.System.Runtime.CompilerServices.Extension()>
+		Public Function GetBytesBeingRepresented(ByVal _BytesString$) As [Byte]()
+
+			If Not _BytesString.ToUpper().MatchesRegEx("[0-9A-F]{2}(-[0-9A-F]{2})*") Then Throw New ArgumentException("The _BytesString must be in the format e.g. 4D-65-62-69-74..., but the received string was: " & _BytesString)
+
+			Return _BytesString.Split("-"c).Select(Of [Byte])(Function(_HexString$) Convert.ToByte(_HexString, 16)).ToArray()
+
+		End Function
+
+		''' <summary>(MullNet CompilerExtention) Returns the _String, or the _AlternativeString if _String is Null or Empty</summary>
+		<Global.System.Runtime.CompilerServices.Extension()>
+		Public Function OrThisValueIfEmpty$(ByVal _String$, ByVal _AlternativeString$)
+
+			Return If(
+				[String].IsNullOrEmpty(_String),
+				_AlternativeString,
+				_String
+			)
+
+		End Function
+
+		''' <summary>(MullNet CompilerExtention) Puts the Specified Text in the Middle of the Bitmap Returned, using a size-25 Tahoma font on a grey background</summary>
+		<Global.System.Runtime.CompilerServices.Extension()>
+		Public Function GetImage_OfThisText(ByVal _Text$) As Drawing.Bitmap
+
+			Dim _Bitmap As New Drawing.Bitmap(400, 400)
+			Dim _RectangleF As New Drawing.RectangleF(50, 100, 290, 290)
+			Dim _Graphics As Drawing.Graphics = Drawing.Graphics.FromImage(_Bitmap)
+
+			_Graphics.SmoothingMode = Drawing.Drawing2D.SmoothingMode.AntiAlias
+			_Graphics.InterpolationMode = Drawing.Drawing2D.InterpolationMode.HighQualityBicubic
+			_Graphics.PixelOffsetMode = Drawing.Drawing2D.PixelOffsetMode.HighQuality
+
+			_Graphics.DrawString(_Text, New Drawing.Font("Tahoma", 25), Drawing.Brushes.Black, _RectangleF)
+			_Graphics.Flush()
+
+			Return _Bitmap
+
+		End Function
+
 	End Module
 
 	Public Module NumericExtentions
@@ -962,7 +1048,7 @@ Namespace CompilerExtentions
 		''' <example>JoinAsStrings(Of Int32)({12, 34, &amp;H20}) → "12, 34, 32"</example>
 		''' </summary>
 		<Global.System.Runtime.CompilerServices.Extension()>
-		Public Function JoinAsStrings(Of _TEachElement)(ByVal _Elements As _TEachElement(), Optional ByVal _Seperator$ = ", ") As [String]
+		Public Function JoinAsStrings(Of _TEachElement)(ByVal _Elements As IEnumerable(Of _TEachElement), Optional ByVal _Seperator$ = ", ") As [String]
 
 			If _Elements Is Nothing Then Return [String].Empty
 
@@ -977,6 +1063,17 @@ Namespace CompilerExtentions
 		<Global.System.Runtime.CompilerServices.Extension()>
 		Public Function GetStandardArraySerialisation(Of _TEachElement)(ByVal _Array As _TEachElement(), Optional ByVal _Seperator$ = ", ") As String
 			Return _Array.JoinAsStrings(_Seperator).InCurlies()
+		End Function
+
+		''' <summary>(MullNet CompilerExtention) Returns the Key-Value-Pairs in a tabular-like format, with each pair on a new line.</summary>
+		<Global.System.Runtime.CompilerServices.Extension()>
+		Public Function GetDictionaryPrintout(Of TKey, TValue)(ByVal _KVPs As IEnumerable(Of KeyValuePair(Of TKey, TValue)), Optional ByVal _KeyToValue_Seperator$ = " = ", Optional ByVal _KVPToKVP_Seperator$ = vbCrLf) As [String]
+
+			Return _KVPs _
+				.Select(Of [String])(
+					Function(_KVP As KeyValuePair(Of TKey, TValue)) _KVP.Key.ToString() & _KeyToValue_Seperator & _KVP.Value.ToString()
+				).JoinAsStrings(_KVPToKVP_Seperator)
+
 		End Function
 
 	End Module
@@ -1073,6 +1170,12 @@ Namespace CompilerExtentions
 				Return _OuterXElement
 
 			Catch _Ex As Exception : Throw New Exception("@WrapIn (Array-Version) (CompilerExtention): " & _Ex.Message, _Ex) : End Try
+		End Function
+
+		''' <summary>(MullNet CompilerExtention) Returns a new XElement which contains the _Children</summary>
+		<Global.System.Runtime.CompilerServices.Extension()>
+		Public Function WithChildren(ByVal _XElement As XElement, ByVal _Children As IEnumerable(Of XElement)) As XElement
+			_XElement.Add(_Children) : Return _XElement
 		End Function
 
 		''' <summary>(MullNet CompilerExtention) Returns the first in the series of XElements, otherwise an XElement that looks like: &lt;Empty/&gt;</summary>

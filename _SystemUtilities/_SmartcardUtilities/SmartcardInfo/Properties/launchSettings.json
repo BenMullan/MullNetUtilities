@@ -2,7 +2,11 @@
   "profiles": {
     "SmartcardInfo": {
       "commandName": "Project",
-      "commandLineArgs": "/ListReaders /?"
+      "commandLineArgs": "/GetCardInfo /TargetReaderIndex:0",
+      "environmentVariables": {
+        "sci_test_var": "some_value"
+      },
+      "remoteDebugEnabled": false
     }
   }
 }
