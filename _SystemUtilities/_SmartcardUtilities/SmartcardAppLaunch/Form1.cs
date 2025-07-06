@@ -44,7 +44,7 @@ namespace SmartcardAppLaunch {
             }
 			
 			this.InsertSmartcard_InfoLabel.Hide(); this.InsertSmartcard_IconPictureBox.Hide();
-			this.Text = "Reading: " + _ReaderName; this.LaunchingApp_ProgressBar.Show();
+			this.Text = "→ " + _ReaderName; this.LaunchingApp_ProgressBar.Show();
 			this.Invalidate(); this.Refresh();
 
 			System.Threading.Tasks.Task.Run(
