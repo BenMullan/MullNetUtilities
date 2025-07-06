@@ -121,7 +121,11 @@ public static class SmartcardInfo {
 				(
 					new XElement(
 						"SmartcardInfo",
-						new XAttribute("", "")
+						new XAttribute("CardholderName", _SmartcardData.CardholderName),
+						new XAttribute("CardProvider", _SmartcardData.CardProviderName),
+						new XAttribute("CardLanguageID", _SmartcardData.CardLanguageID),
+						new XAttribute("PaymentSystemEnvironment", _SmartcardData.PaymentSystemEnvironment),
+						_SmartcardData.HeirarchicalData.ToXML()
 					)
 				).WriteToConsoleWithXMLColourFormatting();
 
@@ -222,7 +226,6 @@ $@"
 				case ActionWhenReady.AwaitCardInsertion: {
 
 					global::LibPCSC.PCSCReader _SmartcardReader = new();
-
 					_SmartcardReader.CardInserted += _HandleSmartcardInsertion;
 
 					// Hang around until a smartcard is inserted.
@@ -233,7 +236,6 @@ $@"
 				case ActionWhenReady.AwaitCardRemoval: {
 
 					global::LibPCSC.PCSCReader _SmartcardReader = new();
-
 					_SmartcardReader.CardRemoved += _HandleSmartcardRemoval;
 
 					// Hang around until a smartcard is removed.

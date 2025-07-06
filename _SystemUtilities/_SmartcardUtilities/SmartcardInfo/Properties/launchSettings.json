@@ -2,7 +2,7 @@
   "profiles": {
     "SmartcardInfo": {
       "commandName": "Project",
-      "commandLineArgs": "/GetCardInfo /TargetReaderIndex:0",
+      "commandLineArgs": "/GetCardInfo /TargetReaderIndex:0 /AsXML",
       "environmentVariables": {
         "sci_test_var": "some_value"
       },

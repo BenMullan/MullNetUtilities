@@ -26,6 +26,7 @@
 
 			''' <summary>Returns e.g. <![CDATA[  <TreeNode Name="Smartcard" Value="Somat"> <TreeNode ... /> </TreeNode>  ]]> </summary>
 			Public Function ToXML() As XElement
+				If [String].IsNullOrEmpty(Me.Name) Then Throw (New Exception("The TreeNode cannot be serialised to XML, because it has no name. Node: " & Me.ToString()))
 				Return (<TreeNode Name=<%= Me.Name %> Value=<%= Me.Value %>/>).WithChildren(Me.Children.Select(Of XElement)(Function(_Child As TreeNode) _Child.ToXML()))
 			End Function
 
