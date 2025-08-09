@@ -1,0 +1,27 @@
+﻿# File:     Example.wmds - sample WinMorph-DocScript program
+# Exec:     WinMorph32.exe Example.wmds
+# Author:   Ben Mullan (c) 2025
+
+Function <Number> Main (<String@> _CLAs)
+    Output("wmds-clas → " & _CLAs)
+
+
+    Output(DS_StringArray_Serialise(WM_EnumWindowTitles(), Const_CrLf()))
+    Output("----------------------------------------------------------------------------------")
+    
+    Output(DS_StringArray_Serialise(WM_EnumWindowTitles_VisibleOnly(), Const_CrLf()))
+    Output("----------------------------------------------------------------------------------")
+
+    <String@> _TopLevelWindowXEs : WM_EnumTopLevelWindowsXE()
+    Output(DS_StringArray_Serialise(_TopLevelWindowXEs, Const_CrLf()))
+    Output("----------------------------------------------------------------------------------")
+
+    # Eg: <TLWindowInfo HWND=``$WMH-0x002A1142`` Title=```` ClassName=``tooltips_class32`` ProcessName=``explorer`` PID=``11300`` />
+    <String> _FirstTopLevelWindowXE : DS_StringArray_At(_TopLevelWindowXEs, 0)
+    <String> _FirstPID : WMUtil_XElement_GetAttribute(_FirstTopLevelWindowXE, "PID")
+    Output("1st PID == " & _FirstPID)
+    Output("----------------------------------------------------------------------------------")
+    
+
+    Return 2904
+EndFunction
