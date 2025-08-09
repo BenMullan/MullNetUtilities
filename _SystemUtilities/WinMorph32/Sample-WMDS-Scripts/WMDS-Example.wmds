@@ -7,24 +7,39 @@ Function <Number> Main (<String@> _CLAs)
 
 
     Output(DS_StringArray_Serialise(WM_EnumWindowTitles(), Const_CrLf()))
-    Output("----------------------------------------------------------------------------------")
+    Output("-----------------------------------------------------------")
     
     Output(DS_StringArray_Serialise(WM_EnumWindowTitles_VisibleOnly(), Const_CrLf()))
-    Output("----------------------------------------------------------------------------------")
+    Output("-----------------------------------------------------------")
 
     <String@> _TopLevelWindowXEs : WM_EnumTopLevelWindowsXE()
     Output(DS_StringArray_Serialise(_TopLevelWindowXEs, Const_CrLf()))
-    Output("----------------------------------------------------------------------------------")
+    Output("-----------------------------------------------------------")
 
     # Eg: <TLWindowInfo HWND=``$WMH-0x002A1142`` Title=```` ClassName=``tooltips_class32`` ProcessName=``explorer`` PID=``11300`` />
     <String> _FirstTopLevelWindowXE : DS_StringArray_At(_TopLevelWindowXEs, 0)
     <String> _FirstPID : WMUtil_XElement_GetAttribute(_FirstTopLevelWindowXE, "PID")
     Output("1st PID == " & _FirstPID)
-    Output("----------------------------------------------------------------------------------")
+    Output("-----------------------------------------------------------")
     
-    <String> _UpdatedWindowXE : WMUtil_XElement_SetAttribute(_FirstTopLevelWindowXE, "PID", "NewPID-Here")
-    Output("Mutated Window-XE == " & _UpdatedWindowXE)
-    Output("----------------------------------------------------------------------------------")
+    
+    # Get the HWND of the 1st top-level window whose ProcessName is "notepad"
+    <String@> _NotepadWindowXEs : DS_StringArray_Where(_TopLevelWindowXEs, "TLWindowXE_HasThisProcessName(_Item, `notepad`)")
+    <String@> _VisibleNotepadWindowXEs : DS_StringArray_Where(_NotepadWindowXEs, "TLWindowXE_IsVisible(_Item)")
+    Output("Visible Notepad windows: " & _VisibleNotepadWindowXEs)
+    
+    # Move the window by 50px →rightwards→
+    <String> _NotepadWindowXE : DS_StringArray_At(_VisibleNotepadWindowXEs, 0)
+    WM_MoveWindowBy(WMUtil_XElement_GetAttribute(_NotepadWindowXE, "HWND"), 50, 0)
 
     Return 2904
+EndFunction
+
+Function <Boolean> TLWindowXE_HasThisProcessName (<String> _TLWindowXE, <String> _ProcessName)
+    <String> _WindowProcName : WMUtil_XElement_GetAttribute(_TLWindowXE, "ProcessName")
+    Return [_WindowProcName = _ProcessName]
+EndFunction
+
+Function <Boolean> TLWindowXE_IsVisible (<String> _TLWindowXE)
+    Return [WMUtil_XElement_GetAttribute(_TLWindowXE, "IsVisible") = "True"]
 EndFunction

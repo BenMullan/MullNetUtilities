@@ -15,7 +15,7 @@ namespace WinMorph32 {
                 }
 
                 global::DocScript.Runtime.ExecutionContext _ExecutionContext =
-                    WinMorph32.WinMorphDSExecutionContext.WinMorphExeCxt
+                    WinMorph32.WMDSExecutionContext.WinMorphExeCxt
                 ;
 
                 global::DocScript.Runtime.Program _WMProgram = global::DocScript.Runtime.Program.FromSource(
@@ -26,11 +26,14 @@ namespace WinMorph32 {
                 return _WMProgram.Run(_CLAs.Skip(1).ToArray()).ReturnStatus.Program_ExitCode ?? -1;
 
             } catch (System.Exception _Ex) {
+
                 global::DocScript.CompilerExtentions.UsefulMethods.ConsoleErrorWriteLineInColour(
                     "WinMorph :: runtime exception :: " + _Ex.ToString(),
                     System.ConsoleColor.Red
                 );
+
                 return 1;
+
             }
         }
 

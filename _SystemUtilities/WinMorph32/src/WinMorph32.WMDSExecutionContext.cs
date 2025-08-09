@@ -1,14 +1,10 @@
-﻿using System.Linq;
-using DocScript.CompilerExtentions;
-using DocScript.Language.Instructions;
-using DocScript.Language.Instructions.Statements;
-using DocScript.Language.Variables;
-using DocScript.Runtime;
+﻿using System.Linq; using DocScript.CompilerExtentions; using DocScript.Language.Instructions;
+using DocScript.Language.Instructions.Statements; using DocScript.Language.Variables; using DocScript.Runtime;
 
 namespace WinMorph32 {
     
     /// <summary>For injecting the custom functions into the DocScript runtime...</summary>
-    public static class WinMorphDSExecutionContext {
+    public static class WMDSExecutionContext {
 
         public static ExecutionContext @WinMorphExeCxt {
             get {
@@ -17,7 +13,7 @@ namespace WinMorph32 {
                    _RootFolder:         new System.IO.DirectoryInfo(System.IO.Directory.GetCurrentDirectory()),
                    _InputDelegate:      ExecutionContext.CLIDefault.InputDelegate,
                    _OutputDelegate:     ExecutionContext.CLIDefault.OutputDelegate,
-                   _BuiltInFunctions:   ExecutionContext.AllStandardBuiltInFunctions.Concat(WinMorphDSExecutionContext.WinMorphBIFs).ToArray()
+                   _BuiltInFunctions:   ExecutionContext.AllStandardBuiltInFunctions.Concat(WMDSExecutionContext.WinMorphBIFs).ToArray()
                 );
             }
         }
@@ -25,7 +21,7 @@ namespace WinMorph32 {
         public static BuiltInFunction[] @WinMorphBIFs {
             get {
                 return new BuiltInFunction[] {
-                    WM_EnumWindowTitles_, WM_EnumWindowTitles_VisibleOnly_, WM_EnumTopLevelWindowsXE_,
+                    WM_EnumWindowTitles_, WM_EnumWindowTitles_VisibleOnly_, WM_EnumTopLevelWindowsXE_, WM_MoveWindowBy_,
                     WMUtil_XElement_New_, WMUtil_XElement_GetAttribute_, WMUtil_XElement_SetAttribute_, WMUtil_XElement_HasAttribute_,
                     WMUtil_XElement_GetAttrKeys_, WMUtil_XElement_RemoveAttribute_, WMUtil_XElement_IsValid_, WMUtil_XElement_Merge_
                 };
@@ -49,7 +45,7 @@ namespace WinMorph32 {
                             var _ExeRes = ExecutionResult.New_AndStartExecutionTimer(@"WM-BIF\" + _BifName);
 
                             _ExeRes.ReturnStatus.BuiltInFunction_ReturnValue = new DSArray<DSString>(
-                                global::WinMorph32.Win32Functions.EnumWindowTitles().Select<System.String, DSString>(
+                                global::WinMorph32.WindowManipulationMethods.EnumWindowTitles().Select<System.String, DSString>(
                                     (System.String _WindowTitle) => new DSString(_WindowTitle)
                                 ).ToArray()
                             );
@@ -80,7 +76,7 @@ namespace WinMorph32 {
                             var _ExeRes = ExecutionResult.New_AndStartExecutionTimer(@"WM-BIF\" + _BifName);
 
                             _ExeRes.ReturnStatus.BuiltInFunction_ReturnValue = new DSArray<DSString>(
-                                global::WinMorph32.Win32Functions.EnumWindowTitles_VisibleOnly().Select<System.String, DSString>(
+                                global::WinMorph32.WindowManipulationMethods.EnumWindowTitles_VisibleOnly().Select<System.String, DSString>(
                                     (System.String _WindowTitle) => new DSString(_WindowTitle)
                                 ).ToArray()
                             );
@@ -103,18 +99,18 @@ namespace WinMorph32 {
 
                 return new BuiltInFunction(
                     _Identifier:            _BifName,
-                    _ExpectedParameters:    (new DSFunction.Parameter[] { }),
                     _ReturnType:            typeof(DSArray<DSString>),
+                    _ExpectedParameters:    (new DSFunction.Parameter[] { }),
                     _Action:                new BuiltInFunction.BuiltInFunctionDelegate(
                         (SymbolTablesSnapshot _SymTbls, IDataValue[] _Arguments) => {
 
                             var _ExeRes = ExecutionResult.New_AndStartExecutionTimer(@"WM-BIF\" + _BifName);
 
                             _ExeRes.ReturnStatus.BuiltInFunction_ReturnValue = new DSArray<DSString>(
-                                global::WinMorph32.Win32Functions.EnumTopLevelWindows().Select<Win32Functions.TLWindowInfo, DSString>(
-                                    (Win32Functions.TLWindowInfo _TLWinInfo) => new DSString(
+                                global::WinMorph32.WindowManipulationMethods.EnumTopLevelWindows().Select<WindowManipulationMethods.TLWindowInfo, DSString>(
+                                    (WindowManipulationMethods.TLWindowInfo _TLWinInfo) => new DSString(
                                         WinMorph32.ExeCxtUtilityMethods.SerializeXElement_WithDoubleBackticks(
-                                            WinMorph32.ExeCxtUtilityMethods.ToXElement<Win32Functions.TLWindowInfo>(_TLWinInfo)
+                                            WinMorph32.ExeCxtUtilityMethods.ToXElement<WindowManipulationMethods.TLWindowInfo>(_TLWinInfo)
                                         )
                                     )
                                 ).ToArray()
@@ -125,7 +121,53 @@ namespace WinMorph32 {
                         }
                     )
                 ) {
-                    Description = "Returns (ds-double-backtick-)serialised XElements for the {HWND, ClassName, Title, ProcessName, and PID} of all windows. Eg <TLWindowInfo Attr=``Value`` ... />."
+                    Description = "Returns (ds-double-backtick-)serialised XElements for {HWND, ClassName, Title, ProcessName, PID, IsVisible, IsEnabled} of all top-level windows. Eg <TLWindowInfo Attr=``Value`` ... />."
+                };
+
+            }
+        }
+
+        private static BuiltInFunction WM_MoveWindowBy_ {
+            get {
+
+                System.String _BifName = "WM_MoveWindowBy";
+
+                return new BuiltInFunction(
+                    _Identifier: _BifName,
+                    _ReturnType: typeof(@Void),
+                    _ExpectedParameters: (
+                        new DSFunction.Parameter[] {
+                            new DSFunction.Parameter("_HWnd", typeof(DSString)),
+                            new DSFunction.Parameter("_PixelsToTheRight", typeof(DSNumber)),
+                            new DSFunction.Parameter("_PixelsDownwards", typeof(DSNumber))
+                        }
+                    ),
+                    _Action: new BuiltInFunction.BuiltInFunctionDelegate(
+                        (SymbolTablesSnapshot _SymTbls, IDataValue[] _Arguments) => {
+
+                            var _ExeRes = ExecutionResult.New_AndStartExecutionTimer(@"WM-BIF\" + _BifName);
+
+                            // _HWnd, eg: "0x000100EE"
+                            System.String _HWnd = _Arguments[0].Coerce<DSString>().Value;
+
+                            // _PixelsToTheRight, eg: 50
+                            System.Int32 _PixelsToTheRight = (System.Int32)_Arguments[1].Coerce<DSNumber>().Value;
+
+                            // _PixelsDownwards, eg: -600
+                            System.Int32 _PixelsDownwards = (System.Int32)_Arguments[2].Coerce<DSNumber>().Value;
+
+                            global::WinMorph32.WindowManipulationMethods.MoveWindowBy(
+                               _hWnd: WinMorph32.WindowManipulationMethods.GetHwnd_FromHexString(_HWnd),
+                               _PixelsToTheRight: _PixelsToTheRight,
+                               _PixelsDownwards: _PixelsDownwards
+                            );
+
+                            return _ExeRes.StopExecutionTimer_AndFinaliseObject(ref _SymTbls);
+
+                        }
+                    )
+                ) {
+                    Description = "Moves the window pointed-to by the _HWnd, _PixelsToTheRight right, and _PixelsDownwards down."
                 };
 
             }

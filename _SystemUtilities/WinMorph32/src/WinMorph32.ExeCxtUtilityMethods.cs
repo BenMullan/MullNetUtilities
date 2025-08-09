@@ -11,7 +11,7 @@ namespace WinMorph32 {
          *
          * WinMorph-DocScript custom XElement serialisation:
          *  (") isn't allowed in DSString values, so use (``) instead. Eg...
-         *  <Person Name=``Ben`` Value=``Some (`)(`) chars here.`` />
+         *  <Person Name=``Ben`` Value=``Some escaped (`)(`) chars here.`` />
          * 
          */
 
