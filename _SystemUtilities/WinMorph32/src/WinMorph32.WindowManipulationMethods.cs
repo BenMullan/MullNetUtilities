@@ -143,6 +143,19 @@ namespace WinMorph32 {
 
         }
 
+        /// <summary>Gets the window's title/caption text.</summary>
+        public static System.String GetWindowText(System.IntPtr _hWnd) {
+
+            System.Int32 _TitleLength = RawWin32Methods.GetWindowTextLength(_hWnd);
+            if (_TitleLength < 1) { return System.String.Empty; }
+
+            System.Text.StringBuilder _StringBuilder = new System.Text.StringBuilder(capacity: _TitleLength + 1);
+            RawWin32Methods.GetWindowText(_hWnd, _StringBuilder, _StringBuilder.Capacity);
+
+            return _StringBuilder.ToString();
+
+        }
+
         /// <summary>Moves the specified window by the given pixel offsets (relative to its current position).</summary>
         public static void MoveWindowBy(System.IntPtr _hWnd, System.Int32 _PixelsToTheRight, System.Int32 _PixelsDownwards) {
 
@@ -155,6 +168,56 @@ namespace WinMorph32 {
             System.Int32 _Height = _Rect.Bottom - _Rect.Top;
 
             if (!RawWin32Methods.MoveWindow(_hWnd, _NewX, _NewY, _Width, _Height, bRepaint: true)) { throw new System.Exception("Couldn't MoveWindow() for (HWND)" + _hWnd); }
+
+        }
+
+        /// <summary>Shows/hides the specified window.</summary>
+        public static void SetWindowVisibility(System.IntPtr _hWnd, System.Boolean _MakeWindowVisible) {
+
+            if (
+                !RawWin32Methods.ShowWindow(
+                    _hWnd,
+                    _MakeWindowVisible ? RawWin32Methods.SW_SHOW : RawWin32Methods.SW_HIDE
+                )
+            ) { throw new System.Exception("Couldn't ShowWindow() for (HWND)" + _hWnd); }
+
+        }
+
+        /// <summary>Enables/disables the specified window.</summary>
+        public static void SetWindowEnabled(System.IntPtr _hWnd, System.Boolean _MakeWindowEnabled) {
+
+            if (!RawWin32Methods.EnableWindow(_hWnd, _MakeWindowEnabled)) {
+                throw new System.Exception("Couldn't EnableWindow() for (HWND)" + _hWnd);
+            }
+
+        }
+
+        /// <summary>Gets the window's width &amp; height.</summary>
+        public static System.Drawing.Size GetWindowSize(System.IntPtr _hWnd) {
+
+            RawWin32Methods.RECT _Rect;
+            if (!RawWin32Methods.GetWindowRect(_hWnd, out _Rect)) {
+                throw new System.Exception("Couldn't GetWindowRect() for (HWND)" + _hWnd);
+            }
+
+            System.Int32 _Width = _Rect.Right - _Rect.Left;
+            System.Int32 _Height = _Rect.Bottom - _Rect.Top;
+
+            return new System.Drawing.Size(_Width, _Height);
+
+        }
+
+        /// <summary>Sets the window's width &amp; height (...retaining the current top-left position).</summary>
+        public static void SetWindowSize(System.IntPtr _hWnd, System.Int32 _Width, System.Int32 _Height) {
+
+            RawWin32Methods.RECT _Rect;
+            if (!RawWin32Methods.GetWindowRect(_hWnd, out _Rect)) {
+                throw new System.Exception("Couldn't GetWindowRect() for (HWND)" + _hWnd);
+            }
+
+            if (!RawWin32Methods.MoveWindow(_hWnd, X: _Rect.Left, Y: _Rect.Top, nWidth: _Width, nHeight: _Height, bRepaint: true)) {
+                throw new System.Exception("Couldn't MoveWindow() for (HWND)" + _hWnd);
+            }
 
         }
 

@@ -5,7 +5,6 @@
 Function <Number> Main (<String@> _CLAs)
     Output("wmds-clas → " & _CLAs)
 
-
     Output(DS_StringArray_Serialise(WM_EnumWindowTitles(), Const_CrLf()))
     Output("-----------------------------------------------------------")
     
@@ -13,8 +12,8 @@ Function <Number> Main (<String@> _CLAs)
     Output("-----------------------------------------------------------")
 
     <String@> _TopLevelWindowXEs : WM_EnumTopLevelWindowsXE()
-    Output(DS_StringArray_Serialise(_TopLevelWindowXEs, Const_CrLf()))
-    Output("-----------------------------------------------------------")
+    #Output(DS_StringArray_Serialise(_TopLevelWindowXEs, Const_CrLf()))
+    #Output("-----------------------------------------------------------")
 
     # Eg: <TLWindowInfo HWND=``$WMH-0x002A1142`` Title=```` ClassName=``tooltips_class32`` ProcessName=``explorer`` PID=``11300`` />
     <String> _FirstTopLevelWindowXE : DS_StringArray_At(_TopLevelWindowXEs, 0)
@@ -28,17 +27,39 @@ Function <Number> Main (<String@> _CLAs)
     <String@> _VisibleNotepadWindowXEs : DS_StringArray_Where(_NotepadWindowXEs, "TLWindowXE_IsVisible(_Item)")
     Output("Visible Notepad windows: " & _VisibleNotepadWindowXEs)
     
-    # Move the window by 50px →rightwards→
+    # Move the window by 100px →rightwards→, in 10 steps
     <String> _NotepadWindowXE : DS_StringArray_At(_VisibleNotepadWindowXEs, 0)
-    WM_MoveWindowBy(WMUtil_XElement_GetAttribute(_NotepadWindowXE, "HWND"), 50, 0)
+    <String> _NotepadWindowHwnd : WMUtil_XElement_GetAttribute(_NotepadWindowXE, "HWND")
+    Loop (10)
+        WM_MoveWindowBy(_NotepadWindowHwnd, 5, 0)
+        DS_Sleep(100)
+    EndLoop
+    
+    # Change the window-title
+    WM_SetWindowText(_NotepadWindowHwnd, DS_String_GetRandom(25))
+    
+    # Make the window invisible/visible 10 times
+    Loop (10)
+        If (¬DS_InterpretTry("WM_SetWindowVisibility(_NotepadWindowHwnd, ¬ WM_GetWindowVisibility(_NotepadWindowHwnd))"))
+            OutputError("Failed to WM_SetWindowVisibility()")
+        EndIf
+        DS_Sleep(100)
+    EndLoop
+    
+    Output("Notepad's title is... " & WM_GetWindowText(_NotepadWindowHwnd))
+    
+    WM_SetWindowSize(_NotepadWindowHwnd, 640, 480)
+    Output("Notepad's window-size is... " & WM_GetWindowSize(_NotepadWindowHwnd))
 
     Return 2904
 EndFunction
+
 
 Function <Boolean> TLWindowXE_HasThisProcessName (<String> _TLWindowXE, <String> _ProcessName)
     <String> _WindowProcName : WMUtil_XElement_GetAttribute(_TLWindowXE, "ProcessName")
     Return [_WindowProcName = _ProcessName]
 EndFunction
+
 
 Function <Boolean> TLWindowXE_IsVisible (<String> _TLWindowXE)
     Return [WMUtil_XElement_GetAttribute(_TLWindowXE, "IsVisible") = "True"]

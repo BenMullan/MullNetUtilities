@@ -41,6 +41,32 @@
 
         /**/
 
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        public static extern System.IntPtr GetForegroundWindow();
+
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        public static extern System.Boolean SetForegroundWindow(System.IntPtr hWnd);
+
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        public static extern System.IntPtr GetParent(System.IntPtr hWnd);
+
+        [System.Runtime.InteropServices.DllImport("user32.dll", CharSet = System.Runtime.InteropServices.CharSet.Auto)]
+        public static extern System.IntPtr SendMessage(System.IntPtr hWnd, System.UInt32 Msg, System.IntPtr wParam, System.IntPtr lParam);
+
+        [System.Runtime.InteropServices.DllImport("user32.dll", CharSet = System.Runtime.InteropServices.CharSet.Auto)]
+        public static extern System.Boolean PostMessage(System.IntPtr hWnd, System.UInt32 Msg, System.IntPtr wParam, System.IntPtr lParam);
+
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        public static extern System.Boolean DestroyWindow(System.IntPtr hWnd);
+
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        public static extern System.Boolean FlashWindow(System.IntPtr hWnd, System.Boolean bInvert);
+
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        public static extern System.IntPtr GetDesktopWindow();
+
+        /**/
+
         // RECT for sizing
         [System.Runtime.InteropServices.DllImport("user32.dll", SetLastError = true)]
         public static extern System.Boolean GetWindowRect(System.IntPtr hWnd, out RECT lpRect);
@@ -79,9 +105,8 @@
         public static extern System.Boolean SetLayeredWindowAttributes(System.IntPtr hwnd, System.UInt32 crKey, byte bAlpha, System.UInt32 dwFlags);
         public const System.Int32 LWA_ALPHA = 0x2;
 
+
         // Font
-        [System.Runtime.InteropServices.DllImport("user32.dll", CharSet = System.Runtime.InteropServices.CharSet.Auto)]
-        public static extern System.IntPtr SendMessage(System.IntPtr hWnd, System.UInt32 Msg, System.IntPtr wParam, System.IntPtr lParam);
         public const System.UInt32 WM_SETFONT = 0x0030;
 
         [System.Runtime.InteropServices.DllImport("gdi32.dll", CharSet = System.Runtime.InteropServices.CharSet.Auto)]
@@ -102,8 +127,43 @@
         public const System.Int32 GCLP_HBRBACKGROUND = -10;
 
         [System.Runtime.InteropServices.DllImport("user32.dll", SetLastError = true)]
-        public static extern System.Boolean InvalidateRect(
-        System.IntPtr hWnd, System.IntPtr lpRect, System.Boolean bErase);
+        public static extern System.Boolean InvalidateRect(System.IntPtr hWnd, System.IntPtr lpRect, System.Boolean bErase);
+
+        /**/
+
+        // ShowWindow() commands
+        public const System.Int32 SW_MINIMIZE      = 6;
+        public const System.Int32 SW_MAXIMIZE      = 3;
+        public const System.Int32 SW_RESTORE       = 9;
+
+        // SetWindowPos() special HWND values
+        public static readonly System.IntPtr HWND_TOP       = new System.IntPtr(0);
+        public static readonly System.IntPtr HWND_BOTTOM    = new System.IntPtr(1);
+        public static readonly System.IntPtr HWND_TOPMOST   = new System.IntPtr(-1);
+        public static readonly System.IntPtr HWND_NOTOPMOST = new System.IntPtr(-2);
+
+        // SetWindowPos() flags
+        public const System.UInt32 SWP_SHOWWINDOW   = 0x0040;
+        public const System.UInt32 SWP_HIDEWINDOW   = 0x0080;
+
+        // Window styles
+        public const System.Int32 WS_OVERLAPPEDWINDOW = 0x00CF0000;
+        public const System.Int32 WS_POPUP            = unchecked((int)0x80000000);
+        public const System.Int32 WS_VISIBLE          = 0x10000000;
+        public const System.Int32 WS_DISABLED         = 0x08000000;
+        public const System.Int32 WS_MINIMIZE         = 0x20000000;
+        public const System.Int32 WS_MAXIMIZE         = 0x01000000;
+
+        // Extended window styles
+        public const System.Int32 WS_EX_TOPMOST      = 0x00000008;
+        public const System.Int32 WS_EX_TOOLWINDOW   = 0x00000080;
+        public const System.Int32 WS_EX_APPWINDOW    = 0x00040000;
+
+        // Window messages
+        public const System.UInt32 WM_CLOSE          = 0x0010;
+        public const System.UInt32 WM_SETTEXT        = 0x000C;
+        public const System.UInt32 WM_GETTEXT        = 0x000D;
+        public const System.UInt32 WM_GETTEXTLENGTH  = 0x000E;
 
     }
 }

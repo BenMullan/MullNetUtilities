@@ -28,7 +28,7 @@ namespace WinMorph32 {
             } catch (System.Exception _Ex) {
 
                 global::DocScript.CompilerExtentions.UsefulMethods.ConsoleErrorWriteLineInColour(
-                    "WinMorph :: runtime exception :: " + _Ex.ToString(),
+                    "WinMorph :: runtime exception :: " + _Ex.Message,
                     System.ConsoleColor.Red
                 );
 

@@ -22,6 +22,8 @@ namespace WinMorph32 {
             get {
                 return new BuiltInFunction[] {
                     WM_EnumWindowTitles_, WM_EnumWindowTitles_VisibleOnly_, WM_EnumTopLevelWindowsXE_, WM_MoveWindowBy_,
+                    WM_SetWindowText_, WM_GetWindowText_, WM_SetWindowVisibility_, WM_GetWindowVisibility_, WM_SetWindowEnabled_,
+                    WM_GetWindowEnabled_, WM_SetWindowSize_, WM_GetWindowSize_,
                     WMUtil_XElement_New_, WMUtil_XElement_GetAttribute_, WMUtil_XElement_SetAttribute_, WMUtil_XElement_HasAttribute_,
                     WMUtil_XElement_GetAttrKeys_, WMUtil_XElement_RemoveAttribute_, WMUtil_XElement_IsValid_, WMUtil_XElement_Merge_
                 };
@@ -168,6 +170,329 @@ namespace WinMorph32 {
                     )
                 ) {
                     Description = "Moves the window pointed-to by the _HWnd, _PixelsToTheRight right, and _PixelsDownwards down."
+                };
+
+            }
+        }
+
+        private static BuiltInFunction WM_SetWindowText_ {
+            get {
+
+                System.String _BifName = "WM_SetWindowText";
+
+                return new BuiltInFunction(
+                    _Identifier: _BifName,
+                    _ReturnType: typeof(@Void),
+                    _ExpectedParameters: (
+                        new DSFunction.Parameter[] {
+                            new DSFunction.Parameter("_HWnd", typeof(DSString)),
+                            new DSFunction.Parameter("_NewText", typeof(DSString))
+                        }
+                    ),
+                    _Action: new BuiltInFunction.BuiltInFunctionDelegate(
+                        (SymbolTablesSnapshot _SymTbls, IDataValue[] _Arguments) => {
+
+                            var _ExeRes = ExecutionResult.New_AndStartExecutionTimer(@"WM-BIF\" + _BifName);
+
+                            // _HWnd, eg: "0x000100EE"
+                            System.String _HWnd = _Arguments[0].Coerce<DSString>().Value;
+
+                            // _NewText, eg: "Title Here"
+                            System.String _NewText = _Arguments[1].Coerce<DSString>().Value;
+
+                            global::WinMorph32.RawWin32Methods.SetWindowText(
+                               hWnd: WinMorph32.WindowManipulationMethods.GetHwnd_FromHexString(_HWnd),
+                               lpString: _NewText
+                            );
+
+                            return _ExeRes.StopExecutionTimer_AndFinaliseObject(ref _SymTbls);
+
+                        }
+                    )
+                ) {
+                    Description = "Changes the window's text (eg title, button-text, label-text, etc) to the _NewText."
+                };
+
+            }
+        }
+
+        private static BuiltInFunction WM_GetWindowText_ {
+            get {
+
+                System.String _BifName = "WM_GetWindowText";
+
+                return new BuiltInFunction(
+                    _Identifier: _BifName,
+                    _ReturnType: typeof(DSString),
+                    _ExpectedParameters: (
+                        new DSFunction.Parameter[] {
+                            new DSFunction.Parameter("_HWnd", typeof(DSString))
+                        }
+                    ),
+                    _Action: new BuiltInFunction.BuiltInFunctionDelegate(
+                        (SymbolTablesSnapshot _SymTbls, IDataValue[] _Arguments) => {
+
+                            var _ExeRes = ExecutionResult.New_AndStartExecutionTimer(@"WM-BIF\" + _BifName);
+
+                            // _HWnd, eg: "0x000100EE"
+                            System.String _HWnd = _Arguments[0].Coerce<DSString>().Value;
+
+                            _ExeRes.ReturnStatus.BuiltInFunction_ReturnValue = new DSString(
+                                global::WinMorph32.WindowManipulationMethods.GetWindowText(
+                                    _hWnd: WinMorph32.WindowManipulationMethods.GetHwnd_FromHexString(_HWnd)
+                                )
+                            );
+
+                            return _ExeRes.StopExecutionTimer_AndFinaliseObject(ref _SymTbls);
+
+                        }
+                    )
+                ) {
+                    Description = "Returns the text (title, caption, etc) of the window pointed-to by the _HWnd."
+                };
+
+            }
+        }
+
+        private static BuiltInFunction WM_SetWindowVisibility_ {
+            get {
+
+                System.String _BifName = "WM_SetWindowVisibility";
+
+                return new BuiltInFunction(
+                    _Identifier: _BifName,
+                    _ReturnType: typeof(@Void),
+                    _ExpectedParameters: (
+                        new DSFunction.Parameter[] {
+                            new DSFunction.Parameter("_HWnd", typeof(DSString)),
+                            new DSFunction.Parameter("_MakeWindowVisible", typeof(DSBoolean))
+                        }
+                    ),
+                    _Action: new BuiltInFunction.BuiltInFunctionDelegate(
+                        (SymbolTablesSnapshot _SymTbls, IDataValue[] _Arguments) => {
+
+                            var _ExeRes = ExecutionResult.New_AndStartExecutionTimer(@"WM-BIF\" + _BifName);
+
+                            // _HWnd, eg: "0x000100EE"
+                            System.String _HWnd = _Arguments[0].Coerce<DSString>().Value;
+
+                            // _MakeWindowVisible, eg: False
+                            System.Boolean _MakeWindowVisible = _Arguments[1].Coerce<DSBoolean>().Value;
+
+                            global::WinMorph32.WindowManipulationMethods.SetWindowVisibility(
+                               _hWnd: WinMorph32.WindowManipulationMethods.GetHwnd_FromHexString(_HWnd),
+                               _MakeWindowVisible: _MakeWindowVisible
+                            );
+
+                            return _ExeRes.StopExecutionTimer_AndFinaliseObject(ref _SymTbls);
+
+                        }
+                    )
+                ) {
+                    Description = "Makes the window pointed-to by the _HWnd visible/invisible, in accordance with _MakeWindowVisible."
+                };
+
+            }
+        }
+
+        private static BuiltInFunction WM_GetWindowVisibility_ {
+            get {
+
+                System.String _BifName = "WM_GetWindowVisibility";
+
+                return new BuiltInFunction(
+                    _Identifier: _BifName,
+                    _ReturnType: typeof(DSBoolean),
+                    _ExpectedParameters: (
+                        new DSFunction.Parameter[] {
+                            new DSFunction.Parameter("_HWnd", typeof(DSString))
+                        }
+                    ),
+                    _Action: new BuiltInFunction.BuiltInFunctionDelegate(
+                        (SymbolTablesSnapshot _SymTbls, IDataValue[] _Arguments) => {
+
+                            var _ExeRes = ExecutionResult.New_AndStartExecutionTimer(@"WM-BIF\" + _BifName);
+
+                            // _HWnd, eg: "0x000100EE"
+                            System.String _HWnd = _Arguments[0].Coerce<DSString>().Value;
+
+                            _ExeRes.ReturnStatus.BuiltInFunction_ReturnValue = new DSBoolean(
+                                global::WinMorph32.RawWin32Methods.IsWindowVisible(
+                                    hWnd: WinMorph32.WindowManipulationMethods.GetHwnd_FromHexString(_HWnd)
+                                )
+                            );
+
+                            return _ExeRes.StopExecutionTimer_AndFinaliseObject(ref _SymTbls);
+
+                        }
+                    )
+                ) {
+                    Description = "Returns whether or not the window pointed-to by the _HWnd is visible."
+                };
+
+            }
+        }
+
+        private static BuiltInFunction WM_SetWindowEnabled_ {
+            get {
+
+                System.String _BifName = "WM_SetWindowEnabled";
+
+                return new BuiltInFunction(
+                    _Identifier: _BifName,
+                    _ReturnType: typeof(@Void),
+                    _ExpectedParameters: (
+                        new DSFunction.Parameter[] {
+                            new DSFunction.Parameter("_HWnd", typeof(DSString)),
+                            new DSFunction.Parameter("_MakeWindowEnabled", typeof(DSBoolean))
+                        }
+                    ),
+                    _Action: new BuiltInFunction.BuiltInFunctionDelegate(
+                        (SymbolTablesSnapshot _SymTbls, IDataValue[] _Arguments) => {
+
+                            var _ExeRes = ExecutionResult.New_AndStartExecutionTimer(@"WM-BIF\" + _BifName);
+
+                            // _HWnd, eg: "0x000100EE"
+                            System.String _HWnd = _Arguments[0].Coerce<DSString>().Value;
+
+                            // _MakeWindowEnabled, eg: False
+                            System.Boolean _MakeWindowEnabled = _Arguments[1].Coerce<DSBoolean>().Value;
+
+                            global::WinMorph32.WindowManipulationMethods.SetWindowEnabled(
+                               _hWnd: WinMorph32.WindowManipulationMethods.GetHwnd_FromHexString(_HWnd),
+                               _MakeWindowEnabled: _MakeWindowEnabled
+                            );
+
+                            return _ExeRes.StopExecutionTimer_AndFinaliseObject(ref _SymTbls);
+
+                        }
+                    )
+                ) {
+                    Description = "Makes the window pointed-to by the _HWnd enabled/disabled, in accordance with _MakeWindowEnabled."
+                };
+
+            }
+        }
+
+        private static BuiltInFunction WM_GetWindowEnabled_ {
+            get {
+
+                System.String _BifName = "WM_GetWindowEnabled";
+
+                return new BuiltInFunction(
+                    _Identifier: _BifName,
+                    _ReturnType: typeof(DSBoolean),
+                    _ExpectedParameters: (
+                        new DSFunction.Parameter[] {
+                            new DSFunction.Parameter("_HWnd", typeof(DSString))
+                        }
+                    ),
+                    _Action: new BuiltInFunction.BuiltInFunctionDelegate(
+                        (SymbolTablesSnapshot _SymTbls, IDataValue[] _Arguments) => {
+
+                            var _ExeRes = ExecutionResult.New_AndStartExecutionTimer(@"WM-BIF\" + _BifName);
+
+                            // _HWnd, eg: "0x000100EE"
+                            System.String _HWnd = _Arguments[0].Coerce<DSString>().Value;
+
+                            _ExeRes.ReturnStatus.BuiltInFunction_ReturnValue = new DSBoolean(
+                                global::WinMorph32.RawWin32Methods.IsWindowEnabled(
+                                    hWnd: WinMorph32.WindowManipulationMethods.GetHwnd_FromHexString(_HWnd)
+                                )
+                            );
+
+                            return _ExeRes.StopExecutionTimer_AndFinaliseObject(ref _SymTbls);
+
+                        }
+                    )
+                ) {
+                    Description = "Returns whether or not the window pointed-to by the _HWnd is enabled."
+                };
+
+            }
+        }
+
+        private static BuiltInFunction WM_SetWindowSize_ {
+            get {
+
+                System.String _BifName = "WM_SetWindowSize";
+
+                return new BuiltInFunction(
+                    _Identifier: _BifName,
+                    _ReturnType: typeof(@Void),
+                    _ExpectedParameters: (
+                        new DSFunction.Parameter[] {
+                            new DSFunction.Parameter("_HWnd", typeof(DSString)),
+                            new DSFunction.Parameter("_Width", typeof(DSNumber)),
+                            new DSFunction.Parameter("_Height", typeof(DSNumber))
+                        }
+                    ),
+                    _Action: new BuiltInFunction.BuiltInFunctionDelegate(
+                        (SymbolTablesSnapshot _SymTbls, IDataValue[] _Arguments) => {
+
+                            var _ExeRes = ExecutionResult.New_AndStartExecutionTimer(@"WM-BIF\" + _BifName);
+
+                            // _HWnd, eg: "0x000100EE"
+                            System.String _HWnd = _Arguments[0].Coerce<DSString>().Value;
+
+                            // _Width, eg: 600
+                            System.Int32 _Width = (System.Int32)_Arguments[1].Coerce<DSNumber>().Value;
+
+                            // _Height, eg: 400
+                            System.Int32 _Height = (System.Int32)_Arguments[2].Coerce<DSNumber>().Value;
+
+                            global::WinMorph32.WindowManipulationMethods.SetWindowSize(
+                               _hWnd:   WinMorph32.WindowManipulationMethods.GetHwnd_FromHexString(_HWnd),
+                               _Width:  _Width,
+                               _Height: _Height
+                            );
+
+                            return _ExeRes.StopExecutionTimer_AndFinaliseObject(ref _SymTbls);
+
+                        }
+                    )
+                ) {
+                    Description = "Sets [the window pointed-to by the _HWnd]'s width and height, retaining the current top-left position."
+                };
+
+            }
+        }
+
+        private static BuiltInFunction WM_GetWindowSize_ {
+            get {
+
+                System.String _BifName = "WM_GetWindowSize";
+
+                return new BuiltInFunction(
+                    _Identifier: _BifName,
+                    _ReturnType: typeof(DSArray<DSNumber>),
+                    _ExpectedParameters: (
+                        new DSFunction.Parameter[] {
+                            new DSFunction.Parameter("_HWnd", typeof(DSString))
+                        }
+                    ),
+                    _Action: new BuiltInFunction.BuiltInFunctionDelegate(
+                        (SymbolTablesSnapshot _SymTbls, IDataValue[] _Arguments) => {
+
+                            var _ExeRes = ExecutionResult.New_AndStartExecutionTimer(@"WM-BIF\" + _BifName);
+
+                            // _HWnd, eg: "0x000100EE"
+                            System.String _HWnd = _Arguments[0].Coerce<DSString>().Value;
+
+                            System.Drawing.Size _WindowSize = global::WinMorph32.WindowManipulationMethods.GetWindowSize(
+                                _hWnd: WinMorph32.WindowManipulationMethods.GetHwnd_FromHexString(_HWnd)
+                            );
+
+                            _ExeRes.ReturnStatus.BuiltInFunction_ReturnValue = new DSArray<DSNumber>(
+                                new DSNumber[] { new DSNumber(_WindowSize.Width), new DSNumber(_WindowSize.Height) }
+                            );
+
+                            return _ExeRes.StopExecutionTimer_AndFinaliseObject(ref _SymTbls);
+
+                        }
+                    )
+                ) {
+                    Description = "Returns [0] the width, and [1] the height of the window."
                 };
 
             }
