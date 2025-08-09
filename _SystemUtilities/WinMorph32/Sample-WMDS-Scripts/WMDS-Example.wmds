@@ -22,6 +22,9 @@ Function <Number> Main (<String@> _CLAs)
     Output("1st PID == " & _FirstPID)
     Output("----------------------------------------------------------------------------------")
     
+    <String> _UpdatedWindowXE : WMUtil_XElement_SetAttribute(_FirstTopLevelWindowXE, "PID", "NewPID-Here")
+    Output("Mutated Window-XE == " & _UpdatedWindowXE)
+    Output("----------------------------------------------------------------------------------")
 
     Return 2904
 EndFunction

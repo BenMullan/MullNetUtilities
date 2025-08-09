@@ -6,7 +6,7 @@ namespace WinMorph32 {
         public static System.Int32 @Main(System.String[] _CLAs) {
             try {
 
-                if ( (_CLAs.Length < 01) || !System.IO.File.Exists(_CLAs[00]) ) {
+                if ( (_CLAs.Length < 01) || !(new System.IO.FileInfo(_CLAs[00])).Exists ) {
                     throw new System.Exception(
                         "\nWinMorph - Win32 window text-, -size, and -position modifier utility."
                         + "\n   Usage: WinMorph32.exe [path-to-wmds-script] [...script-args]"

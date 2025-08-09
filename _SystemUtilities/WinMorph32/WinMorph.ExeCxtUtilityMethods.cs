@@ -43,6 +43,7 @@ namespace WinMorph32 {
             );
 
             return _DoubleBacktickXml;
+
         }
 
         /// <summary>Takes in an XElement which uses `` instead of ", for attrs; eg name=``BEN``.</summary>

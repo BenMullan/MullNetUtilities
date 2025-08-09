@@ -1,0 +1,55 @@
+﻿# File:     XElement-Objects.wmds - sample XElement-objects program
+# Exec:     WinMorph32.exe XElement-Objects.wmds
+# Author:   Ben Mullan (c) 2025
+
+Function <Void> Main ()
+    
+    <String> _PersonXE : WMUtil_XElement_New("Person")
+    _PersonXE : WMUtil_XElement_SetAttribute(_PersonXE, "Name", "Ben")
+    _PersonXE : WMUtil_XElement_SetAttribute(_PersonXE, "Age", "20")
+    
+    Output(_PersonXE)
+    Output("Name == " & WMUtil_XElement_GetAttribute(_PersonXE, "Name"))
+    Output("----------------------------------------------------------")
+    
+    # Output:
+    # 	<Person Name=``Ben`` Age=``20`` />
+    # 	Name == Ben
+    
+    
+    Output("Has `Age` == " & WMUtil_XElement_HasAttribute(_PersonXE, "Age"))
+    _PersonXE : WMUtil_XElement_RemoveAttribute(_PersonXE, "Age")
+    Output("Has `Age` == " & WMUtil_XElement_HasAttribute(_PersonXE, "Age"))
+    Output("----------------------------------------------------------")
+    
+    Output("Person-1 attrs == " & WMUtil_XElement_GetAttrKeys(_PersonXE))
+    <String> _PersonTwoXE : "<Person Name=``Luke`` Likes=``VisualF#`` />"
+    Output("Person-2 attrs == " & WMUtil_XElement_GetAttrKeys(_PersonTwoXE))
+    Output("----------------------------------------------------------")
+    
+    Output("Person-1 == " & _PersonXE)
+    _PersonXE : WMUtil_XElement_Merge(_PersonXE, _PersonTwoXE)
+    Output("Person-1 == " & _PersonXE)
+    Output("----------------------------------------------------------")
+    
+    Output("Person-2 is-valid == " & WMUtil_XElement_IsValid(_PersonTwoXE))
+    _PersonTwoXE : DS_String_GetRandom(50)
+    Output("Person-2 is-valid == " & WMUtil_XElement_IsValid(_PersonTwoXE))
+    Output("----------------------------------------------------------")
+    
+    # Output:
+    #   ----------------------------------------------------------
+    #   Has `Age` == True
+    #   Has `Age` == False
+    #   ----------------------------------------------------------
+    #   Person-1 attrs == (Length: 1) {`Name`}
+    #   Person-2 attrs == (Length: 2) {`Name`, `Likes`}
+    #   ----------------------------------------------------------
+    #   Person-1 == <Person Name=``Ben`` />
+    #   Person-1 == <Person Name=``Luke`` Likes=``VisualF#`` />
+    #   ----------------------------------------------------------
+    #   Person-2 is-valid == True
+    #   Person-2 is-valid == False
+    #   ----------------------------------------------------------
+    
+EndFunction
