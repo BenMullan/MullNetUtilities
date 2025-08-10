@@ -70,9 +70,9 @@ Function <Void> RunDialogDemo (<String@> _TopLevelWindowXEs)
     WM_SetWindowText(_ButtonOneHwnd, "newtonhoward")
     
     # move it
-    #Output("[" & _ButtonOneText & "] position before: " & WM_GetWindowPosition(_ButtonOneHwnd))
-    #WM_MoveWindowBy(_ButtonOneHwnd, 60, 40)
-    #Output("[" & _ButtonOneText & "] position after: " & WM_GetWindowPosition(_ButtonOneHwnd))
+    Output("[" & _ButtonOneText & "] position before: " & WM_GetWindowPosition(_ButtonOneHwnd))
+    WM_MoveWindowBy(_ButtonOneHwnd, 60, 40)
+    Output("[" & _ButtonOneText & "] position after: " & WM_GetWindowPosition(_ButtonOneHwnd))
     
 EndFunction
 
