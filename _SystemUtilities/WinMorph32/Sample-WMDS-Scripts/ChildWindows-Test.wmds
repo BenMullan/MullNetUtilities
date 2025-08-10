@@ -1,0 +1,100 @@
+# File:     ChildWindows-Test.wmds - sample WinMorph-DocScript program
+# Exec:     WinMorph32.exe ChildWindows-Test.wmds
+# Author:   Ben Mullan (c) 2025
+
+Function <Number> Main (<String@> _CLAs)
+    
+    # list all avaliable WM_ functions...
+    # Output( Debug_GetVisibleSymbols() )
+    
+    output("scanning top-level windows..." & Const_CrLf())
+    <String@> _TopLevelWindowXEs : WM_EnumTopLevelWindowsXE()
+
+    NotepadWindowDemo(_TopLevelWindowXEs)
+    RunDialogDemo(_TopLevelWindowXEs)
+
+    Return 2004
+EndFunction
+
+
+Function <Void> NotepadWindowDemo (<String@> _TopLevelWindowXEs)
+    
+    # get the hWnd, of the 1st top-level window whose ProcessName is "notepad"
+    <String@> _NotepadWindowXEs : DS_StringArray_Where(_TopLevelWindowXEs, "TLWindowXE_HasThisProcessName(_Item, `notepad`)")
+    <String@> _VisibleNotepadWindowXEs : DS_StringArray_Where(_NotepadWindowXEs, "WindowXE_IsVisible(_Item)")
+    
+    Output("visible `notepad` windows: " & Const_CrLf() & DS_StringArray_Serialise(_VisibleNotepadWindowXEs, Const_CrLf()) & Const_CrLf())
+    <String> _NotepadWindowXE : DS_StringArray_At(_VisibleNotepadWindowXEs, 0)
+    <String> _NotepadWindowHwnd : WMUtil_XElement_GetAttribute(_NotepadWindowXE, "HWND")
+    
+    # incrementally move the window ←leftwards←
+    Loop (50)
+        WM_MoveWindowBy(_NotepadWindowHwnd, ~1, 0)
+        DS_Sleep(30)
+    EndLoop
+    
+    # change the window-title
+    WM_SetWindowText(_NotepadWindowHwnd, DS_String_GetRandom(8))
+    
+EndFunction
+
+
+Function <Void> RunDialogDemo (<String@> _TopLevelWindowXEs)
+    
+    # get the 1st top-level window whose Title contains "Ausführen"
+    <String@> _RunDialogXEs : DS_StringArray_Where(_TopLevelWindowXEs, "WindowXE_WindowTextContains(_Item, `Ausführen`)")
+    <String> _RunDialogXE : DS_StringArray_At(_RunDialogXEs, 0)
+    Output("`Ausführen` window: " & Const_CrLf() & _RunDialogXE & Const_CrLf())
+    
+    # get child windows
+    <String> _RunDialogHwnd : WMUtil_XElement_GetAttribute(_RunDialogXE, "HWND")
+    <String@> _RecursiveChildren : WM_GetChildWindows_RecursiveXE(_RunDialogHwnd)
+    Output("run-dialog recursive children: " & Const_CrLf() & DS_StringArray_Serialise(_RecursiveChildren, Const_CrLf()) & Const_CrLf())
+    
+    # get all visible buttons
+    <String@> _Buttons : DS_StringArray_Where(_RecursiveChildren, "WindowXE_ClassNameContains(_Item, `Button`) ' WindowXE_IsVisible(_Item)")
+    Output("run-dialog visible buttons: " & Const_CrLf() & DS_StringArray_Serialise(_Buttons, Const_CrLf()) & Const_CrLf())
+    
+    # get the 1st visible button
+    <String> _ButtonOneXE : DS_StringArray_At(_Buttons, 0)
+    <String> _ButtonOneHwnd : WMUtil_XElement_GetAttribute(_ButtonOneXE, "HWND")
+    <String> _ButtonOneText : WMUtil_XElement_GetAttribute(_ButtonOneXE, "Text")
+    
+    # hide/show it 10x
+    # Loop (10)
+        # WM_SetWindowVisibility(_ButtonOneHwnd, WM_GetWindowVisibility(_ButtonOneHwnd))
+        # DS_Sleep(800)
+    # EndLoop
+    
+    # change its text
+    WM_SetWindowText(_ButtonOneHwnd, "newtonhoward")
+    
+    # move it
+    #Output("[" & _ButtonOneText & "] position before: " & WM_GetWindowPosition(_ButtonOneHwnd))
+    #WM_MoveWindowBy(_ButtonOneHwnd, 60, 40)
+    #Output("[" & _ButtonOneText & "] position after: " & WM_GetWindowPosition(_ButtonOneHwnd))
+    
+EndFunction
+
+
+Function <Boolean> TLWindowXE_HasThisProcessName (<String> _TLWindowXE, <String> _ProcessName)
+    <String> _WindowProcName : WMUtil_XElement_GetAttribute(_TLWindowXE, "ProcessName")
+    Return [_WindowProcName = _ProcessName]
+EndFunction
+
+
+Function <Boolean> WindowXE_WindowTextContains (<String> _TLWindowXE, <String> _WindowTextSubstring)
+    <String> _WindowText : WMUtil_XElement_GetAttribute(_TLWindowXE, "Text")
+    Return DS_String_Contains(_WindowText, _WindowTextSubstring)
+EndFunction
+
+
+Function <Boolean> WindowXE_ClassNameContains (<String> _TLWindowXE, <String> _ClassNameSubstring)
+    <String> _ClassName : WMUtil_XElement_GetAttribute(_TLWindowXE, "ClassName")
+    Return DS_String_Contains(_ClassName, _ClassNameSubstring)
+EndFunction
+
+
+Function <Boolean> WindowXE_IsVisible (<String> _TLWindowXE)
+    Return [WMUtil_XElement_GetAttribute(_TLWindowXE, "IsVisible") = "True"]
+EndFunction

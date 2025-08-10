@@ -4,6 +4,11 @@
 
 Function <Number> Main (<String@> _CLAs)
     Output("wmds-clas → " & _CLAs)
+    
+    
+    # To list all avaliable WM_ functions:
+    # Output( Debug_GetVisibleSymbols() )
+    
 
     Output(DS_StringArray_Serialise(WM_EnumWindowTitles(), Const_CrLf()))
     Output("-----------------------------------------------------------")
@@ -12,10 +17,10 @@ Function <Number> Main (<String@> _CLAs)
     Output("-----------------------------------------------------------")
 
     <String@> _TopLevelWindowXEs : WM_EnumTopLevelWindowsXE()
-    #Output(DS_StringArray_Serialise(_TopLevelWindowXEs, Const_CrLf()))
-    #Output("-----------------------------------------------------------")
+    Output(DS_StringArray_Serialise(_TopLevelWindowXEs, Const_CrLf()))
+    Output("-----------------------------------------------------------")
 
-    # Eg: <TLWindowInfo HWND=``$WMH-0x002A1142`` Title=```` ClassName=``tooltips_class32`` ProcessName=``explorer`` PID=``11300`` />
+    # Eg: <TLWindowInfo HWND=``0x00DC119C`` Text=``Ausführen`` ClassName=``#32770`` ProcessName=``explorer`` PID=``11300`` IsVisible=``True`` IsEnabled=``True`` />
     <String> _FirstTopLevelWindowXE : DS_StringArray_At(_TopLevelWindowXEs, 0)
     <String> _FirstPID : WMUtil_XElement_GetAttribute(_FirstTopLevelWindowXE, "PID")
     Output("1st PID == " & _FirstPID)
@@ -50,6 +55,9 @@ Function <Number> Main (<String@> _CLAs)
     
     WM_SetWindowSize(_NotepadWindowHwnd, 640, 480)
     Output("Notepad's window-size is... " & WM_GetWindowSize(_NotepadWindowHwnd))
+    
+    WM_SetWindowPosition(_NotepadWindowHwnd, ~600, 10)
+    Output("Notepad's window-position is... " & WM_GetWindowPosition(_NotepadWindowHwnd))
 
     Return 2904
 EndFunction

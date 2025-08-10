@@ -28,9 +28,11 @@
         public static extern System.Boolean ShowWindow(System.IntPtr hWnd, System.Int32 nCmdShow);
 
         [System.Runtime.InteropServices.DllImport("user32.dll")]
+        [return: System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.Bool)]
         public static extern System.Boolean IsWindowVisible(System.IntPtr hWnd);
 
         [System.Runtime.InteropServices.DllImport("user32.dll")]
+        [return: System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.Bool)]
         public static extern System.Boolean IsWindowEnabled(System.IntPtr hWnd);
 
         [System.Runtime.InteropServices.DllImport("user32.dll")]
@@ -40,6 +42,12 @@
         public static extern System.Int32 GetClassName(System.IntPtr hWnd, System.Text.StringBuilder lpClassName, System.Int32 nMaxCount);
 
         /**/
+
+        /*
+         * - WindowState (maximised, normal, minimised)
+         * - GetWindowTextSafe() (cross-process, use WM_GETTEXT instead of GetWindowText)
+         * - UIAutomation?
+         */
 
         [System.Runtime.InteropServices.DllImport("user32.dll")]
         public static extern System.IntPtr GetForegroundWindow();
@@ -65,11 +73,16 @@
         [System.Runtime.InteropServices.DllImport("user32.dll")]
         public static extern System.IntPtr GetDesktopWindow();
 
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        public static extern System.Boolean UpdateWindow(System.IntPtr hWnd);
+
         /**/
 
         // RECT for sizing
         [System.Runtime.InteropServices.DllImport("user32.dll", SetLastError = true)]
         public static extern System.Boolean GetWindowRect(System.IntPtr hWnd, out RECT lpRect);
+
+        [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
         public struct RECT { public System.Int32 Left, Top, Right, Bottom; }
 
 
@@ -92,8 +105,10 @@
         // Styles
         [System.Runtime.InteropServices.DllImport("user32.dll", SetLastError = true)]
         public static extern System.Int32 GetWindowLong(System.IntPtr hWnd, System.Int32 nIndex);
+        
         [System.Runtime.InteropServices.DllImport("user32.dll", SetLastError = true)]
         public static extern System.Int32 SetWindowLong(System.IntPtr hWnd, System.Int32 nIndex, System.Int32 dwNewLong);
+
         public const System.Int32 GWL_STYLE   = -16;
         public const System.Int32 WS_BORDER   = 0x00800000;
         public const System.Int32 GWL_EXSTYLE = -20;
@@ -103,6 +118,7 @@
         // Transparency
         [System.Runtime.InteropServices.DllImport("user32.dll", SetLastError = true)]
         public static extern System.Boolean SetLayeredWindowAttributes(System.IntPtr hwnd, System.UInt32 crKey, byte bAlpha, System.UInt32 dwFlags);
+        
         public const System.Int32 LWA_ALPHA = 0x2;
 
 
@@ -124,6 +140,7 @@
 
         [System.Runtime.InteropServices.DllImport("user32.dll", SetLastError = true)]
         public static extern System.IntPtr SetClassLongPtr(System.IntPtr hWnd, System.Int32 nIndex, System.IntPtr dwNewLong);
+        
         public const System.Int32 GCLP_HBRBACKGROUND = -10;
 
         [System.Runtime.InteropServices.DllImport("user32.dll", SetLastError = true)]

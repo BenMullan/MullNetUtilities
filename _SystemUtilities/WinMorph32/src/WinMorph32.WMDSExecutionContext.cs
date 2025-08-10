@@ -23,7 +23,8 @@ namespace WinMorph32 {
                 return new BuiltInFunction[] {
                     WM_EnumWindowTitles_, WM_EnumWindowTitles_VisibleOnly_, WM_EnumTopLevelWindowsXE_, WM_MoveWindowBy_,
                     WM_SetWindowText_, WM_GetWindowText_, WM_SetWindowVisibility_, WM_GetWindowVisibility_, WM_SetWindowEnabled_,
-                    WM_GetWindowEnabled_, WM_SetWindowSize_, WM_GetWindowSize_,
+                    WM_GetWindowEnabled_, WM_SetWindowSize_, WM_GetWindowSize_, WM_SetWindowPosition_, WM_GetWindowPosition_,
+                    WM_GetChildWindowsXE_, WM_GetChildWindows_RecursiveXE_,
                     WMUtil_XElement_New_, WMUtil_XElement_GetAttribute_, WMUtil_XElement_SetAttribute_, WMUtil_XElement_HasAttribute_,
                     WMUtil_XElement_GetAttrKeys_, WMUtil_XElement_RemoveAttribute_, WMUtil_XElement_IsValid_, WMUtil_XElement_Merge_
                 };
@@ -102,7 +103,7 @@ namespace WinMorph32 {
                 return new BuiltInFunction(
                     _Identifier:            _BifName,
                     _ReturnType:            typeof(DSArray<DSString>),
-                    _ExpectedParameters:    (new DSFunction.Parameter[] { }),
+                    _ExpectedParameters:    (new DSFunction.Parameter[] {}),
                     _Action:                new BuiltInFunction.BuiltInFunctionDelegate(
                         (SymbolTablesSnapshot _SymTbls, IDataValue[] _Arguments) => {
 
@@ -123,12 +124,190 @@ namespace WinMorph32 {
                         }
                     )
                 ) {
-                    Description = "Returns (ds-double-backtick-)serialised XElements for {HWND, ClassName, Title, ProcessName, PID, IsVisible, IsEnabled} of all top-level windows. Eg <TLWindowInfo Attr=``Value`` ... />."
+                    Description = "Returns (ds-double-backtick-)serialised XElements for {HWND, ClassName, Text, ProcessName, PID, IsVisible, IsEnabled} of all top-level windows. Syntax eg <TLWindowInfo Attr=``Value`` ... />."
                 };
 
             }
         }
 
+        private static BuiltInFunction WM_GetChildWindowsXE_ {
+            get {
+
+                System.String _BifName = "WM_GetChildWindowsXE";
+
+                return new BuiltInFunction(
+                    _Identifier: _BifName,
+                    _ReturnType: typeof(DSArray<DSString>),
+                    _ExpectedParameters: (
+                        new DSFunction.Parameter[] {
+                            new DSFunction.Parameter("_ParentHWnd", typeof(DSString))
+                        }
+                    ),
+                    _Action: new BuiltInFunction.BuiltInFunctionDelegate(
+                        (SymbolTablesSnapshot _SymTbls, IDataValue[] _Arguments) => {
+
+                            var _ExeRes = ExecutionResult.New_AndStartExecutionTimer(@"WM-BIF\" + _BifName);
+
+                            // _ParentHWnd, eg: "0x000100EE"
+                            System.String _ParentHWnd = _Arguments[0].Coerce<DSString>().Value;
+
+                            WindowManipulationMethods.ChildWindowInfo[] _ChildWindows = global::WinMorph32.WindowManipulationMethods.EnumChildWindows(
+                                WinMorph32.WindowManipulationMethods.GetHwnd_FromHexString(_ParentHWnd)
+                            );
+
+                            _ExeRes.ReturnStatus.BuiltInFunction_ReturnValue = new DSArray<DSString>(
+                                _ChildWindows.Select<WindowManipulationMethods.ChildWindowInfo, DSString>(
+                                    (_ChildWinInfo) => new DSString(
+                                        WinMorph32.ExeCxtUtilityMethods.SerializeXElement_WithDoubleBackticks(
+                                            WinMorph32.ExeCxtUtilityMethods.ToXElement<WindowManipulationMethods.ChildWindowInfo>(_ChildWinInfo)
+                                        )
+                                    )
+                                ).ToArray()
+                            );
+
+                            return _ExeRes.StopExecutionTimer_AndFinaliseObject(ref _SymTbls);
+
+                        }
+                    )
+                ) {
+                    Description = "Returns (ds-double-backtick-)serialised XElements for all direct child windows of the specified parent HWND. Syntax eg <ChildWindowInfo Attr=``Value`` ... />."
+                };
+
+            }
+        }
+
+        private static BuiltInFunction WM_GetChildWindows_RecursiveXE_ {
+            get {
+
+                System.String _BifName = "WM_GetChildWindows_RecursiveXE";
+
+                return new BuiltInFunction(
+                    _Identifier: _BifName,
+                    _ReturnType: typeof(DSArray<DSString>),
+                    _ExpectedParameters: (
+                        new DSFunction.Parameter[] {
+                            new DSFunction.Parameter("_ParentHWnd", typeof(DSString))
+                        }
+                    ),
+                    _Action: new BuiltInFunction.BuiltInFunctionDelegate(
+                        (SymbolTablesSnapshot _SymTbls, IDataValue[] _Arguments) => {
+
+                            var _ExeRes = ExecutionResult.New_AndStartExecutionTimer(@"WM-BIF\" + _BifName);
+
+                            // _ParentHWnd, eg: "0x000100EE"
+                            System.String _ParentHWnd = _Arguments[0].Coerce<DSString>().Value;
+
+                            WindowManipulationMethods.ChildWindowInfo[] _ChildWindows = global::WinMorph32.WindowManipulationMethods.EnumChildWindows_Recursive(
+                                WinMorph32.WindowManipulationMethods.GetHwnd_FromHexString(_ParentHWnd)
+                            );
+
+                            _ExeRes.ReturnStatus.BuiltInFunction_ReturnValue = new DSArray<DSString>(
+                                _ChildWindows.Select<WindowManipulationMethods.ChildWindowInfo, DSString>(
+                                    (_ChildWinInfo) => new DSString(
+                                        WinMorph32.ExeCxtUtilityMethods.SerializeXElement_WithDoubleBackticks(
+                                            WinMorph32.ExeCxtUtilityMethods.ToXElement<WindowManipulationMethods.ChildWindowInfo>(_ChildWinInfo)
+                                        )
+                                    )
+                                ).ToArray()
+                            );
+
+                            return _ExeRes.StopExecutionTimer_AndFinaliseObject(ref _SymTbls);
+
+                        }
+                    )
+                ) {
+                    Description = "Returns (ds-double-backtick-)serialised XElements for all descendant child windows (recursive) of the specified parent HWND. Syntax eg <ChildWindowInfo Attr=``Value`` ... />."
+                };
+
+            }
+        }
+
+        private static BuiltInFunction WM_SetWindowPosition_ {
+            get {
+
+                System.String _BifName = "WM_SetWindowPosition";
+
+                return new BuiltInFunction(
+                    _Identifier: _BifName,
+                    _ReturnType: typeof(@Void),
+                    _ExpectedParameters: (
+                        new DSFunction.Parameter[] {
+                            new DSFunction.Parameter("_HWnd", typeof(DSString)),
+                            new DSFunction.Parameter("_TopLeftX", typeof(DSNumber)),
+                            new DSFunction.Parameter("_TopLeftY", typeof(DSNumber))
+                        }
+                    ),
+                    _Action: new BuiltInFunction.BuiltInFunctionDelegate(
+                        (SymbolTablesSnapshot _SymTbls, IDataValue[] _Arguments) => {
+
+                            var _ExeRes = ExecutionResult.New_AndStartExecutionTimer(@"WM-BIF\" + _BifName);
+
+                            // _HWnd, eg: "0x000100EE"
+                            System.String _HWnd = _Arguments[0].Coerce<DSString>().Value;
+
+                            // _TopLeftX, eg: 100
+                            System.Int32 _TopLeftX = (System.Int32)_Arguments[1].Coerce<DSNumber>().Value;
+
+                            // _TopLeftY, eg: 200
+                            System.Int32 _TopLeftY = (System.Int32)_Arguments[2].Coerce<DSNumber>().Value;
+
+                            global::WinMorph32.WindowManipulationMethods.SetWindowPosition(
+                                _hWnd: WinMorph32.WindowManipulationMethods.GetHwnd_FromHexString(_HWnd),
+                                _TopLeftX: _TopLeftX,
+                                _TopLeftY: _TopLeftY
+                            );
+
+                            return _ExeRes.StopExecutionTimer_AndFinaliseObject(ref _SymTbls);
+
+                        }
+                    )
+                ) {
+                    Description = "Sets the window's top-left position (screen coordinates) to _TopLeftX, _TopLeftY, retaining current width and height."
+                };
+
+            }
+        }
+
+        private static BuiltInFunction WM_GetWindowPosition_ {
+            get {
+
+                System.String _BifName = "WM_GetWindowPosition";
+
+                return new BuiltInFunction(
+                    _Identifier: _BifName,
+                    _ReturnType: typeof(DSArray<DSNumber>),
+                    _ExpectedParameters: (
+                        new DSFunction.Parameter[] {
+                            new DSFunction.Parameter("_HWnd", typeof(DSString))
+                        }
+                    ),
+                    _Action: new BuiltInFunction.BuiltInFunctionDelegate(
+                        (SymbolTablesSnapshot _SymTbls, IDataValue[] _Arguments) => {
+
+                            var _ExeRes = ExecutionResult.New_AndStartExecutionTimer(@"WM-BIF\" + _BifName);
+
+                            // _HWnd, eg: "0x000100EE"
+                            System.String _HWnd = _Arguments[0].Coerce<DSString>().Value;
+
+                            System.Drawing.Point _WindowPos = global::WinMorph32.WindowManipulationMethods.GetWindowPosition(
+                                _hWnd: WinMorph32.WindowManipulationMethods.GetHwnd_FromHexString(_HWnd)
+                            );
+
+                            _ExeRes.ReturnStatus.BuiltInFunction_ReturnValue = new DSArray<DSNumber>(
+                                new DSNumber[] { new DSNumber(_WindowPos.X), new DSNumber(_WindowPos.Y) }
+                            );
+
+                            return _ExeRes.StopExecutionTimer_AndFinaliseObject(ref _SymTbls);
+
+                        }
+                    )
+                ) {
+                    Description = "Returns [0] the top-left-X, and [1] the top-left-Y screen coordinates of the window."
+                };
+
+            }
+        }
+        
         private static BuiltInFunction WM_MoveWindowBy_ {
             get {
 

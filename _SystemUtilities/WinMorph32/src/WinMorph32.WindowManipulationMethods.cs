@@ -3,8 +3,11 @@
 namespace WinMorph32 {
     public static class WindowManipulationMethods {
 
-        /// <summary>Represents a top-level window with a {HWND, Title, ClassName, ProcessName, PID, IsVisible, IsEnabled}.</summary>
-        public struct TLWindowInfo { public System.String HWND, Title, ClassName, ProcessName; public System.UInt32 PID; public System.Boolean IsVisible, IsEnabled; }
+        /// <summary>Represents a top-level window with a {HWND, Text, ClassName, ProcessName, PID, IsVisible, IsEnabled}.</summary>
+        public struct TLWindowInfo { public System.String HWND, Text, ClassName, ProcessName; public System.UInt32 PID; public System.Boolean IsVisible, IsEnabled; }
+
+        /// <summary>Represents a top-level window with a {HWND, ParentHwnd, Text, ClassName, IsVisible, IsEnabled}.</summary>
+        public struct ChildWindowInfo { public System.String HWND, ParentHwnd, Text, ClassName; public System.Boolean IsVisible, IsEnabled; }
 
         /// <summary>Eg: 0xA3F88E9B3</summary>
         public const System.String WinMorph_SerialisedHwndPrefix = "0x";
@@ -91,7 +94,7 @@ namespace WinMorph32 {
 
         }
 
-        /// <summary>Returns {HWND, Title, ClassName, ProcessName, PID, IsVisible, IsEnabled} for ALL top-level windows.</summary>
+        /// <summary>Returns a TLWindowInfo for ALL top-level windows (visible or not).</summary>
         public static WindowManipulationMethods.TLWindowInfo[] EnumTopLevelWindows() {
 
             System.Collections.Generic.List<WindowManipulationMethods.TLWindowInfo> _TLWindowInfos =
@@ -106,16 +109,11 @@ namespace WinMorph32 {
                     // HWND
                     _TLWindowInfo.HWND = WindowManipulationMethods.ConvertHwnd_ToHexString(_hWnd);
 
-                    // Title
-                    System.Int32 _TitleLength = RawWin32Methods.GetWindowTextLength(_hWnd);
-                    System.Text.StringBuilder _TitleStringBuilder = new System.Text.StringBuilder(capacity: _TitleLength + 1);
-                    RawWin32Methods.GetWindowText(_hWnd, _TitleStringBuilder, _TitleStringBuilder.Capacity);
-                    _TLWindowInfo.Title = _TitleStringBuilder.ToString();
+                    // Text
+                    _TLWindowInfo.Text = WindowManipulationMethods.GetWindowText(_hWnd);
 
                     // ClassName
-                    System.Text.StringBuilder _ClassNameStringBuilder = new System.Text.StringBuilder(capacity: 256);
-                    RawWin32Methods.GetClassName(_hWnd, _ClassNameStringBuilder, _ClassNameStringBuilder.Capacity);
-                    _TLWindowInfo.ClassName = _ClassNameStringBuilder.ToString();
+                    _TLWindowInfo.ClassName = WindowManipulationMethods.GetWindowClassName(_hWnd);
 
                     // PID
                     RawWin32Methods.GetWindowThreadProcessId(_hWnd, out _TLWindowInfo.PID);
@@ -143,6 +141,82 @@ namespace WinMorph32 {
 
         }
 
+        /// <summary>Returns DIRECT children only (not children, of children, recursively).</summary>
+        public static WindowManipulationMethods.ChildWindowInfo[] EnumChildWindows(System.IntPtr _ParentHWnd) {
+            return WindowManipulationMethods.GetChildWindows_(_ParentHWnd).ToArray();
+        }
+
+        /// <summary>Returns ALL child windows (all children, of all children, recursively).</summary>
+        public static WindowManipulationMethods.ChildWindowInfo[] EnumChildWindows_Recursive(System.IntPtr _ParentHWnd) {
+            return WindowManipulationMethods.GetAllDescendantWindows_(_ParentHWnd).ToArray();
+        }
+
+        #region EnumChildWindows-Resources
+
+        /// <summary>Returns DIRECT children only (not children, of children, recursively).</summary>
+        private static System.Collections.Generic.List<WindowManipulationMethods.ChildWindowInfo> GetChildWindows_(System.IntPtr _ParentHwnd) {
+
+            System.Collections.Generic.List<ChildWindowInfo> _ChildWindows = new System.Collections.Generic.List<ChildWindowInfo>();
+            System.Runtime.InteropServices.GCHandle _ChildWindows_ListHandle = System.Runtime.InteropServices.GCHandle.Alloc(_ChildWindows);
+
+            try { RawWin32Methods.EnumChildWindows(_ParentHwnd, WindowManipulationMethods.EnumChildWindowCallback_, System.Runtime.InteropServices.GCHandle.ToIntPtr(_ChildWindows_ListHandle)); }
+            finally { _ChildWindows_ListHandle.Free(); }
+
+            return _ChildWindows;
+
+        }
+
+        private static System.Boolean EnumChildWindowCallback_(System.IntPtr _hWnd, System.IntPtr _lParam) {
+
+            System.Collections.Generic.List<ChildWindowInfo> _ChildWindows =
+                (System.Collections.Generic.List<ChildWindowInfo>)System.Runtime.InteropServices.GCHandle.FromIntPtr(_lParam).Target
+            ;
+
+            WindowManipulationMethods.ChildWindowInfo _ChildWindowInfo = new WindowManipulationMethods.ChildWindowInfo();
+
+            _ChildWindowInfo.HWND = WindowManipulationMethods.ConvertHwnd_ToHexString(_hWnd);
+            _ChildWindowInfo.ParentHwnd = WindowManipulationMethods.ConvertHwnd_ToHexString(RawWin32Methods.GetParent(_hWnd));
+
+            _ChildWindowInfo.Text = WindowManipulationMethods.GetWindowText(_hWnd);
+            _ChildWindowInfo.ClassName = WindowManipulationMethods.GetWindowClassName(_hWnd);
+
+            _ChildWindowInfo.IsVisible = RawWin32Methods.IsWindowVisible(_hWnd);
+            _ChildWindowInfo.IsEnabled = RawWin32Methods.IsWindowEnabled(_hWnd);
+
+            _ChildWindows.Add(_ChildWindowInfo);
+
+            // continue enumeration...
+            return true;
+
+        }
+
+        /// <summary>Returns ALL child windows (all children, of all children, recursively).</summary>
+        private static System.Collections.Generic.List<ChildWindowInfo> GetAllDescendantWindows_(System.IntPtr _ParentHwnd) {
+            
+            System.Collections.Generic.List<ChildWindowInfo> _AllWindows = new System.Collections.Generic.List<ChildWindowInfo>();
+            WindowManipulationMethods.GetChildWindowsRecursive_(_ParentHwnd, _AllWindows);
+            
+            return _AllWindows;
+        
+        }
+
+        private static void GetChildWindowsRecursive_(System.IntPtr _ParentHwnd, System.Collections.Generic.List<ChildWindowInfo> _AllWindows) {
+            
+            System.Collections.Generic.List<ChildWindowInfo> _DirectChildren = WindowManipulationMethods.GetChildWindows_(_ParentHwnd);
+
+            foreach (ChildWindowInfo _ChildWindowInfo in _DirectChildren) {
+                
+                _AllWindows.Add(_ChildWindowInfo);
+                
+                // recursively probe the children, of this child...
+                GetChildWindowsRecursive_(WindowManipulationMethods.GetHwnd_FromHexString(_ChildWindowInfo.HWND), _AllWindows);
+
+            }
+
+        }
+
+        #endregion
+
         /// <summary>Gets the window's title/caption text.</summary>
         public static System.String GetWindowText(System.IntPtr _hWnd) {
 
@@ -156,18 +230,89 @@ namespace WinMorph32 {
 
         }
 
+        /// <summary>Gets the window's Class, eg `static` or `Edit`.</summary>
+        public static System.String GetWindowClassName(System.IntPtr _hWnd) {
+
+            System.Text.StringBuilder _ClassNameStringBuilder = new System.Text.StringBuilder(capacity: 256);
+            RawWin32Methods.GetClassName(_hWnd, _ClassNameStringBuilder, _ClassNameStringBuilder.Capacity);
+
+            return _ClassNameStringBuilder.ToString();
+
+        }
+
+        /// <summary>Sets the window's top-left position (keeps current width & height).</summary>
+        public static void SetWindowPosition(System.IntPtr _hWnd, System.Int32 _TopLeftX, System.Int32 _TopLeftY) {
+
+            RawWin32Methods.RECT _Rect;
+            if (!RawWin32Methods.GetWindowRect(_hWnd, out _Rect)) {
+                throw new System.Exception("Couldn't GetWindowRect() for (HWND)" + _hWnd);
+            }
+
+            System.Int32 _Width = _Rect.Right - _Rect.Left;
+            System.Int32 _Height = _Rect.Bottom - _Rect.Top;
+
+            if (!RawWin32Methods.MoveWindow(_hWnd, _TopLeftX, _TopLeftY, _Width, _Height, bRepaint: true)) {
+                throw new System.Exception("Couldn't MoveWindow() for (HWND)" + _hWnd);
+            }
+
+        }
+
+        /// <summary>Gets the window's top-left position (screen coordinates).</summary>
+        public static System.Drawing.Point GetWindowPosition(System.IntPtr _hWnd) {
+
+            RawWin32Methods.RECT _Rect;
+            if (!RawWin32Methods.GetWindowRect(_hWnd, out _Rect)) {
+                throw new System.Exception("Couldn't GetWindowRect() for (HWND)" + _hWnd);
+            }
+
+            return new System.Drawing.Point(_Rect.Left, _Rect.Top);
+
+        }
+
         /// <summary>Moves the specified window by the given pixel offsets (relative to its current position).</summary>
         public static void MoveWindowBy(System.IntPtr _hWnd, System.Int32 _PixelsToTheRight, System.Int32 _PixelsDownwards) {
 
             RawWin32Methods.RECT _Rect;
-            if (!RawWin32Methods.GetWindowRect(_hWnd, out _Rect)) { throw new System.Exception("Couldn't GetWindowRect() for (HWND)" + _hWnd); }
+            if (!RawWin32Methods.GetWindowRect(_hWnd, out _Rect)) {
+                throw new System.Exception("Couldn't GetWindowRect() for (HWND)" + _hWnd);
+            }
 
             System.Int32 _NewX = _Rect.Left + _PixelsToTheRight;
             System.Int32 _NewY = _Rect.Top + _PixelsDownwards;
-            System.Int32 _Width = _Rect.Right - _Rect.Left;
-            System.Int32 _Height = _Rect.Bottom - _Rect.Top;
 
-            if (!RawWin32Methods.MoveWindow(_hWnd, _NewX, _NewY, _Width, _Height, bRepaint: true)) { throw new System.Exception("Couldn't MoveWindow() for (HWND)" + _hWnd); }
+            {
+                const System.Boolean ___USE_NEW_MOVEWINDOW_MECHANISM___ = true;
+
+                if (___USE_NEW_MOVEWINDOW_MECHANISM___) {
+                    
+                    // using SetWindowPos() for more reliable cross-process child-window movement
+                    if (
+                        !RawWin32Methods.SetWindowPos(
+                            _hWnd,
+                            RawWin32Methods.HWND_TOP,
+                            _NewX, _NewY,
+                            0, 0,
+                            RawWin32Methods.SWP_NOSIZE | RawWin32Methods.SWP_NOZORDER | RawWin32Methods.SWP_SHOWWINDOW
+                        )
+                    ) {
+                        throw new System.Exception("Couldn't SetWindowPos() for (HWND)" + _hWnd);
+                    }
+
+                } else {
+
+                    // using MoveWindow()... seems only to work for top-level windows.
+                    System.Int32 _Width = _Rect.Right - _Rect.Left;
+                    System.Int32 _Height = _Rect.Bottom - _Rect.Top;
+
+                    if (!RawWin32Methods.MoveWindow(_hWnd, _NewX, _NewY, _Width, _Height, bRepaint: true)) {
+                        throw new System.Exception("Couldn't MoveWindow() for (HWND)" + _hWnd);
+                    }
+
+                }
+            }
+
+            // Force repaint
+            RawWin32Methods.InvalidateRect(_hWnd, System.IntPtr.Zero, bErase: true);
 
         }
 
